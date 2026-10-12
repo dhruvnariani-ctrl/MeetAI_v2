@@ -15,7 +15,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider theme={Theme}>
       <CssBaseline />
-      <BrowserRouter basename="/MeetAI_v2">
+      <BrowserRouter>
         <App />
       </BrowserRouter>
     </ThemeProvider>
