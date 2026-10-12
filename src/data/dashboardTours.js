@@ -5,17 +5,6 @@
 export const DASHBOARD_TOUR_STEPS = [
   {
     path: '/',
-    target: '[data-tour="dashboard-welcome"]',
-    title: 'Welcome to your dashboard',
-    icon: 'Today',
-    body:
-      'This is your main MeetAI screen. It gives you a quick overview of your meetings, upcoming events, and tasks that need your attention.',
-    action: 'Take a moment to look at the information on your dashboard.',
-    tip: 'You can always return here when you want a quick overview of your day.',
-  },
-
-  {
-    path: '/',
     target: '[data-tour="dashboard-todays-meetings"]',
     title: "Today's meetings",
     icon: 'CalendarMonth',
@@ -23,6 +12,7 @@ export const DASHBOARD_TOUR_STEPS = [
       'This section shows the meetings scheduled for today. You can quickly see what has already happened and what is coming next.',
     action: 'Look through the meetings shown here.',
     tip: 'Completed and upcoming meetings are shown differently so they are easier to recognise.',
+    scrollBlock: 'start',
   },
 
   {

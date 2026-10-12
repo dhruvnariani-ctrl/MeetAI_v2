@@ -1,599 +1,135 @@
-import { useNavigate } from 'react-router-dom'
+
+import { useState } from 'react'
 
 import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
-import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 
-import PeopleOutlineIcon from '@mui/icons-material/PeopleOutlined'
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import EventBusyOutlinedIcon from '@mui/icons-material/EventBusyOutlined'
+import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded'
+import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded'
 
-import MeetingToggles from '../MeetingToggles'
+import SlidingSegmented from '../SlidingSegmented'
+import MeetingListItem from '../meetings/MeetingListItem'
+import MeetingGridCard from '../meetings/MeetingGridCard'
+import { readJSON, writeJSON } from '../../utils/storage'
 
-const STATUS_STYLES = {
-  Live: {
-    backgroundColor: '#fff0f0',
-    color: '#c62828',
-  },
+const LAYOUT_KEY = 'calendar-meeting-layout'
 
-  Upcoming: {
-    backgroundColor: '#eaf3ff',
-    color: '#1769aa',
-  },
+const LAYOUT_OPTIONS = [
+  { value: 'list', label: 'List', icon: <ViewListRoundedIcon /> },
+  { value: 'grid', label: 'Grid', icon: <GridViewRoundedIcon /> },
+]
 
-  Done: {
-    backgroundColor: '#e7f6ee',
-    color: '#237a4b',
-  },
-}
+function readSavedLayout() {
+  const saved = readJSON(LAYOUT_KEY, null)
 
-/**
- * Resolve the MeetAI toggle state.
- *
- * Priority:
- * 1. Local user changes
- * 2. Meeting data
- * 3. false
- */
-function getMeetingToggleSettings(
-  meeting,
-  localSettings,
-) {
-  return {
-    autoJoin:
-      localSettings?.autoJoin ??
-      meeting?.meetAI?.invited ??
-      false,
-
-    recordVideo:
-      localSettings?.recordVideo ??
-      meeting?.meetAI?.recordVideo ??
-      false,
+  if (saved === 'grid' || saved === 'list') {
+    return saved
   }
+
+  // Migrate the older plain-string localStorage value.
+  try {
+    const legacy =
+      typeof window !== 'undefined'
+        ? window.localStorage.getItem(LAYOUT_KEY)
+        : null
+
+    if (legacy === 'grid' || legacy === 'list') {
+      writeJSON(LAYOUT_KEY, legacy)
+      return legacy
+    }
+  } catch {
+    // Fall back to list layout if storage is unavailable.
+  }
+
+  return 'list'
 }
 
 function formatDateHeading(dateString) {
-  const [
-    year,
-    month,
-    day,
-  ] = dateString
-    .split('-')
-    .map(Number)
+  if (!dateString) return ''
 
-  const date = new Date(
-    year,
-    month - 1,
-    day,
-  )
+  const parts = String(dateString).split('-').map(Number)
 
-  return new Intl.DateTimeFormat(
-    'en-US',
-    {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    },
-  ).format(date)
-}
-
-function MeetingCard({
-  meeting,
-  settings,
-  onSettingsChange,
-  tourTarget = false,
-}) {
-  const navigate = useNavigate()
-
-  const statusStyle =
-    STATUS_STYLES[meeting.type] ??
-    STATUS_STYLES.Upcoming
-
-  /*
-   * Live, Upcoming and Done meetings
-   * all show the MeetAI controls.
-   *
-   * Done meetings have disabled controls.
-   */
-  const showToggles =
-    meeting.type === 'Live' ||
-    meeting.type === 'Upcoming' ||
-    meeting.type === 'Done'
-
-  const togglesDisabled =
-    meeting.type === 'Done'
-
-  const meetingSettings =
-    getMeetingToggleSettings(
-      meeting,
-      settings?.[meeting.id],
-    )
-
-  const handleOpenMeeting = () => {
-    navigate(
-      `/meetings/${meeting.id}`,
-    )
+  if (parts.length !== 3 || parts.some(Number.isNaN)) {
+    return String(dateString)
   }
 
-  /*
-   * Keyboard users can still open
-   * meeting details without double-clicking.
-   */
-  const handleKeyDown = (event) => {
-    if (
-      event.key === 'Enter' ||
-      event.key === ' '
-    ) {
-      event.preventDefault()
-      handleOpenMeeting()
-    }
-  }
-
-  /*
-   * MeetAI controls must not trigger
-   * meeting navigation.
-   */
-  const stopMeetingNavigation = (
-    event,
-  ) => {
-    event.stopPropagation()
-  }
-
-  return (
-    <Paper
-      data-tour={
-        tourTarget
-          ? 'calendar-meeting'
-          : undefined
-      }
-      elevation={0}
-      role="button"
-      tabIndex={0}
-      onDoubleClick={handleOpenMeeting}
-      onKeyDown={handleKeyDown}
-      sx={{
-        border:
-          '1px solid #e1e6ec',
-
-        borderRadius: '18px',
-
-        bgcolor: '#fff',
-
-        overflow: 'hidden',
-
-        cursor: 'default',
-
-        transition:
-          'border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease',
-
-        '&:hover': {
-          borderColor:
-            '#c5d0df',
-
-          boxShadow:
-            '0 5px 18px rgba(15, 23, 42, 0.06)',
-
-          bgcolor:
-            '#fcfdff',
-
-          '& .meeting-arrow': {
-            opacity: 1,
-
-            transform:
-              'translateX(2px)',
-          },
-        },
-
-        '&:focus-visible': {
-          outline: '2px solid',
-
-          outlineColor:
-            'primary.main',
-
-          outlineOffset: '2px',
-        },
-      }}
-    >
-      <Box
-        sx={{
-          display: 'grid',
-
-          /*
-           * Desktop:
-           *
-           * meeting information
-           * status
-           * MeetAI controls
-           * arrow
-           */
-          gridTemplateColumns: {
-            xs: '1fr auto',
-            md:
-              'minmax(0, 1fr) auto auto 24px',
-          },
-
-          alignItems: 'center',
-
-          columnGap: {
-            xs: 1,
-            md: 2,
-          },
-
-          rowGap: {
-            xs: 1,
-            md: 0,
-          },
-
-          px: {
-            xs: 1.75,
-            md: 2.5,
-          },
-
-          py: {
-            xs: 1.5,
-            md: 1.75,
-          },
-        }}
-      >
-        {/* ============================================================ */}
-        {/* Meeting information                                           */}
-        {/* ============================================================ */}
-
-        <Box
-          sx={{
-            minWidth: 0,
-
-            gridColumn: {
-              xs: '1 / 2',
-              md: '1 / 2',
-            },
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: '0.78rem',
-
-              lineHeight: 1.25,
-
-              color: '#48658d',
-
-              fontWeight: 500,
-
-              mb: 0.6,
-
-              userSelect: 'none',
-            }}
-          >
-            {meeting.time}
-          </Typography>
-
-          <Typography
-            sx={{
-              fontSize: {
-                xs: '0.95rem',
-                md: '1rem',
-              },
-
-              lineHeight: 1.3,
-
-              fontWeight: 700,
-
-              color: '#0f172a',
-
-              mb: 0.65,
-
-              overflow: 'hidden',
-
-              textOverflow: 'ellipsis',
-
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {meeting.title}
-          </Typography>
-
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            sx={{
-              flexWrap: 'wrap',
-              rowGap: 0.5,
-            }}
-          >
-            <Typography
-              sx={{
-                fontSize: '0.78rem',
-
-                color: '#48658d',
-
-                fontWeight: 500,
-              }}
-            >
-              {meeting.platform}
-            </Typography>
-
-            <Box
-              sx={{
-                width: 3,
-                height: 3,
-                borderRadius: '50%',
-                bgcolor: '#a8b3c2',
-              }}
-            />
-
-            <Stack
-              direction="row"
-              spacing={0.4}
-              alignItems="center"
-            >
-              <PeopleOutlineIcon
-                sx={{
-                  fontSize: 16,
-                  color: '#64748b',
-                }}
-              />
-
-              <Typography
-                sx={{
-                  fontSize: '0.78rem',
-
-                  color: '#64748b',
-                }}
-              >
-                {meeting.participants}
-              </Typography>
-            </Stack>
-          </Stack>
-        </Box>
-
-        {/* ============================================================ */}
-        {/* Status                                                        */}
-        {/* ============================================================ */}
-
-        <Box
-          onClick={
-            stopMeetingNavigation
-          }
-          onMouseDown={
-            stopMeetingNavigation
-          }
-          onPointerDown={
-            stopMeetingNavigation
-          }
-          sx={{
-            gridColumn: {
-              xs: '2 / 3',
-              md: '2 / 3',
-            },
-
-            alignSelf: {
-              xs: 'start',
-              md: 'center',
-            },
-
-            justifySelf: 'end',
-          }}
-        >
-          <Chip
-            label={meeting.type}
-            size="small"
-            sx={{
-              height: 32,
-
-              minWidth: {
-                xs: 88,
-                md: 104,
-              },
-
-              borderRadius: '999px',
-
-              backgroundColor:
-                statusStyle.backgroundColor,
-
-              color:
-                statusStyle.color,
-
-              fontSize: '0.75rem',
-
-              fontWeight: 700,
-
-              userSelect: 'none',
-
-              '& .MuiChip-label': {
-                px: 1.5,
-              },
-
-              '&:focus': {
-                outline: 'none',
-              },
-            }}
-          />
-        </Box>
-
-        {/* ============================================================ */}
-        {/* MeetAI controls                                               */}
-        {/* ============================================================ */}
-
-        {showToggles ? (
-          <Box
-            onClick={
-              stopMeetingNavigation
-            }
-            onMouseDown={
-              stopMeetingNavigation
-            }
-            onPointerDown={
-              stopMeetingNavigation
-            }
-            sx={{
-              gridColumn: {
-                xs: '1 / 3',
-                md: '3 / 4',
-              },
-
-              display: 'flex',
-
-              alignItems: 'center',
-
-              justifyContent: {
-                xs: 'flex-start',
-                md: 'flex-end',
-              },
-
-              minWidth: {
-                md: 220,
-              },
-
-              pt: {
-                xs: 1,
-                md: 0,
-              },
-
-              mt: {
-                xs: 0.25,
-                md: 0,
-              },
-
-              borderTop: {
-                xs:
-                  '1px solid #eef1f5',
-                md: 'none',
-              },
-            }}
-          >
-            <Tooltip
-              title={
-                togglesDisabled
-                  ? 'Meeting already done'
-                  : ''
-              }
-              placement="top"
-              arrow
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-
-                  alignItems: 'center',
-
-                  opacity:
-                    togglesDisabled
-                      ? 0.7
-                      : 1,
-
-                  cursor:
-                    togglesDisabled
-                      ? 'not-allowed'
-                      : 'default',
-                }}
-              >
-                <MeetingToggles
-                  meeting={meeting}
-                  settings={
-                    meetingSettings
-                  }
-                  onChange={
-                    onSettingsChange
-                  }
-                  disabled={
-                    togglesDisabled
-                  }
-                />
-              </Box>
-            </Tooltip>
-          </Box>
-        ) : null}
-
-        {/* ============================================================ */}
-        {/* Arrow                                                         */}
-        {/* ============================================================ */}
-
-        <Box
-          className="meeting-arrow"
-          aria-hidden="true"
-          sx={{
-            display: {
-              xs: 'none',
-              md: 'flex',
-            },
-
-            alignItems: 'center',
-
-            justifyContent: 'center',
-
-            color: '#94a3b8',
-
-            opacity: 0.5,
-
-            transform:
-              'translateX(0)',
-
-            transition:
-              'opacity 160ms ease, transform 160ms ease',
-          }}
-        >
-          <ArrowForwardIosIcon
-            sx={{
-              fontSize: 15,
-            }}
-          />
-        </Box>
-      </Box>
-    </Paper>
-  )
+  const date = new Date(parts[0], parts[1] - 1, parts[2])
+
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date)
 }
 
 function groupByDate(meetings) {
-  return meetings.reduce(
-    (groups, meeting) => {
-      if (!groups[meeting.date]) {
-        groups[meeting.date] = []
-      }
+  return meetings.reduce((groups, meeting) => {
+    const key = meeting.date || 'No date'
 
-      groups[meeting.date].push(
-        meeting,
-      )
+    if (!groups[key]) {
+      groups[key] = []
+    }
 
-      return groups
-    },
-    {},
-  )
+    groups[key].push(meeting)
+
+    return groups
+  }, {})
 }
 
 export default function CalendarMeetingList({
   meetings = [],
-  view,
+  view = 'week',
   settings = {},
   onSettingsChange,
 }) {
-  if (!meetings.length) {
+  const [layout, setLayout] = useState(readSavedLayout)
+
+  const handleLayoutChange = (nextLayout) => {
+    if (nextLayout !== 'list' && nextLayout !== 'grid') {
+      return
+    }
+
+    setLayout(nextLayout)
+    writeJSON(LAYOUT_KEY, nextLayout)
+  }
+
+  if (meetings.length === 0) {
     return (
       <Paper
         elevation={0}
         sx={{
           p: 4,
-
-          border:
-            '1px solid #e1e6ec',
-
-          borderRadius: '18px',
-
+          border: '1px solid #E0E8F0',
+          borderRadius: '14px',
+          bgcolor: '#FFFFFF',
           textAlign: 'center',
-
-          bgcolor: '#fff',
         }}
       >
+        <Box
+          sx={{
+            width: 44,
+            height: 44,
+            mx: 'auto',
+            mb: 1.25,
+            display: 'grid',
+            placeItems: 'center',
+            borderRadius: '12px',
+            bgcolor: '#EDF4FA',
+            color: '#52758F',
+          }}
+        >
+          <EventBusyOutlinedIcon />
+        </Box>
+
         <Typography
           sx={{
-            fontSize: '0.9rem',
-
-            fontWeight: 600,
-
-            color: 'text.primary',
+            color: '#123A59',
+            fontSize: '0.95rem',
+            fontWeight: 750,
           }}
         >
           No meetings found
@@ -602,115 +138,99 @@ export default function CalendarMeetingList({
         <Typography
           sx={{
             mt: 0.5,
-
-            fontSize: '0.78rem',
-
-            color: 'text.secondary',
+            color: '#74869A',
+            fontSize: '0.8rem',
           }}
         >
-          There are no meetings
-          matching your current
-          selection.
+          Try selecting another date or changing the meeting filters.
         </Typography>
       </Paper>
     )
   }
 
-  const groupedMeetings =
-    groupByDate(meetings)
-
-  const firstMeetingId =
-    Object.values(groupedMeetings)
-      .flat()[0]?.id
+  const groupedMeetings = groupByDate(meetings)
 
   return (
-    <Box>
-      {/* ================================================================ */}
-      {/* Meeting interaction hint                                         */}
-      {/* ================================================================ */}
+    <Stack spacing={1.75} sx={{ minWidth: 0 }}>
+      {Object.entries(groupedMeetings).map(
+        ([date, dateMeetings], groupIndex) => (
+          <Box key={date} sx={{ minWidth: 0 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 1,
+                mb: 1.1,
+                minHeight: 34,
+              }}
+            >
+              <Typography
+                component="h3"
+                sx={{
+                  color: '#123A59',
+                  fontSize: '0.95rem',
+                  lineHeight: 1.4,
+                  fontWeight: 800,
+                }}
+              >
+                {formatDateHeading(date)}
+              </Typography>
 
-      <Typography
-        sx={{
-          mb: 1.5,
-
-          fontSize: '0.75rem',
-
-          lineHeight: 1.4,
-
-          color: '#64748b',
-        }}
-      >
-        <Box
-          component="span"
-          sx={{
-            color: '#94a3b8',
-            fontWeight: 700,
-            mr: 0.35,
-          }}
-        >
-          *
-        </Box>
-
-        Double-click a meeting to open
-        meeting details.
-      </Typography>
-
-      {/* ================================================================ */}
-      {/* Meeting groups                                                    */}
-      {/* ================================================================ */}
-
-      <Stack spacing={2}>
-        {Object.entries(
-          groupedMeetings,
-        ).map(
-          ([date, dateMeetings]) => (
-            <Box key={date}>
-              {view !== 'day' && (
-                <Typography
-                  sx={{
-                    mb: 0.9,
-
-                    fontSize: '0.8rem',
-
-                    fontWeight: 700,
-
-                    color: '#475569',
-                  }}
-                >
-                  {formatDateHeading(
-                    date,
-                  )}
-                </Typography>
+              {groupIndex === 0 && (
+                <SlidingSegmented
+                  dataTour="calendar-layout-toggle"
+                  ariaLabel="Meeting layout"
+                  options={LAYOUT_OPTIONS}
+                  value={layout}
+                  onChange={handleLayoutChange}
+                  sx={{ bgcolor: '#EDF4FA' }}
+                />
               )}
-
-              <Stack spacing={1.25}>
-                {dateMeetings.map(
-                  (meeting) => (
-                    <MeetingCard
-                      key={
-                        meeting.id
-                      }
-                      meeting={
-                        meeting
-                      }
-                      settings={
-                        settings
-                      }
-                      onSettingsChange={
-                        onSettingsChange
-                      }
-                      tourTarget={
-                        firstMeetingId ===
-                        meeting.id
-                      }
-                    />
-                  ),
-                )}
-              </Stack>
             </Box>
-          ),
-        )}
-      </Stack>
-    </Box>
+
+            {layout === 'list' ? (
+              <Stack spacing={1}>
+                {dateMeetings.map((meeting) => (
+                  <MeetingListItem
+                    key={meeting.id}
+                    meeting={meeting}
+                    status={meeting.type}
+                    timeLabel={meeting.time}
+                    settings={settings}
+                    onSettingsChange={onSettingsChange}
+                    tourTarget={dateMeetings[0]?.id === meeting.id}
+                  />
+                ))}
+              </Stack>
+            ) : (
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: {
+                    xs: 'minmax(0, 1fr)',
+                    sm: 'repeat(2, minmax(0, 1fr))',
+                  },
+                  gap: 1.25,
+                  alignItems: 'stretch',
+                }}
+              >
+                {dateMeetings.map((meeting) => (
+                  <MeetingGridCard
+                    key={meeting.id}
+                    meeting={meeting}
+                    status={meeting.type}
+                    timeLabel={meeting.time}
+                    settings={settings}
+                    onSettingsChange={onSettingsChange}
+                    tourTarget={dateMeetings[0]?.id === meeting.id}
+                  />
+                ))}
+              </Box>
+            )}
+          </Box>
+        ),
+      )}
+    </Stack>
   )
 }

@@ -1,6 +1,5 @@
-// TODO: replace with a call to the Darwin employee directory API.
-// Must resolve to [{ name, email }] for a search string.
-const PEOPLE = [
+
+export const PEOPLE = [
   { name: 'Aarav Mehta', email: 'aarav.mehta@avaada.com' },
   { name: 'Ananya Rao', email: 'ananya.rao@avaada.com' },
   { name: 'Karan Malhotra', email: 'karan.malhotra@avaada.com' },
@@ -9,8 +8,18 @@ const PEOPLE = [
   { name: 'Sneha Kulkarni', email: 'sneha.kulkarni@avaada.com' },
 ]
 
-export async function searchDirectory(query) {
-  const q = query.toLowerCase()
-  await new Promise((r) => setTimeout(r, 150))
-  return PEOPLE.filter((p) => p.name.toLowerCase().includes(q) || p.email.toLowerCase().includes(q)).slice(0, 8)
+// TODO: Replace with a call to the Darwin employee directory API.
+// Must resolve to [{ name, email }] for a search string.
+export async function searchDirectory(query = '') {
+  const q = query.trim().toLowerCase()
+
+  await new Promise((resolve) => setTimeout(resolve, 150))
+
+  if (!q) return PEOPLE.slice(0, 8)
+
+  return PEOPLE.filter(
+    (person) =>
+      person.name.toLowerCase().includes(q) ||
+      person.email.toLowerCase().includes(q),
+  ).slice(0, 8)
 }

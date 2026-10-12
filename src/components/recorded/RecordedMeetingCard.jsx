@@ -1,0 +1,371 @@
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
+
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
+import NotesOutlinedIcon from '@mui/icons-material/NotesOutlined'
+import VideoFileOutlinedIcon from '@mui/icons-material/VideoFileOutlined'
+import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined'
+import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined'
+import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined'
+
+import AvailabilityBadge from './AvailabilityBadge'
+import { formatTime } from '../../utils/time'
+
+const COLORS = {
+  navy: '#123A59',
+  blue: '#075A9C',
+  muted: '#71869A',
+  border: '#E7EDF3',
+}
+
+function formatMeetingDate(value) {
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) return 'Date unavailable'
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date)
+}
+
+const secondaryButtonSx = {
+  minWidth: 0,
+  minHeight: 33,
+  px: 1,
+  borderRadius: '8px',
+  borderColor: '#D7E2EC',
+  color: '#365974',
+  fontSize: '0.72rem',
+  fontWeight: 650,
+  textTransform: 'none',
+  whiteSpace: 'nowrap',
+  '&:hover': {
+    borderColor: '#AFC7DA',
+    bgcolor: '#F5F9FC',
+  },
+  '&.Mui-disabled': {
+    borderColor: '#E8EDF2',
+    color: '#A4B1BE',
+  },
+}
+
+const DOT_SPACE = 14 // px reserved on the left of every item for its dot
+
+// One metadata item (optional icon + text) with its own separator dot.
+// The dot sits just left of the item. The wrapper clips whatever overflows
+// its left edge, so an item that wraps onto a new line loses its dot and
+// no separator is ever left dangling at the start or end of a line.
+function MetaItem({ icon, children, sx }) {
+  return (
+    <Box
+      sx={[
+        {
+          position: 'relative',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 0.5,
+          pl: `${DOT_SPACE}px`,
+          minWidth: 0,
+          whiteSpace: 'nowrap',
+          color: COLORS.muted,
+          '& svg': { fontSize: 14, flexShrink: 0 },
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            left: 5,
+            top: '50%',
+            width: 3,
+            height: 3,
+            borderRadius: '50%',
+            bgcolor: '#9BACBA',
+            transform: 'translateY(-50%)',
+          },
+        },
+        ...(Array.isArray(sx) ? sx : [sx]),
+      ]}
+    >
+      {icon}
+      <Typography
+        component="span"
+        sx={{ color: 'inherit', fontSize: '0.72rem', lineHeight: 1.4 }}
+      >
+        {children}
+      </Typography>
+    </Box>
+  )
+}
+
+export default function RecordedMeetingCard({
+  meeting,
+  onWatchRecording,
+  onViewTranscript,
+  onViewNotes,
+}) {
+  const start = new Date(meeting.start)
+  const end = new Date(meeting.end)
+
+  const dateText = formatMeetingDate(meeting.start)
+
+  const timeText =
+    !Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime())
+      ? `${formatTime(start)} – ${formatTime(end)}`
+      : 'Time unavailable'
+
+  const participantCount = meeting.participants?.length || 0
+  const participantLabel =
+    participantCount === 1 ? 'participant' : 'participants'
+
+  const recordingAvailable = Boolean(meeting.recording?.available)
+  const transcriptAvailable = Boolean(meeting.transcript?.available)
+  const notesAvailable = Boolean(meeting.meetingNotes?.available)
+
+  return (
+    <Box
+      component="article"
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: {
+          xs: 'minmax(0, 1fr)',
+          lg: 'minmax(0, 1fr) 105px 185px 240px',
+        },
+        alignItems: 'center',
+        columnGap: 2,
+        rowGap: 1.5,
+        px: { xs: 1.5, md: 2 },
+        py: { xs: 1.75, md: 1.5 },
+        borderBottom: `1px solid ${COLORS.border}`,
+        transition: 'background-color 140ms ease',
+        '&:last-child': { borderBottom: 0 },
+        '&:hover': { bgcolor: '#FAFCFE' },
+      }}
+    >
+      {/* Meeting title and metadata */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 1.25,
+          minWidth: 0,
+        }}
+      >
+        <Box
+          sx={{
+            width: 39,
+            height: 39,
+            display: 'grid',
+            placeItems: 'center',
+            flexShrink: 0,
+            border: '1px solid #DCEAF7',
+            borderRadius: '10px',
+            bgcolor: '#EDF5FC',
+            color: COLORS.blue,
+          }}
+        >
+          <VideoFileOutlinedIcon sx={{ fontSize: 21 }} />
+        </Box>
+
+        <Box sx={{ minWidth: 0 }}>
+          <Typography
+            sx={{
+              color: COLORS.navy,
+              fontSize: '0.88rem',
+              lineHeight: 1.4,
+              fontWeight: 750,
+              overflowWrap: 'anywhere',
+            }}
+          >
+            {meeting.title || 'Untitled meeting'}
+          </Typography>
+
+          {/* Platform · date · time (+ participants on smaller screens) */}
+          <Box sx={{ mt: 0.5, overflow: 'hidden' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                rowGap: 0.4,
+                ml: `-${DOT_SPACE}px`,
+              }}
+            >
+              <MetaItem sx={{ color: '#526E84', '& span': { fontWeight: 600 } }}>
+                {meeting.platform || 'Meeting platform'}
+              </MetaItem>
+
+              <MetaItem icon={<CalendarTodayOutlinedIcon />}>{dateText}</MetaItem>
+
+              <MetaItem icon={<ScheduleOutlinedIcon />}>{timeText}</MetaItem>
+
+              <MetaItem
+                icon={<GroupsOutlinedIcon />}
+                sx={{ display: { xs: 'inline-flex', lg: 'none' } }}
+              >
+                {participantCount} {participantLabel}
+              </MetaItem>
+            </Box>
+          </Box>
+
+          {/* Availability on smaller screens */}
+          <Box
+            sx={{
+              display: { xs: 'flex', lg: 'none' },
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 0.75,
+              mt: 1.1,
+            }}
+          >
+            <AvailabilityBadge
+              icon={<PlayArrowRoundedIcon />}
+              label="Recording"
+              available={recordingAvailable}
+            />
+            <AvailabilityBadge
+              icon={<DescriptionOutlinedIcon />}
+              label="Transcript"
+              available={transcriptAvailable}
+            />
+            <AvailabilityBadge
+              icon={<NotesOutlinedIcon />}
+              label="Notes"
+              available={notesAvailable}
+            />
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Participant count (large screens) */}
+      <Box
+        sx={{
+          display: { xs: 'none', lg: 'flex' },
+          alignItems: 'center',
+          gap: 0.9,
+        }}
+      >
+        <GroupsOutlinedIcon sx={{ fontSize: 19, color: '#7B90A3' }} />
+
+        <Box>
+          <Typography
+            sx={{
+              color: '#34536E',
+              fontSize: '0.8rem',
+              fontWeight: 750,
+              lineHeight: 1.25,
+            }}
+          >
+            {participantCount}
+          </Typography>
+
+          <Typography
+            sx={{
+              color: COLORS.muted,
+              fontSize: '0.68rem',
+              lineHeight: 1.3,
+            }}
+          >
+            {participantLabel}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Content availability (large screens): equal-width badges */}
+      <Box
+        data-tour="recorded-actions"
+        sx={{
+          display: { xs: 'none', lg: 'grid' },
+          gridTemplateColumns: 'minmax(0, 1fr)',
+          gap: 0.65,
+        }}
+      >
+        <AvailabilityBadge
+          icon={<PlayArrowRoundedIcon />}
+          label="Recording"
+          available={recordingAvailable}
+        />
+        <AvailabilityBadge
+          icon={<DescriptionOutlinedIcon />}
+          label="Transcript"
+          available={transcriptAvailable}
+        />
+        <AvailabilityBadge
+          icon={<NotesOutlinedIcon />}
+          label="Meeting notes"
+          available={notesAvailable}
+        />
+      </Box>
+
+      {/* Actions: Watch recording on top, Transcript and Notes side by side */}
+      <Box
+        data-tour="recorded-content-actions"
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: 'repeat(3, minmax(0, auto))',
+            sm: 'repeat(3, auto)',
+            lg: 'repeat(2, minmax(0, 1fr))',
+          },
+          justifyContent: { xs: 'stretch', sm: 'start', lg: 'stretch' },
+          gap: 0.75,
+          minWidth: 0,
+        }}
+      >
+        <Button
+          size="small"
+          variant="contained"
+          startIcon={<PlayArrowRoundedIcon />}
+          disabled={!recordingAvailable}
+          onClick={onWatchRecording}
+          sx={{
+            gridColumn: { lg: '1 / -1' }, // full width on large screens
+            minWidth: 0,
+            minHeight: 34,
+            px: 1.25,
+            borderRadius: '8px',
+            bgcolor: COLORS.blue,
+            boxShadow: 'none',
+            fontSize: '0.74rem',
+            fontWeight: 700,
+            textTransform: 'none',
+            whiteSpace: 'nowrap',
+            '&:hover': {
+              bgcolor: '#064A80',
+              boxShadow: 'none',
+            },
+            '&.Mui-disabled': {
+              bgcolor: '#EDF1F5',
+              color: '#9AA9B7',
+            },
+          }}
+        >
+          Watch recording
+        </Button>
+
+        <Button
+          size="small"
+          variant="outlined"
+          startIcon={<DescriptionOutlinedIcon />}
+          disabled={!transcriptAvailable}
+          onClick={onViewTranscript}
+          sx={secondaryButtonSx}
+        >
+          Transcript
+        </Button>
+
+        <Button
+          size="small"
+          variant="outlined"
+          startIcon={<NotesOutlinedIcon />}
+          disabled={!notesAvailable}
+          onClick={onViewNotes}
+          sx={secondaryButtonSx}
+        >
+          Notes
+        </Button>
+      </Box>
+    </Box>
+  )
+}

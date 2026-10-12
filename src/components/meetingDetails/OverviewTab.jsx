@@ -1,225 +1,199 @@
 import Box from '@mui/material/Box'
+import Link from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
-import NotesOutlinedIcon from '@mui/icons-material/NotesOutlined'
-import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined'
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined'
+import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
+import NotesOutlinedIcon from '@mui/icons-material/NotesOutlined'
+import VideocamOutlinedIcon from '@mui/icons-material/VideocamOutlined'
 
-import {
-  formatDate,
-  formatTimeRange,
-} from './utils'
-
+import AttendeesPanel from './AttendeesPanel'
+import MeetingActionsHero from './MeetingActionHero'
+import { getMeetingLink, isMeetingEnded } from './designHelpers'
 import { NotReadyMessage } from './ui'
+
+const NAVY = '#123A59'
+const MUTED = '#6E8397'
+const BORDER = '#DFE8F0'
+
+function InfoItem({ icon, label, children }) {
+  return (
+    <Box sx={{ minWidth: 0 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.7,
+          color: '#3776A9',
+          '& svg': { fontSize: 17 },
+        }}
+      >
+        {icon}
+        <Typography
+          component="span"
+          sx={{ color: MUTED, fontSize: '0.72rem', fontWeight: 650 }}
+        >
+          {label}
+        </Typography>
+      </Box>
+
+      <Box sx={{ mt: 0.6, pl: '24px', minWidth: 0 }}>{children}</Box>
+    </Box>
+  )
+}
+
+const valueSx = {
+  color: NAVY,
+  fontSize: '0.82rem',
+  fontWeight: 700,
+  lineHeight: 1.5,
+  overflowWrap: 'anywhere',
+}
 
 export default function OverviewTab({
   meeting,
   meetingState,
+  attendance,
   durationMinutes,
+  onSelectTab,
 }) {
   const summary = meeting.meetingSummary
+  const link = getMeetingLink(meeting)
+  const isUpcoming = meetingState?.type === 'upcoming'
+  const ended = isMeetingEnded(meetingState)
 
-  return (
-    <Stack spacing={2}>
-      {/* ---------------------------------------------------------- */}
-      {/* SUMMARY                                                     */}
-      {/* ---------------------------------------------------------- */}
-
-      <Paper
-        elevation={0}
-        sx={{
-          border: '1px solid #dce3eb',
-          borderRadius: 3,
-          bgcolor: '#fff',
-          p: {
-            xs: 2,
-            sm: 2.5,
-          },
-        }}
-      >
-        <Stack
-          direction="row"
-          spacing={1}
-          alignItems="center"
-          sx={{ mb: 1.5 }}
-        >
-          <Box
-            sx={{
-              width: 34,
-              height: 34,
-              borderRadius: 1.5,
-              display: 'grid',
-              placeItems: 'center',
-              bgcolor: '#eef4ff',
-              color: '#245ea8',
-            }}
-          >
-            <NotesOutlinedIcon sx={{ fontSize: 18 }} />
-          </Box>
-
-          <Box>
-            <Typography
-              sx={{
-                fontSize: '.9rem',
-                fontWeight: 700,
-                color: '#24364d',
-              }}
-            >
-              Meeting summary
-            </Typography>
-
-            <Typography
-              sx={{
-                mt: .15,
-                fontSize: '.67rem',
-                color: '#7b8ba1',
-              }}
-            >
-              A quick overview of what was discussed
-            </Typography>
-          </Box>
-        </Stack>
-
-        {summary ? (
-          <Typography
-            sx={{
-              fontSize: '.82rem',
-              lineHeight: 1.8,
-              color: '#52657d',
-              whiteSpace: 'pre-line',
-            }}
-          >
-            {summary}
-          </Typography>
-        ) : meetingState?.type === 'upcoming' ? (
-          <NotReadyMessage>
-            The meeting summary will appear here after
-            the meeting has taken place.
-          </NotReadyMessage>
-        ) : (
-          <NotReadyMessage>
-            No meeting summary is available yet.
-          </NotReadyMessage>
-        )}
-      </Paper>
-
-      {/* ---------------------------------------------------------- */}
-      {/* MEETING INFORMATION                                        */}
-      {/* ---------------------------------------------------------- */}
-
-      <Paper
-        elevation={0}
-        sx={{
-          border: '1px solid #dce3eb',
-          borderRadius: 3,
-          bgcolor: '#fff',
-          p: {
-            xs: 2,
-            sm: 2.5,
-          },
-        }}
-      >
-        <Typography
-          sx={{
-            fontSize: '.9rem',
-            fontWeight: 700,
-            color: '#24364d',
-            mb: 1.5,
-          }}
-        >
-          Meeting information
-        </Typography>
-
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: 'repeat(3, 1fr)',
-            },
-            gap: 1,
-          }}
-        >
-          <Info
-            icon={<CalendarMonthOutlinedIcon />}
-            label="Date"
-            value={formatDate(meeting.start)}
-          />
-
-          <Info
-            icon={<AccessTimeOutlinedIcon />}
-            label="Time"
-            value={formatTimeRange(
-              meeting.start,
-              meeting.end,
-            )}
-          />
-
-          <Info
-            icon={<AccessTimeOutlinedIcon />}
-            label="Duration"
-            value={`${durationMinutes} minutes`}
-          />
-        </Box>
-      </Paper>
-    </Stack>
-  )
-}
-
-function Info({
-  icon,
-  label,
-  value,
-}) {
   return (
     <Box
       sx={{
-        p: 1.35,
-        borderRadius: 2,
-        bgcolor: '#f8fafc',
-        border: '1px solid #e7edf3',
+        display: 'grid',
+        gridTemplateColumns: {
+          xs: 'minmax(0, 1fr)',
+          lg: 'minmax(0, 1fr) 340px',
+          xl: 'minmax(0, 1fr) 380px',
+        },
+        gap: 2,
+        alignItems: 'start',
       }}
     >
-      <Stack
-        direction="row"
-        spacing={.7}
-        alignItems="center"
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            color: '#718198',
-
-            '& svg': {
-              fontSize: 16,
-            },
-          }}
-        >
-          {icon}
-        </Box>
-
-        <Typography
-          sx={{
-            fontSize: '.66rem',
-            color: '#7b8ba1',
-          }}
-        >
-          {label}
-        </Typography>
-      </Stack>
-
-      <Typography
+      {/* Left: summary + attendees */}
+      <Box
         sx={{
-          mt: .6,
-          fontSize: '.78rem',
-          fontWeight: 700,
-          color: '#24364d',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          minWidth: 0,
         }}
       >
-        {value}
-      </Typography>
+        <Paper
+          data-tour="meeting-content"
+          elevation={0}
+          sx={{
+            p: { xs: 1.75, md: 2.25 },
+            border: `1px solid ${BORDER}`,
+            borderRadius: '14px',
+            bgcolor: '#FFFFFF',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.25 }}>
+            <NotesOutlinedIcon sx={{ fontSize: 20, color: '#1769AA' }} />
+
+            <Typography
+              component="h2"
+              sx={{ color: NAVY, fontSize: '0.95rem', fontWeight: 800 }}
+            >
+              Meeting Summary
+            </Typography>
+          </Box>
+
+          {summary ? (
+            <Typography
+              sx={{
+                color: '#425D74',
+                fontSize: '0.84rem',
+                lineHeight: 1.75,
+                whiteSpace: 'pre-line',
+              }}
+            >
+              {summary}
+            </Typography>
+          ) : isUpcoming ? (
+            <NotReadyMessage>
+              The meeting summary will appear here after the meeting has taken place.
+            </NotReadyMessage>
+          ) : (
+            <NotReadyMessage>
+              No meeting summary is available for this meeting.
+            </NotReadyMessage>
+          )}
+
+          {/* Duration, platform and link */}
+          <Box
+            sx={{
+              mt: 2,
+              pt: 1.75,
+              borderTop: `1px solid ${BORDER}`,
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: 'minmax(0, 1fr)',
+                sm: 'repeat(3, minmax(0, 1fr))',
+              },
+              gap: 2,
+            }}
+          >
+            <InfoItem icon={<AccessTimeOutlinedIcon />} label="Duration">
+              <Typography sx={valueSx}>{durationMinutes} minutes</Typography>
+            </InfoItem>
+
+            <InfoItem icon={<VideocamOutlinedIcon />} label="Platform">
+              <Typography sx={valueSx}>
+                {meeting.platform || 'Not specified'}
+              </Typography>
+            </InfoItem>
+
+            <InfoItem icon={<LinkRoundedIcon />} label="Meeting Link">
+              {link ? (
+                <Link
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  underline="hover"
+                  sx={{
+                    ...valueSx,
+                    display: 'block',
+                    color: '#1565C0',
+                    fontWeight: 600,
+                    fontSize: '0.78rem',
+                  }}
+                >
+                  {link}
+                </Link>
+              ) : (
+                <Typography sx={{ ...valueSx, color: MUTED, fontWeight: 500 }}>
+                  Not available
+                </Typography>
+              )}
+            </InfoItem>
+          </Box>
+        </Paper>
+
+        <AttendeesPanel
+          dataTour="meeting-participants"
+          attendance={attendance}
+          participants={meeting.participants || []}
+          upcoming={isUpcoming}
+        />
+      </Box>
+
+      {/* Right: hero banner and quick actions */}
+      <MeetingActionsHero
+        ended={ended}
+        joinDisabled={!link}
+        onJoin={() => window.open(link, '_blank', 'noopener,noreferrer')}
+        onRecording={() => onSelectTab?.('recording')}
+        onTranscript={() => onSelectTab?.('transcript')}
+        onActions={() => onSelectTab?.('actions')}
+      />
     </Box>
   )
 }

@@ -1,202 +1,206 @@
 import { useMemo, useState } from 'react'
-
-import PageShell, {
-  EmptyPanel,
-} from '../components/PageShell'
+import PageShell, { EmptyPanel } from '../components/PageShell'
+import TaskFilters from '../components/tasks/TaskFilters'
+import TaskCard from '../components/tasks/TaskCard'
 
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import ButtonGroup from '@mui/material/ButtonGroup'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import AddTaskOutlinedIcon from '@mui/icons-material/AddTaskOutlined'
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined'
+import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined'
+import EventOutlinedIcon from '@mui/icons-material/EventOutlined'
+import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined'
 
 import usePageTitle from '../hooks/usePageTitle'
+import useCurrentUser from '../hooks/useCurrentUser'
 
-import { getTodaysMeetings } from '../data/Dashboard'
+import {
+  TASK_SORT_OPTIONS,
+  getTasksFromDashboard,
+  filterAndSortTasks,
+  normalizeTaskPriority,
+  normalizeTaskStatus,
+  parseTaskDate,
+} from '../data/tasks'
 
-/* ====================================================== */
-/* TASK DATA                                               */
-/* ====================================================== */
+import { updateMeetingActionItemStatus } from '../data/meetings'
 
-const getTasksFromDashboard = () => {
-  const meetings = getTodaysMeetings()
-
-  return meetings.flatMap((meeting) => {
-    const actionItems =
-      Array.isArray(meeting.actionItems)
-        ? meeting.actionItems
-        : []
-
-    return actionItems.map(
-      (item, index) => ({
-        id:
-          item.id ??
-          `${meeting.id}-task-${index}`,
-
-        title:
-          item.title ??
-          item.task ??
-          item.description ??
-          'Untitled task',
-
-        owner:
-          item.owner ??
-          item.assignee ??
-          item.assignedTo ??
-          'Unassigned',
-
-        due:
-          item.due ??
-          item.dueDate ??
-          null,
-
-        priority:
-          item.priority ??
-          'Medium',
-
-        status:
-          item.status ??
-          'Pending',
-
-        meetingId: meeting.id,
-        meetingTitle: meeting.title,
-      }),
-    )
-  })
+const COLORS = {
+  navy: '#123A59',
+  blue: '#075A9C',
+  muted: '#718398',
+  border: '#E0E8F0',
+  background: '#F4F8FC',
 }
 
-const FILTERS = [
-  'All',
-  'Pending',
-  'In Process',
-  'Blocked',
-  'Done',
-]
+function SummaryCard({ title, value, subtitle, icon, tone, onClick }) {
+  return (
+    <Paper
+      component={onClick ? 'button' : 'div'}
+      elevation={0}
+      onClick={onClick}
+      sx={{
+        minWidth: 0,
+        width: '100%',
+        minHeight: 82,
+        p: 1.5,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.4,
+        textAlign: 'left',
+        font: 'inherit',
+        border: `1px solid ${COLORS.border}`,
+        borderRadius: '13px',
+        bgcolor: '#FFFFFF',
+        cursor: onClick ? 'pointer' : 'default',
+        transition: 'border-color 160ms ease, box-shadow 160ms ease',
+        '&:hover': onClick
+          ? {
+              borderColor: '#B9D0E3',
+              boxShadow: '0 3px 12px rgba(18,58,89,0.05)',
+            }
+          : {},
+      }}
+    >
+      <Box
+        sx={{
+          width: 40,
+          height: 40,
+          flexShrink: 0,
+          display: 'grid',
+          placeItems: 'center',
+          borderRadius: '11px',
+          bgcolor: tone.bg,
+          color: tone.fg,
+        }}
+      >
+        {icon}
+      </Box>
 
-const SORT_OPTIONS = [
-  'My Order',
-  'Due date',
-  'Priority',
-]
+      <Box sx={{ minWidth: 0, flex: 1 }}>
+        <Typography
+          sx={{
+            color: '#526A80',
+            fontSize: '0.76rem',
+            fontWeight: 650,
+            lineHeight: 1.35,
+          }}
+        >
+          {title}
+        </Typography>
 
-const PRIORITY_ORDER = {
-  High: 1,
-  Medium: 2,
-  Low: 3,
+        <Typography
+          sx={{
+            mt: 0.15,
+            color: COLORS.navy,
+            fontSize: '1.35rem',
+            lineHeight: 1.25,
+            fontWeight: 800,
+            fontVariantNumeric: 'tabular-nums',
+          }}
+        >
+          {value}
+        </Typography>
+
+        {subtitle && (
+          <Typography
+            sx={{
+              mt: 0.2,
+              color: COLORS.muted,
+              fontSize: '0.68rem',
+              lineHeight: 1.3,
+            }}
+          >
+            {subtitle}
+          </Typography>
+        )}
+      </Box>
+    </Paper>
+  )
 }
-
-/* ====================================================== */
-/* PAGE                                                    */
-/* ====================================================== */
 
 export default function MyTasks() {
   usePageTitle('My Tasks')
 
-  const [tasks, setTasks] = useState(
-    () => getTasksFromDashboard(),
+  const currentUser = useCurrentUser()
+
+  const [tasks, setTasks] = useState(() =>
+    getTasksFromDashboard(currentUser),
   )
 
-  const [filter, setFilter] =
-    useState('All')
+  // Everything TaskFilters can change lives here
+  const [filter, setFilter] = useState('All')
+  const [priority, setPriority] = useState('All')
+  const [dueDate, setDueDate] = useState('default')
+  const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState('My Order')
 
-  const [sortBy, setSortBy] =
-    useState('My Order')
+  // Summary numbers use the normalized helpers, so "Completed", "done",
+  // "high priority" etc. are all counted correctly.
+  const isDone = (task) => normalizeTaskStatus(task.status) === 'Done'
 
-  const [anchorEl, setAnchorEl] =
-    useState(null)
+  const completedCount = tasks.filter(isDone).length
 
-  const menuOpen = Boolean(anchorEl)
+  const highPriorityCount = tasks.filter(
+    (task) => normalizeTaskPriority(task.priority) === 'High' && !isDone(task),
+  ).length
 
-  /* ==================================================== */
-  /* FILTER + SORT                                         */
-  /* ==================================================== */
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
 
-  const filteredTasks = useMemo(() => {
-    let result = [...tasks]
+  const dueSoonCount = tasks.filter((task) => {
+    if (isDone(task)) return false
 
-    if (filter !== 'All') {
-      result = result.filter(
-        (task) =>
-          task.status === filter,
-      )
-    }
+    const due = parseTaskDate(task.due)
 
-    if (sortBy === 'Priority') {
-      result.sort((a, b) => {
-        const priorityA =
-          PRIORITY_ORDER[a.priority] || 99
+    if (!due) return false
 
-        const priorityB =
-          PRIORITY_ORDER[b.priority] || 99
+    const daysAway = Math.round((due.getTime() - today.getTime()) / 86400000)
 
-        return priorityA - priorityB
-      })
-    }
+    return daysAway >= 0 && daysAway <= 7
+  }).length
 
-    if (sortBy === 'Due date') {
-      result.sort((a, b) => {
-        if (!a.due && !b.due) {
-          return 0
-        }
+  // Status + priority + due date + search, then sorting: all in one place
+  const filteredTasks = useMemo(
+    () =>
+      filterAndSortTasks(
+        tasks,
+        { filter, priority, dueDate, search },
+        sortBy,
+      ),
+    [tasks, filter, priority, dueDate, search, sortBy],
+  )
 
-        if (!a.due) {
-          return 1
-        }
+  const hasActiveFilters =
+    filter !== 'All' ||
+    priority !== 'All' ||
+    dueDate !== 'default' ||
+    search.trim() !== ''
 
-        if (!b.due) {
-          return -1
-        }
-
-        return (
-          new Date(a.due) -
-          new Date(b.due)
-        )
-      })
-    }
-
-    return result
-  }, [
-    tasks,
-    filter,
-    sortBy,
-  ])
-
-  /* ==================================================== */
-  /* SORT                                                   */
-  /* ==================================================== */
-
-  const handleSortOpen = (event) => {
-    setAnchorEl(event.currentTarget)
+  const clearFilters = () => {
+    setFilter('All')
+    setPriority('All')
+    setDueDate('default')
+    setSearch('')
   }
 
-  const handleSortClose = () => {
-    setAnchorEl(null)
-  }
-
-  const handleSortChange = (value) => {
-    setSortBy(value)
-    handleSortClose()
-  }
-
-  /* ==================================================== */
-  /* MARK DONE                                              */
-  /* ==================================================== */
+  const firstActionableIndex = filteredTasks.findIndex(
+    (task) => !isDone(task),
+  )
 
   const handleMarkDone = (taskId) => {
+    const task = tasks.find((item) => item.id === taskId)
+
+    if (!task || isDone(task)) return
+
+    updateMeetingActionItemStatus(task.meetingId, task.id, 'Done')
+
     setTasks((current) =>
-      current.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              status: 'Done',
-            }
-          : task,
+      current.map((item) =>
+        item.id === taskId ? { ...item, status: 'Done' } : item,
       ),
     )
   }
@@ -204,665 +208,163 @@ export default function MyTasks() {
   return (
     <PageShell
       title="My Tasks"
-      subtitle="Action items assigned to you from your meetings."
+      subtitle="Stay on top of your action items and commitments."
     >
-      <Stack spacing={2.5}>
-
-        {/* ================================================== */}
-{/* FILTERS + SORT                                     */}
-{/* ================================================== */}
-
-<Paper
-  elevation={0}
-  sx={{
-    border: '1px solid #dce3eb',
-    borderRadius: 2.5,
-    bgcolor: '#fff',
-    overflow: 'hidden',
-  }}
->
-  <Box
-    sx={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: 1.5,
-      width: '100%',
-      px: { xs: 1, sm: 1.25 },
-      py: 0.75,
-    }}
-  >
-    {/* ================================================== */}
-    {/* STATUS FILTERS                                     */}
-    {/* ================================================== */}
-
-    <Box
-      data-tour="tasks-filters"
-      sx={{
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 0.4,
-        minWidth: 0,
-        flexShrink: 1,
-        overflowX: 'auto',
-
-        '&::-webkit-scrollbar': {
-          display: 'none',
-        },
-
-        scrollbarWidth: 'none',
-      }}
-    >
-      {/* Animated selected background */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-
-          width: {
-            xs: 68,
-            sm: 92,
-          },
-
-          height: {
-            xs: 38,
-            sm: 42,
-          },
-
-          borderRadius: 1.75,
-
-          bgcolor: '#0d68c9',
-
-          boxShadow:
-            '0 2px 7px rgba(13, 104, 201, 0.22)',
-
-          transform: {
-            xs: `translateX(${FILTERS.indexOf(filter) * 70.4}px)`,
-            sm: `translateX(${FILTERS.indexOf(filter) * 94.4}px)`,
-          },
-
-          transition:
-            'transform 220ms cubic-bezier(0.4, 0, 0.2, 1)',
-
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-
-      {FILTERS.map((item) => {
-        const selected = filter === item
-
-        return (
-          <Button
-            key={item}
-            onClick={() => setFilter(item)}
-            disableRipple
-            sx={{
-              position: 'relative',
-              zIndex: 1,
-
-              minWidth: {
-                xs: 68,
-                sm: 92,
-              },
-
-              width: {
-                xs: 68,
-                sm: 92,
-              },
-
-              height: {
-                xs: 38,
-                sm: 42,
-              },
-
-              px: 1,
-
-              flexShrink: 0,
-
-              textTransform: 'none',
-
-              fontSize: {
-                xs: '0.74rem',
-                sm: '0.82rem',
-              },
-
-              fontWeight: selected ? 600 : 500,
-
-              color: selected
-                ? '#fff'
-                : '#52657d',
-
-              bgcolor: 'transparent',
-
-              border: 'none',
-
-              borderRadius: 1.75,
-
-              whiteSpace: 'nowrap',
-
-              transition:
-                'color 180ms ease, font-weight 180ms ease',
-
-              '&:hover': {
-                bgcolor: 'transparent',
-                color: selected
-                  ? '#fff'
-                  : '#243b5a',
-              },
-
-              '&:focus': {
-                bgcolor: 'transparent',
-              },
-
-              '&:focus-visible': {
-                outline:
-                  '2px solid rgba(13, 104, 201, 0.35)',
-                outlineOffset: 1,
-              },
-            }}
-          >
-            {item}
-          </Button>
-        )
-      })}
-    </Box>
-
-    {/* ================================================== */}
-    {/* SORT                                               */}
-    {/* ================================================== */}
-
-    <Box
-      sx={{
-        flexShrink: 0,
-        ml: 'auto',
-      }}
-    >
-      <Button
-        data-tour="tasks-sort"
-        size="small"
-        variant="outlined"
-        endIcon={
-          <KeyboardArrowDownIcon
-            sx={{ fontSize: 18 }}
-          />
-        }
-        onClick={handleSortOpen}
-        sx={{
-          minWidth: {
-            xs: 130,
-            sm: 150,
-          },
-
-          height: {
-            xs: 38,
-            sm: 40,
-          },
-
-          px: {
-            xs: 1.25,
-            sm: 1.5,
-          },
-
-          justifyContent: 'space-between',
-
-          textTransform: 'none',
-
-          fontSize: {
-            xs: '0.74rem',
-            sm: '0.8rem',
-          },
-
-          fontWeight: 500,
-
-          color: '#243b5a',
-
-          bgcolor: '#fff',
-
-          borderColor: '#d6dee8',
-
-          borderRadius: 1.75,
-
-          whiteSpace: 'nowrap',
-
-          '&:hover': {
-            bgcolor: '#fff',
-            borderColor: '#c5d0dc',
-            color: '#243b5a',
-          },
-        }}
-      >
-        Sort: {sortBy}
-      </Button>
-
-      <Menu
-        anchorEl={anchorEl}
-        open={menuOpen}
-        onClose={handleSortClose}
-      >
-        {SORT_OPTIONS.map((item) => (
-          <MenuItem
-            key={item}
-            selected={sortBy === item}
-            onClick={() =>
-              handleSortChange(item)
-            }
-            sx={{
-              minWidth: 170,
-              minHeight: 40,
-              fontSize: '0.82rem',
-            }}
-          >
-            {item}
-          </MenuItem>
-        ))}
-      </Menu>
-    </Box>
-  </Box>
-</Paper>
-
-        {/* ================================================== */}
-        {/* TASK COUNT                                         */}
-        {/* ================================================== */}
-
+      <Stack spacing={2}>
+        {/* Executive summary (cards also work as quick filters) */}
         <Box
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 2,
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: 'repeat(2, minmax(0, 1fr))',
+              md: 'repeat(4, minmax(0, 1fr))',
+            },
+            gap: 1.25,
           }}
         >
-          <Typography
-            sx={{
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              color: '#24364d',
+          <SummaryCard
+            title="Total tasks"
+            value={tasks.length}
+            subtitle="Assigned to you"
+            icon={<AssignmentOutlinedIcon />}
+            tone={{ bg: '#E7F5EF', fg: '#148363' }}
+            onClick={clearFilters}
+          />
+
+          <SummaryCard
+            title="High priority"
+            value={highPriorityCount}
+            subtitle="Needs attention"
+            icon={<FlagOutlinedIcon />}
+            tone={{ bg: '#FDEBED', fg: '#D23F4B' }}
+            onClick={() => {
+              setFilter('Open')
+              setPriority('High')
+              setDueDate('default')
             }}
-          >
-            {filteredTasks.length}{' '}
-            {filteredTasks.length === 1
-              ? 'task'
-              : 'tasks'}
-          </Typography>
+          />
+
+          <SummaryCard
+            title="Due soon"
+            value={dueSoonCount}
+            subtitle="Within 7 days"
+            icon={<EventOutlinedIcon />}
+            tone={{ bg: '#FFF2E3', fg: '#D77A18' }}
+            onClick={() => {
+              setFilter('Open')
+              setPriority('All')
+              setDueDate('week')
+            }}
+          />
+
+          <SummaryCard
+            title="Completed"
+            value={completedCount}
+            subtitle="Marked as done"
+            icon={<TaskAltOutlinedIcon />}
+            tone={{ bg: '#E7F5EF', fg: '#16845A' }}
+            onClick={() => {
+              setFilter('Done')
+              setPriority('All')
+              setDueDate('default')
+            }}
+          />
         </Box>
 
-        {/* ================================================== */}
-        {/* TASK LIST                                          */}
-        {/* ================================================== */}
+        {/* Status, priority, due date, sort and search */}
+        <TaskFilters
+          filter={filter}
+          onFilterChange={setFilter}
+          priority={priority}
+          onPriorityChange={setPriority}
+          dueDate={dueDate}
+          onDueDateChange={setDueDate}
+          search={search}
+          onSearchChange={setSearch}
+          sortOptions={TASK_SORT_OPTIONS}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+        />
 
-        {filteredTasks.length === 0 ? (
-          <EmptyPanel title="No tasks here">
-            There are no tasks in this section.
-          </EmptyPanel>
-        ) : (
-          <Stack spacing={1.5}>
-            {filteredTasks.map(
-              (task, index) => {
-                const isFirstTask =
-                  index === 0
-
-                const firstActionableIndex =
-                  filteredTasks.findIndex(
-                    (item) =>
-                      item.status !==
-                      'Done',
-                  )
-
-                const isFirstActionableTask =
-                  index ===
-                  firstActionableIndex
-
-                return (
-                  <Box
-                    key={task.id}
-                    data-tour={
-                      isFirstTask
-                        ? 'task-card'
-                        : undefined
-                    }
-                  >
-                    <TaskCard
-                      task={task}
-                      onMarkDone={
-                        handleMarkDone
-                      }
-                      showMarkDoneTour={
-                        isFirstActionableTask
-                      }
-                    />
+        {/* Task table */}
+        <Paper
+          elevation={0}
+          sx={{
+            minWidth: 0,
+            overflow: 'hidden',
+            border: `1px solid ${COLORS.border}`,
+            borderRadius: '13px',
+            bgcolor: '#FFFFFF',
+          }}
+        >
+          {filteredTasks.length === 0 ? (
+            <Box sx={{ p: 2 }}>
+              <EmptyPanel title="No tasks found">
+                Try another status, priority, due date or search term.
+                {hasActiveFilters && (
+                  <Box sx={{ mt: 1.25 }}>
+                    <Button
+                      onClick={clearFilters}
+                      sx={{
+                        color: '#2369A5',
+                        fontWeight: 700,
+                        textTransform: 'none',
+                      }}
+                    >
+                      Clear filters
+                    </Button>
                   </Box>
-                )
-              },
-            )}
-          </Stack>
-        )}
+                )}
+              </EmptyPanel>
+            </Box>
+          ) : (
+            <>
+              {/* Table column headers */}
+              <Box
+                sx={{
+                  display: { xs: 'none', md: 'grid' },
+                  gridTemplateColumns:
+                    'minmax(220px, 2.6fr) minmax(90px, .8fr) minmax(105px, 1fr) minmax(125px, 1.1fr) minmax(95px, .9fr) 32px',
+                  alignItems: 'center',
+                  gap: 1.25,
+                  px: 2,
+                  py: 1,
+                  bgcolor: '#F6F9FC',
+                  borderBottom: `1px solid ${COLORS.border}`,
+                }}
+              >
+                {['Task', 'Priority', 'Due date', 'Owner', 'Status', ''].map(
+                  (label, index) => (
+                    <Typography
+                      key={`${label}-${index}`}
+                      sx={{
+                        color: '#60768A',
+                        fontSize: '0.69rem',
+                        fontWeight: 750,
+                        textTransform: 'uppercase',
+                        letterSpacing: '.035em',
+                      }}
+                    >
+                      {label}
+                    </Typography>
+                  ),
+                )}
+              </Box>
+
+              <Box data-tour="task-card">
+                {filteredTasks.map((task, index) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onMarkDone={handleMarkDone}
+                    showMarkDoneTour={index === firstActionableIndex}
+                  />
+                ))}
+              </Box>
+            </>
+          )}
+        </Paper>
       </Stack>
     </PageShell>
   )
-}
-
-/* ====================================================== */
-/* TASK CARD                                               */
-/* ====================================================== */
-
-function TaskCard({
-  task,
-  onMarkDone,
-  showMarkDoneTour = false,
-}) {
-  const isDone =
-    task.status === 'Done'
-
-  return (
-    <Paper
-      elevation={0}
-      sx={{
-        border: '1px solid #dce3eb',
-        borderRadius: 2.5,
-
-        bgcolor: '#fff',
-
-        px: {
-          xs: 1.75,
-          sm: 2.5,
-        },
-
-        py: {
-          xs: 1.75,
-          sm: 2,
-        },
-
-        transition:
-          'border-color 160ms ease, box-shadow 160ms ease',
-
-        '&:hover': {
-          borderColor: '#bdc9d8',
-
-          boxShadow:
-            '0 4px 14px rgba(15,23,42,0.06)',
-        },
-      }}
-    >
-      <Box
-        sx={{
-          display: 'grid',
-
-          gridTemplateColumns: {
-            xs: '1fr',
-            md: 'minmax(0, 1fr) auto',
-          },
-
-          gap: {
-            xs: 1.5,
-            md: 3,
-          },
-
-          alignItems: 'center',
-        }}
-      >
-
-        {/* ================================================== */}
-        {/* TASK INFORMATION                                   */}
-        {/* ================================================== */}
-
-        <Box
-          data-tour="task-details"
-          sx={{
-            minWidth: 0,
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: {
-                xs: '0.9rem',
-                sm: '0.95rem',
-              },
-
-              lineHeight: 1.5,
-
-              fontWeight: 600,
-
-              color: isDone
-                ? '#64748b'
-                : '#172b46',
-
-              textDecoration: isDone
-                ? 'line-through'
-                : 'none',
-            }}
-          >
-            {task.title}
-          </Typography>
-
-          {/* Task metadata */}
-
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{
-              mt: 1.25,
-
-              flexWrap: 'wrap',
-
-              rowGap: 0.75,
-            }}
-          >
-            <TaskDetail
-              label="Owner"
-              value={task.owner}
-            />
-
-            <TaskDetail
-              label="Due"
-              value={formatDueDate(
-                task.due,
-              )}
-            />
-
-            <TaskDetail
-              label="Priority"
-              value={task.priority}
-              priority
-            />
-          </Stack>
-        </Box>
-
-        {/* ================================================== */}
-        {/* STATUS + ACTION                                    */}
-        {/* ================================================== */}
-
-        <Box
-          sx={{
-            display: 'flex',
-
-            alignItems: 'center',
-
-            gap: 1.5,
-
-            justifyContent: {
-              xs: 'space-between',
-              md: 'flex-end',
-            },
-          }}
-        >
-          <Box data-tour="task-status">
-            <StatusBadge
-              status={task.status}
-            />
-          </Box>
-
-          {!isDone && (
-            <Button
-              data-tour={
-                showMarkDoneTour
-                  ? 'mark-task-done'
-                  : undefined
-              }
-              size="small"
-              variant="outlined"
-              onClick={() =>
-                onMarkDone(task.id)
-              }
-              sx={{
-                minWidth: 112,
-
-                textTransform: 'none',
-
-                fontSize: '0.78rem',
-
-                fontWeight: 600,
-
-                borderColor:
-                  '#cbd5e1',
-
-                whiteSpace: 'nowrap',
-
-                '&:hover': {
-                  borderColor:
-                    '#94a3b8',
-                  bgcolor: '#f8fafc',
-                },
-              }}
-            >
-              Mark as done
-            </Button>
-          )}
-        </Box>
-      </Box>
-    </Paper>
-  )
-}
-
-/* ====================================================== */
-/* TASK DETAIL                                             */
-/* ====================================================== */
-
-function TaskDetail({
-  label,
-  value,
-  priority = false,
-}) {
-  return (
-    <Box>
-      <Typography
-        component="span"
-        sx={{
-          fontSize: '0.68rem',
-          color: '#7b8ba1',
-          mr: 0.5,
-        }}
-      >
-        {label}:
-      </Typography>
-
-      <Typography
-        component="span"
-        sx={{
-          fontSize: '0.72rem',
-
-          color: priority
-            ? getPriorityColor(value)
-            : '#42546b',
-
-          fontWeight: priority
-            ? 600
-            : 500,
-        }}
-      >
-        {value}
-      </Typography>
-    </Box>
-  )
-}
-
-/* ====================================================== */
-/* STATUS BADGE                                            */
-/* ====================================================== */
-
-function StatusBadge({ status }) {
-  const styles = {
-    Pending: {
-      bgcolor: '#eef4ff',
-      color: '#245ea8',
-    },
-
-    'In Process': {
-      bgcolor: '#fff5df',
-      color: '#946200',
-    },
-
-    Blocked: {
-      bgcolor: '#fff0f0',
-      color: '#b42318',
-    },
-
-    Done: {
-      bgcolor: '#eaf7ef',
-      color: '#287a4d',
-    },
-  }
-
-  const style =
-    styles[status] ||
-    styles.Pending
-
-  return (
-    <Box
-      sx={{
-        px: 1.25,
-        py: 0.55,
-
-        borderRadius: '20px',
-
-        bgcolor: style.bgcolor,
-        color: style.color,
-
-        fontSize: '0.72rem',
-
-        fontWeight: 600,
-
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {status}
-    </Box>
-  )
-}
-
-/* ====================================================== */
-/* HELPERS                                                 */
-/* ====================================================== */
-
-function formatDueDate(value) {
-  if (!value) {
-    return 'No due date'
-  }
-
-  const date = new Date(
-    `${value}T00:00:00`,
-  )
-
-  return new Intl.DateTimeFormat(
-    'en-US',
-    {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    },
-  ).format(date)
-}
-
-function getPriorityColor(priority) {
-  if (priority === 'High') {
-    return '#b42318'
-  }
-
-  if (priority === 'Medium') {
-    return '#946200'
-  }
-
-  return '#52657d'
 }
