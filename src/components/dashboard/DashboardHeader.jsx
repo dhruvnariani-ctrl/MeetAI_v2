@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import AddIcon from '@mui/icons-material/Add'
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined'
 
-const BANNER_URL = '/images/avaada_banner_clean.png'
+const BANNER_URL = `${import.meta.env.BASE_URL}/images/avaada_banner_clean.png`
 // Original banner is 3:1. A bigger first number makes the header shorter.
 // Keep it at or below about 4.5 so the button doesn't touch the bottom edge.
 const BANNER_RATIO = '4.2 / 1'

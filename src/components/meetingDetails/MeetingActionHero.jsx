@@ -13,8 +13,8 @@ import TaskAltRoundedIcon from '@mui/icons-material/TaskAltRounded'
 import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded'
 
 // Put these two files in your project's public/images folder
-const HERO_URL = '/images/meeting-hero.jpg'
-const LOGO_URL = '/images/avaada-logo.png'
+const HERO_URL = `${import.meta.env.BASE_URL}/images/meeting-hero.jpg`
+const LOGO_URL = `${import.meta.env.BASE_URL}/images/avaada-logo.png`
 
 const NAVY = '#123A59'
 

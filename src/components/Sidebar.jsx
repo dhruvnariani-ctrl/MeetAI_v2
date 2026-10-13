@@ -236,7 +236,7 @@ export default function Sidebar({
       >
         <Box
           component="img"
-          src="/images/Avaada Blue-Green Swoosh Logo.png"
+          src={`${import.meta.env.BASE_URL}/images/Avaada Blue-Green Swoosh Logo.png`}
           alt="Avaada — Always clean. Always on."
           sx={{
             display: 'block',
