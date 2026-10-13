@@ -14,7 +14,7 @@ import HeaderSearch from './HeaderSearch'
 import { startAppTour } from './TourRunner'
 import { APP_TOUR_STEPS } from '../data/tours'
 
-const LOGO_SRC = '/images/Avaada Clean Energy Logo.png'
+const LOGO_SRC = `${import.meta.env.BASE_URL}/images/Avaada Clean Energy Logo.png`
 
 export default function Header({
   query,
