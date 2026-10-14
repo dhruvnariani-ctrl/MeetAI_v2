@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+
+import { useCallback, useMemo, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
@@ -60,16 +61,11 @@ function normalizeStatus(status) {
 
   if (value.includes('blocked')) return 'blocked'
 
-  if (
-    value.includes('process') ||
-    value.includes('progress')
-  ) {
+  if (value.includes('process') || value.includes('progress')) {
     return 'in progress'
   }
 
-  if (
-    ['done', 'completed', 'complete'].includes(value)
-  ) {
+  if (['done', 'completed', 'complete'].includes(value)) {
     return 'done'
   }
 
@@ -80,8 +76,7 @@ function isOpenActionItem(item) {
   return (
     ['pending', 'in progress'].includes(
       normalizeStatus(item.status),
-    ) &&
-    item.completed !== true
+    ) && item.completed !== true
   )
 }
 
@@ -135,9 +130,9 @@ function normalizeIdentity(value) {
   if (typeof value === 'object') {
     return normalizeIdentity(
       value.email ??
-      value.id ??
-      value.userId ??
-      value.name,
+        value.id ??
+        value.userId ??
+        value.name,
     )
   }
 
@@ -189,7 +184,7 @@ export default function Dashboard() {
   const currentUser = useCurrentUser()
   const now = useNow()
 
-  // Today's meetings, scoped to the logged-in user.
+  // Today's meetings accessible to the logged-in user.
   const meetings = useMemo(
     () =>
       filterUserMeetings(
@@ -200,7 +195,7 @@ export default function Dashboard() {
   )
 
   // All meetings accessible to the logged-in user.
-  // Tasks can be due today even if their meeting was earlier.
+  // Tasks may be due today even if their meeting was earlier.
   const allUserMeetings = useMemo(
     () =>
       filterUserMeetings(
@@ -215,8 +210,7 @@ export default function Dashboard() {
     [allUserMeetings],
   )
 
-  // ALL tasks for the current user that are due today.
-  // This includes Pending, In progress, Blocked, and Done.
+  // All of the current user's tasks due today, regardless of status.
   const todaysUserAllActionItems = useMemo(
     () =>
       allActionItems.filter(
@@ -227,15 +221,14 @@ export default function Dashboard() {
     [allActionItems, currentUser, now],
   )
 
-  // OPEN tasks only, for the Pending actions card.
-  // Blocked, Done, Completed, and other statuses are excluded.
+  // Open tasks only for the Pending actions card.
   const todaysUserOpenActionItems = useMemo(
     () =>
       todaysUserAllActionItems.filter(isOpenActionItem),
     [todaysUserAllActionItems],
   )
 
-  // Prefer a live meeting; otherwise use the nearest upcoming one.
+  // Prefer a live meeting; otherwise use the nearest upcoming meeting.
   const featuredMeeting = useMemo(() => {
     const live = meetings.find((meeting) =>
       isLive(meeting, now),
@@ -258,11 +251,33 @@ export default function Dashboard() {
     () => createMeetingSettings(meetings),
   )
 
-  const updateMeetingSettings = (meetingId, changes) => {
-    setMeetingSettings(
-      saveMeetingSettings(meetingId, changes),
-    )
-  }
+  const updateMeetingSettings = useCallback(
+    (meetingId, changes) => {
+      setMeetingSettings(
+        saveMeetingSettings(meetingId, changes),
+      )
+    },
+    [],
+  )
+
+  // Counts reported by ScheduleCard, using useScheduleSwitch status logic.
+  const [meetingCounts, setMeetingCounts] = useState({
+    activeCount: 0,
+    liveCount: 0,
+  })
+
+  const handleMeetingCountsChange = useCallback((counts) => {
+    setMeetingCounts((previous) => {
+      if (
+        previous.activeCount === counts.activeCount &&
+        previous.liveCount === counts.liveCount
+      ) {
+        return previous
+      }
+
+      return counts
+    })
+  }, [])
 
   const liveMeeting = useMemo(
     () =>
@@ -293,27 +308,40 @@ export default function Dashboard() {
       sx={{
         width: '100%',
         minWidth: 0,
-        pb: 2,
       }}
     >
-      <DashboardHeader
-        now={now}
-        firstName={firstName}
-        onCreate={openCreate}
-        onInstant={openInstant}
-      />
-
-      <DashboardOverview
-        values={{
-          meetings: meetings.length,
-          people: participantCount,
-          live: liveMeeting ? 1 : 0,
-
-          // All statuses, for this user, due today.
-          actions: todaysUserAllActionItems.length,
+      {/* Header and overview statistics */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: 'minmax(0, 1fr)',
+            lg: 'minmax(0, 7fr) minmax(0, 3fr)',
+          },
+          gap: 1.5,
+          mb: 1.5,
         }}
-      />
+      >
+        <DashboardHeader
+          now={now}
+          firstName={firstName}
+          onCreate={openCreate}
+          onInstant={openInstant}
+          activeCount={meetingCounts.activeCount}
+          liveCount={meetingCounts.liveCount}
+        />
 
+        <DashboardOverview
+          values={{
+            meetings: meetings.length,
+            people: participantCount,
+            live: liveMeeting ? 1 : 0,
+            actions: todaysUserAllActionItems.length,
+          }}
+        />
+      </Box>
+
+      {/* Today's schedule and pending action items */}
       <Box
         sx={{
           display: 'grid',
@@ -321,8 +349,8 @@ export default function Dashboard() {
             xs: 'minmax(0, 1fr)',
             lg: 'minmax(0, 1.65fr) minmax(300px, .85fr)',
           },
-          alignItems: 'start',
-          gap: { xs: 2, lg: 2.5 },
+          alignItems: 'stretch',
+          gap: 2,
         }}
       >
         <Box sx={{ minWidth: 0 }}>
@@ -332,21 +360,20 @@ export default function Dashboard() {
             nextId={featuredMeeting?.id}
             settings={meetingSettings}
             onSettingsChange={updateMeetingSettings}
-            onJoin={openInstant}
+            onCountsChange={handleMeetingCountsChange}
           />
         </Box>
 
         <Box
           sx={{
             display: 'grid',
-            gap: 2,
+            gridTemplateRows: '1fr',
             minWidth: 0,
-            alignContent: 'start',
           }}
         >
           <ActionItemsCard
             items={todaysUserOpenActionItems}
-            limit={3}
+            limit={5}
           />
         </Box>
       </Box>

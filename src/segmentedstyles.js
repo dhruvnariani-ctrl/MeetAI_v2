@@ -17,7 +17,7 @@ export const segmentedItemSx = {
   py: 0,
   border: 0,
   borderRadius: '8px',
-  fontSize: '0.9375rem',
+  fontSize: '1rem',
   fontWeight: 500,
   color: 'text.secondary',
   '&.Mui-selected, &.Mui-selected:hover': {

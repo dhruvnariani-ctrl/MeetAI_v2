@@ -1,3 +1,4 @@
+
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -15,13 +16,15 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import NotesOutlinedIcon from '@mui/icons-material/NotesOutlined'
 
 import usePageTitle from '../hooks/usePageTitle'
-
+import usePage from '../components/usePage'
 import { getAllMeetings } from '../data/meetings'
 import {
   getRecordedMeetings,
+  RECORDED_GRID_COLUMNS,
   RECORDED_SORT_OPTIONS,
 } from '../data/recorded'
 import { DATE_FILTERS } from '../utils/dateFilters'
+import { FONT } from '../utils/dashboardFonts'
 
 const COLORS = {
   navy: '#123A59',
@@ -47,13 +50,14 @@ function SummaryMetric({ icon, label, value, description, tone }) {
       }}
     >
       <Box
+        aria-hidden="true"
         sx={{
           width: 42,
           height: 42,
           display: 'grid',
           placeItems: 'center',
           flexShrink: 0,
-          borderRadius: '11px',
+          borderRadius: '10px',
           bgcolor: tone.bg,
           color: tone.fg,
         }}
@@ -65,7 +69,7 @@ function SummaryMetric({ icon, label, value, description, tone }) {
         <Typography
           sx={{
             color: '#526A80',
-            fontSize: '0.75rem',
+            fontSize: FONT.caption,
             fontWeight: 650,
             lineHeight: 1.35,
           }}
@@ -77,9 +81,9 @@ function SummaryMetric({ icon, label, value, description, tone }) {
           sx={{
             mt: 0.2,
             color: COLORS.navy,
-            fontSize: '1.45rem',
-            lineHeight: 1.2,
-            fontWeight: 800,
+            fontSize: FONT.statValue,
+            lineHeight: 0.7,
+            fontWeight: 600,
             fontVariantNumeric: 'tabular-nums',
           }}
         >
@@ -90,7 +94,7 @@ function SummaryMetric({ icon, label, value, description, tone }) {
           sx={{
             mt: 0.25,
             color: COLORS.muted,
-            fontSize: '0.68rem',
+            fontSize: FONT.caption,
             lineHeight: 1.35,
           }}
         >
@@ -123,6 +127,11 @@ export default function RecordedMeetings() {
     [meetings, search, dateFilter, sortBy],
   )
 
+  const { rows, pager } = usePage(
+    recordedMeetings,
+    `${search}|${dateFilter}|${sortBy}`,
+  )
+
   const recordingCount = meetings.filter(
     (meeting) => meeting.recording?.available,
   ).length
@@ -135,21 +144,33 @@ export default function RecordedMeetings() {
     (meeting) => meeting.meetingNotes?.available,
   ).length
 
+  const hasActiveFilters =
+    search.trim() !== '' || dateFilter !== 'All'
+
+  const clearFilters = () => {
+    setSearch('')
+    setDateFilter('All')
+    setSortBy('Newest')
+  }
+
   return (
     <PageShell
       title="Recorded Meetings"
       subtitle="Your central archive for meeting recordings, transcripts and notes."
     >
       <Stack spacing={2}>
-        {/* Executive overview */}
+        {/* Summary metrics */}
         <Box
           sx={{
             display: 'grid',
             gridTemplateColumns: {
               xs: 'repeat(2, minmax(0, 1fr))',
-              lg: 'repeat(3, minmax(0, 1fr))',
+              md: 'repeat(3, minmax(0, 1fr))',
             },
             gap: 1.25,
+            '& > :last-child': {
+              gridColumn: { xs: '1 / -1', md: 'auto' },
+            },
           }}
         >
           <SummaryMetric
@@ -177,7 +198,7 @@ export default function RecordedMeetings() {
           />
         </Box>
 
-        {/* Search, date filter and sorting */}
+        {/* Search and filters */}
         <RecordedFilters
           search={search}
           onSearchChange={setSearch}
@@ -189,7 +210,7 @@ export default function RecordedMeetings() {
           onSortChange={setSortBy}
         />
 
-        {/* Results heading */}
+        {/* Archive heading */}
         <Box
           sx={{
             display: 'flex',
@@ -204,7 +225,7 @@ export default function RecordedMeetings() {
             <Typography
               sx={{
                 color: COLORS.navy,
-                fontSize: '0.96rem',
+                fontSize: FONT.heading,
                 fontWeight: 750,
               }}
             >
@@ -215,7 +236,7 @@ export default function RecordedMeetings() {
               sx={{
                 mt: 0.3,
                 color: COLORS.muted,
-                fontSize: '0.75rem',
+                fontSize: FONT.small,
               }}
             >
               Search and open meeting content from one place.
@@ -223,6 +244,8 @@ export default function RecordedMeetings() {
           </Box>
 
           <Box
+            component="span"
+            aria-live="polite"
             sx={{
               px: 1.15,
               py: 0.65,
@@ -230,7 +253,7 @@ export default function RecordedMeetings() {
               borderRadius: '8px',
               bgcolor: '#FFFFFF',
               color: '#526A80',
-              fontSize: '0.73rem',
+              fontSize: FONT.caption,
               fontWeight: 700,
               whiteSpace: 'nowrap',
             }}
@@ -240,83 +263,116 @@ export default function RecordedMeetings() {
           </Box>
         </Box>
 
-        {/* Meeting archive list */}
+        {/* Meeting list */}
         <Box data-tour="recorded-meeting-list">
           {recordedMeetings.length === 0 ? (
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: '12px',
-                bgcolor: '#FFFFFF',
-              }}
-            >
-              <EmptyPanel title="No recorded meetings">
-                {search || dateFilter !== 'All'
-                  ? 'No recorded meetings match your search or selected date filter.'
-                  : 'Meetings with available recording content will appear here.'}
-              </EmptyPanel>
-            </Paper>
+            <EmptyPanel title="No recorded meetings">
+              {hasActiveFilters
+                ? 'No recorded meetings match your search or selected date filter.'
+                : 'Meetings with available recording content will appear here.'}
+
+              {hasActiveFilters && (
+                <Box sx={{ mt: 1.25 }}>
+                  <Typography
+                    component="button"
+                    onClick={clearFilters}
+                    sx={{
+                      border: 0,
+                      bgcolor: 'transparent',
+                      cursor: 'pointer',
+                      color: '#2369A5',
+                      fontWeight: 700,
+                      fontSize: FONT.body,
+                      fontFamily: 'inherit',
+                      '&:focus-visible': {
+                        outline: '2px solid #0a62c9',
+                        outlineOffset: 3,
+                      },
+                    }}
+                  >
+                    Clear filters
+                  </Typography>
+                </Box>
+              )}
+            </EmptyPanel>
           ) : (
-            <Paper
-              elevation={0}
-              sx={{
-                overflow: 'hidden',
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: '12px',
-                bgcolor: '#FFFFFF',
-              }}
-            >
-              <Box
+            <>
+              <Paper
+                elevation={0}
                 sx={{
-                  display: { xs: 'none', md: 'grid' },
-                  gridTemplateColumns:
-                    'minmax(0, 1fr) 125px 120px 235px',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  px: 2,
-                  py: 1.15,
-                  bgcolor: '#F5F8FB',
-                  borderBottom: `1px solid ${COLORS.border}`,
+                  overflow: 'hidden',
+                  border: `1px solid ${COLORS.border}`,
+                  borderRadius: '12px',
+                  bgcolor: '#FFFFFF',
                 }}
               >
-                {['Meeting', 'Participants', 'Content', 'Actions'].map(
-                  (label) => (
-                    <Typography
-                      key={label}
-                      sx={{
-                        color: '#63798D',
-                        fontSize: '0.67rem',
-                        fontWeight: 750,
-                        textTransform: 'uppercase',
-                        letterSpacing: '.04em',
-                      }}
-                    >
-                      {label}
-                    </Typography>
-                  ),
-                )}
-              </Box>
+                <Box
+                  role="table"
+                  aria-label="Recorded meetings archive"
+                >
+                  <Box
+                    role="row"
+                    sx={{
+                      display: { xs: 'none', lg: 'grid' },
+                      gridTemplateColumns: RECORDED_GRID_COLUMNS,
+                      alignItems: 'center',
+                      gap: 2,
+                      px: 2,
+                      py: 1.15,
+                      bgcolor: '#F5F8FB',
+                      borderBottom: `1px solid ${COLORS.border}`,
+                    }}
+                  >
+                    {[
+                      'Meeting',
+                      'Participants',
+                      'Content',
+                      'Actions',
+                    ].map((label) => (
+                      <Typography
+                        key={label}
+                        role="columnheader"
+                        sx={{
+                          color: '#63798D',
+                          fontSize: FONT.caption,
+                          fontWeight: 750,
+                          textTransform: 'uppercase',
+                          letterSpacing: '.04em',
+                        }}
+                      >
+                        {label}
+                      </Typography>
+                    ))}
+                  </Box>
 
-              <Stack spacing={0}>
-                {recordedMeetings.map((meeting) => (
-                  <RecordedMeetingCard
-                    key={meeting.id}
-                    meeting={meeting}
-                    onWatchRecording={() =>
-                      navigate(`/meetings/${meeting.id}?tab=recording`)
-                    }
-                    onViewTranscript={() =>
-                      navigate(`/meetings/${meeting.id}?tab=transcript`)
-                    }
-                    onViewNotes={() =>
-                      navigate(`/meetings/${meeting.id}`)
-                    }
-                  />
-                ))}
-              </Stack>
-            </Paper>
+                  <Box role="rowgroup">
+                    <Stack spacing={0}>
+                      {rows.map((meeting) => (
+                        <RecordedMeetingCard
+                          key={meeting.id}
+                          meeting={meeting}
+                          onWatchRecording={() =>
+                            navigate(
+                              `/meetings/${meeting.id}?tab=recording`,
+                            )
+                          }
+                          onViewTranscript={() =>
+                            navigate(
+                              `/meetings/${meeting.id}?tab=transcript`,
+                            )
+                          }
+                          onViewNotes={() =>
+                            navigate(`/meetings/${meeting.id}`)
+                          }
+                        />
+                      ))}
+                    </Stack>
+                  </Box>
+                </Box>
+              </Paper>
+
+              {pager}
+            </>
           )}
         </Box>
       </Stack>

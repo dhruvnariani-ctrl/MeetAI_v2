@@ -1,4 +1,3 @@
-
 import Box from '@mui/material/Box'
 
 const OVERLAY = 'rgba(10, 29, 43, 0.55)'
@@ -19,6 +18,8 @@ export default function TourOverlay({ targetRect }) {
   )
 
   const middleHeight = Math.max(bottom - top, 0)
+  const spotlightWidth = Math.max(right - left, 0)
+  const spotlightHeight = Math.max(bottom - top, 0)
 
   return (
     <>
@@ -31,6 +32,7 @@ export default function TourOverlay({ targetRect }) {
           pointerEvents: 'none',
         }}
       >
+        {/* Top panel */}
         <Box
           sx={{
             position: 'absolute',
@@ -42,6 +44,7 @@ export default function TourOverlay({ targetRect }) {
           }}
         />
 
+        {/* Bottom panel */}
         <Box
           sx={{
             position: 'absolute',
@@ -53,6 +56,7 @@ export default function TourOverlay({ targetRect }) {
           }}
         />
 
+        {/* Left panel */}
         <Box
           sx={{
             position: 'absolute',
@@ -64,6 +68,7 @@ export default function TourOverlay({ targetRect }) {
           }}
         />
 
+        {/* Right panel */}
         <Box
           sx={{
             position: 'absolute',
@@ -81,10 +86,10 @@ export default function TourOverlay({ targetRect }) {
         sx={{
           position: 'fixed',
           zIndex: 1401,
-          top: targetRect.top - PAD,
-          left: targetRect.left - PAD,
-          width: targetRect.width + PAD * 2,
-          height: targetRect.height + PAD * 2,
+          top,
+          left,
+          width: spotlightWidth,
+          height: spotlightHeight,
           boxSizing: 'border-box',
           borderRadius: '10px',
           border: '2px solid #16815B',

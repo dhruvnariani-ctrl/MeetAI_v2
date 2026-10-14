@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 
 import Box from '@mui/material/Box'
@@ -12,10 +13,12 @@ import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownR
 import FilterAltOffOutlinedIcon from '@mui/icons-material/FilterAltOffOutlined'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 
+import { FONT } from '../../utils/dashboardFonts'
+
 // Values match your task data: Pending / In Process / Blocked / Done
 const STATUS_OPTIONS = [
   { label: 'All Tasks', value: 'All' },
-  { label: 'Open', value: 'Open' }, // everything not done
+  { label: 'Open', value: 'Open' },
   { label: 'Pending', value: 'Pending' },
   { label: 'In Process', value: 'In Process' },
   { label: 'Blocked', value: 'Blocked' },
@@ -46,11 +49,9 @@ export default function TaskFilters({
   onDueDateChange = () => {},
   search = '',
   onSearchChange = () => {},
-  // Optional sort dropdown (e.g. ['My Order', 'Due date', 'Priority'])
   sortOptions = [],
   sortBy = '',
   onSortChange = () => {},
-  // Optional: pass your own reset. Otherwise the filters reset themselves.
   onClearFilters,
 }) {
   const [menu, setMenu] = useState(null)
@@ -70,7 +71,6 @@ export default function TaskFilters({
 
   const hasSort = sortOptions.length > 0
 
-  // Anything other than the defaults counts as an active filter
   const hasActiveFilters =
     filter !== 'All' ||
     priority !== 'All' ||
@@ -99,7 +99,6 @@ export default function TaskFilters({
     setMenu(null)
   }
 
-  // Highlights a dropdown when it has an active (non-default) value
   const activeSx = (active) =>
     active
       ? {
@@ -114,10 +113,10 @@ export default function TaskFilters({
     minHeight: 38,
     px: 1.2,
     border: '1px solid #E7EEF5',
-    borderRadius: '9px',
+    borderRadius: '10px',
     bgcolor: '#FFFFFF',
     color: '#526B83',
-    fontSize: '0.77rem',
+    fontSize: FONT.caption,
     fontWeight: 650,
     textTransform: 'none',
     whiteSpace: 'nowrap',
@@ -137,7 +136,7 @@ export default function TaskFilters({
           boxShadow: '0 8px 24px rgba(18,58,89,0.12)',
           '& .MuiMenuItem-root': {
             minHeight: 36,
-            fontSize: '0.8rem',
+            fontSize: FONT.body,
             color: '#34536E',
           },
           '& .Mui-selected': {
@@ -166,9 +165,9 @@ export default function TaskFilters({
           display: 'grid',
           gridTemplateColumns: {
             xs: 'minmax(0, 1fr) minmax(0, 1fr)',
-            sm: `${
-              hasSort ? 'auto auto auto auto' : 'auto auto auto'
-            } minmax(160px, 1fr) auto`,
+            sm: hasSort
+              ? 'auto auto auto auto minmax(160px, 1fr) auto'
+              : 'auto auto auto minmax(160px, 1fr) auto',
           },
           gap: 0.75,
           alignItems: 'center',
@@ -309,7 +308,7 @@ export default function TaskFilters({
               borderRadius: '10px',
               bgcolor: '#FFFFFF',
               color: '#23445F',
-              fontSize: '0.78rem',
+              fontSize: FONT.body,
               '& fieldset': { borderColor: '#E7EEF5' },
               '&:hover fieldset': { borderColor: '#C9D9E8' },
               '&.Mui-focused fieldset': { borderColor: '#2680D9' },
@@ -329,7 +328,7 @@ export default function TaskFilters({
           }}
         />
 
-        {/* Clear filters: always visible, enabled only when a filter is active */}
+        {/* Clear filters */}
         <Button
           onClick={clearFilters}
           disabled={!hasActiveFilters}
@@ -339,15 +338,18 @@ export default function TaskFilters({
             justifySelf: { xs: 'end', sm: 'stretch' },
             minHeight: 38,
             px: 1.4,
-            borderRadius: '9px',
+            borderRadius: '10px',
             color: '#B93B43',
             bgcolor: '#FFF5F5',
             border: '1px solid #F6D5D7',
-            fontSize: '0.77rem',
+            fontSize: FONT.caption,
             fontWeight: 700,
             textTransform: 'none',
             whiteSpace: 'nowrap',
-            '&:hover': { bgcolor: '#FFECEC', borderColor: '#EDB8BC' },
+            '&:hover': {
+              bgcolor: '#FFECEC',
+              borderColor: '#EDB8BC',
+            },
             '&.Mui-disabled': {
               color: '#9AAABA',
               bgcolor: '#F6F8FA',

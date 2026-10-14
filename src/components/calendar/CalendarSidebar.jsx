@@ -1,6 +1,4 @@
-
 import { useEffect, useState } from 'react'
-
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
@@ -11,6 +9,7 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
 import TodayOutlinedIcon from '@mui/icons-material/TodayOutlined'
 
+import { FONT } from '../../utils/dashboardFonts'
 import {
   dateKey,
   startOfWeek,
@@ -98,7 +97,7 @@ export default function CalendarSidebar({
       sx={{
         p: 1.75,
         border: '1px solid #E0E8F0',
-        borderRadius: '14px',
+        borderRadius: '12px',
         bgcolor: '#FFFFFF',
       }}
     >
@@ -132,7 +131,7 @@ export default function CalendarSidebar({
         <Typography
           sx={{
             color: '#123A59',
-            fontSize: '0.88rem',
+            fontSize: FONT.heading,
             fontWeight: 750,
             textAlign: 'center',
             whiteSpace: 'nowrap',
@@ -179,7 +178,7 @@ export default function CalendarSidebar({
               sx={{
                 py: 0.6,
                 color: '#8292A3',
-                fontSize: '0.66rem',
+                fontSize: FONT.caption,
                 fontWeight: 700,
               }}
             >
@@ -221,14 +220,14 @@ export default function CalendarSidebar({
                 width: '100%',
                 height: 32,
                 p: 0,
-                borderRadius: '9px',
+                borderRadius: '10px',
                 color: selected ? '#FFFFFF' : '#294A65',
                 bgcolor: selected
                   ? '#075A9C'
                   : selectedWeek
                     ? '#EAF3FC'
                     : 'transparent',
-                fontSize: '0.72rem',
+                fontSize: FONT.caption,
                 fontWeight: selected || today ? 750 : 500,
                 outline:
                   today && !selected
@@ -267,15 +266,15 @@ export default function CalendarSidebar({
         fullWidth
         size="small"
         variant="outlined"
-        startIcon={<TodayOutlinedIcon sx={{ fontSize: 16 }} />}
+        startIcon={<TodayOutlinedIcon />}
         onClick={goToday}
         sx={{
           mt: 1.5,
           minHeight: 34,
           borderColor: '#D7E4EF',
-          borderRadius: '9px',
+          borderRadius: '10px',
           color: '#245F94',
-          fontSize: '0.76rem',
+          fontSize: FONT.caption,
           fontWeight: 650,
           textTransform: 'none',
           '&:hover': {

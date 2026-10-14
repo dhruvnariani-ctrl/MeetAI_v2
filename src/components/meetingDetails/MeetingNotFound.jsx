@@ -14,9 +14,9 @@ export default function MeetingNotFound({ onBack }) {
     >
       <Paper
         elevation={0}
-        sx={{ border: '1px solid #dce3eb', borderRadius: 3, p: 3 }}
+        sx={{ border: '1px solid #dce3eb', borderRadius: '12px', p: 3 }}
       >
-        <Typography sx={{ fontSize: '.9rem', color: 'text.secondary', mb: 2 }}>
+        <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary', mb: 2 }}>
           The meeting may have been removed or is no longer available.
         </Typography>
 

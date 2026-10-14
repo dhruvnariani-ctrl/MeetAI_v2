@@ -1,3 +1,4 @@
+
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -12,6 +13,8 @@ import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined'
 
 import AvailabilityBadge from './AvailabilityBadge'
 import { formatTime } from '../../utils/time'
+import { RECORDED_GRID_COLUMNS } from '../../data/recorded'
+import { FONT } from '../../utils/dashboardFonts'
 
 const COLORS = {
   navy: '#123A59',
@@ -19,6 +22,13 @@ const COLORS = {
   muted: '#71869A',
   border: '#E7EDF3',
 }
+
+const ICON_SIZE = {
+  small: '0.85rem',
+  body: '1rem',
+  heading: '1.15rem',
+}
+
 
 function formatMeetingDate(value) {
   const date = new Date(value)
@@ -39,7 +49,7 @@ const secondaryButtonSx = {
   borderRadius: '8px',
   borderColor: '#D7E2EC',
   color: '#365974',
-  fontSize: '0.72rem',
+  fontSize: FONT.caption,
   fontWeight: 650,
   textTransform: 'none',
   whiteSpace: 'nowrap',
@@ -53,12 +63,9 @@ const secondaryButtonSx = {
   },
 }
 
-const DOT_SPACE = 14 // px reserved on the left of every item for its dot
+const DOT_SPACE = 14
 
-// One metadata item (optional icon + text) with its own separator dot.
-// The dot sits just left of the item. The wrapper clips whatever overflows
-// its left edge, so an item that wraps onto a new line loses its dot and
-// no separator is ever left dangling at the start or end of a line.
+
 function MetaItem({ icon, children, sx }) {
   return (
     <Box
@@ -72,7 +79,10 @@ function MetaItem({ icon, children, sx }) {
           minWidth: 0,
           whiteSpace: 'nowrap',
           color: COLORS.muted,
-          '& svg': { fontSize: 14, flexShrink: 0 },
+          '& svg': {
+            fontSize: ICON_SIZE.small,
+            flexShrink: 0,
+          },
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -89,15 +99,21 @@ function MetaItem({ icon, children, sx }) {
       ]}
     >
       {icon}
+
       <Typography
         component="span"
-        sx={{ color: 'inherit', fontSize: '0.72rem', lineHeight: 1.4 }}
+        sx={{
+          color: 'inherit',
+          fontSize: FONT.caption,
+          lineHeight: 1.4,
+        }}
       >
         {children}
       </Typography>
     </Box>
   )
 }
+
 
 export default function RecordedMeetingCard({
   meeting,
@@ -125,12 +141,12 @@ export default function RecordedMeetingCard({
 
   return (
     <Box
-      component="article"
+      role="row"
       sx={{
         display: 'grid',
         gridTemplateColumns: {
           xs: 'minmax(0, 1fr)',
-          lg: 'minmax(0, 1fr) 105px 185px 240px',
+          lg: RECORDED_GRID_COLUMNS,
         },
         alignItems: 'center',
         columnGap: 2,
@@ -143,8 +159,10 @@ export default function RecordedMeetingCard({
         '&:hover': { bgcolor: '#FAFCFE' },
       }}
     >
-      {/* Meeting title and metadata */}
+      {/* Meeting details */}
       <Box
+        role="cell"
+        aria-label={`Meeting: ${meeting.title || 'Untitled meeting'}`}
         sx={{
           display: 'flex',
           alignItems: 'flex-start',
@@ -153,6 +171,7 @@ export default function RecordedMeetingCard({
         }}
       >
         <Box
+          aria-hidden="true"
           sx={{
             width: 39,
             height: 39,
@@ -165,14 +184,16 @@ export default function RecordedMeetingCard({
             color: COLORS.blue,
           }}
         >
-          <VideoFileOutlinedIcon sx={{ fontSize: 21 }} />
+          
+<VideoFileOutlinedIcon sx={{ fontSize: ICON_SIZE.heading }} />
+
         </Box>
 
         <Box sx={{ minWidth: 0 }}>
           <Typography
             sx={{
               color: COLORS.navy,
-              fontSize: '0.88rem',
+              fontSize: FONT.meetingTitle,
               lineHeight: 1.4,
               fontWeight: 750,
               overflowWrap: 'anywhere',
@@ -181,7 +202,6 @@ export default function RecordedMeetingCard({
             {meeting.title || 'Untitled meeting'}
           </Typography>
 
-          {/* Platform · date · time (+ participants on smaller screens) */}
           <Box sx={{ mt: 0.5, overflow: 'hidden' }}>
             <Box
               sx={{
@@ -192,16 +212,25 @@ export default function RecordedMeetingCard({
                 ml: `-${DOT_SPACE}px`,
               }}
             >
-              <MetaItem sx={{ color: '#526E84', '& span': { fontWeight: 600 } }}>
+              <MetaItem
+                sx={{
+                  color: '#526E84',
+                  '& span': { fontWeight: 600 },
+                }}
+              >
                 {meeting.platform || 'Meeting platform'}
               </MetaItem>
 
-              <MetaItem icon={<CalendarTodayOutlinedIcon />}>{dateText}</MetaItem>
+              <MetaItem icon={<CalendarTodayOutlinedIcon sx={{fontSize: ICON_SIZE.small}}/>}>
+                {dateText}
+              </MetaItem>
 
-              <MetaItem icon={<ScheduleOutlinedIcon />}>{timeText}</MetaItem>
+              <MetaItem icon={<ScheduleOutlinedIcon sx={{fontSize: ICON_SIZE.small}}/>}>
+                {timeText}
+              </MetaItem>
 
               <MetaItem
-                icon={<GroupsOutlinedIcon />}
+                icon={<GroupsOutlinedIcon sx={{fontSize: ICON_SIZE.body}}/>}
                 sx={{ display: { xs: 'inline-flex', lg: 'none' } }}
               >
                 {participantCount} {participantLabel}
@@ -209,7 +238,6 @@ export default function RecordedMeetingCard({
             </Box>
           </Box>
 
-          {/* Availability on smaller screens */}
           <Box
             sx={{
               display: { xs: 'flex', lg: 'none' },
@@ -220,17 +248,20 @@ export default function RecordedMeetingCard({
             }}
           >
             <AvailabilityBadge
-              icon={<PlayArrowRoundedIcon />}
+              icon={<PlayArrowRoundedIcon sx={{fontSize: ICON_SIZE.body}}/>}
               label="Recording"
               available={recordingAvailable}
+              fontSize={ICON_SIZE.small}
             />
+
             <AvailabilityBadge
-              icon={<DescriptionOutlinedIcon />}
+              icon={<DescriptionOutlinedIcon sx={{fontSize:ICON_SIZE.small}}/>}
               label="Transcript"
               available={transcriptAvailable}
             />
+
             <AvailabilityBadge
-              icon={<NotesOutlinedIcon />}
+              icon={<NotesOutlinedIcon sx={{fontSize:ICON_SIZE.small}}/>}
               label="Notes"
               available={notesAvailable}
             />
@@ -238,21 +269,26 @@ export default function RecordedMeetingCard({
         </Box>
       </Box>
 
-      {/* Participant count (large screens) */}
+      {/* Participant count */}
       <Box
+        role="cell"
+        aria-label={`${participantCount} ${participantLabel}`}
         sx={{
           display: { xs: 'none', lg: 'flex' },
           alignItems: 'center',
           gap: 0.9,
         }}
       >
-        <GroupsOutlinedIcon sx={{ fontSize: 19, color: '#7B90A3' }} />
+        <GroupsOutlinedIcon
+          aria-hidden="true"
+          sx={{ color: '#7B90A3' }}
+        />
 
         <Box>
           <Typography
             sx={{
               color: '#34536E',
-              fontSize: '0.8rem',
+              fontSize: FONT.body,
               fontWeight: 750,
               lineHeight: 1.25,
             }}
@@ -263,7 +299,7 @@ export default function RecordedMeetingCard({
           <Typography
             sx={{
               color: COLORS.muted,
-              fontSize: '0.68rem',
+              fontSize: FONT.caption,
               lineHeight: 1.3,
             }}
           >
@@ -272,8 +308,10 @@ export default function RecordedMeetingCard({
         </Box>
       </Box>
 
-      {/* Content availability (large screens): equal-width badges */}
+      {/* Available meeting content */}
       <Box
+        role="cell"
+        aria-label="Available meeting content"
         data-tour="recorded-actions"
         sx={{
           display: { xs: 'none', lg: 'grid' },
@@ -286,11 +324,13 @@ export default function RecordedMeetingCard({
           label="Recording"
           available={recordingAvailable}
         />
+
         <AvailabilityBadge
           icon={<DescriptionOutlinedIcon />}
           label="Transcript"
           available={transcriptAvailable}
         />
+
         <AvailabilityBadge
           icon={<NotesOutlinedIcon />}
           label="Meeting notes"
@@ -298,8 +338,10 @@ export default function RecordedMeetingCard({
         />
       </Box>
 
-      {/* Actions: Watch recording on top, Transcript and Notes side by side */}
+      {/* Meeting content actions */}
       <Box
+        role="cell"
+        aria-label="Meeting actions"
         data-tour="recorded-content-actions"
         sx={{
           display: 'grid',
@@ -320,14 +362,14 @@ export default function RecordedMeetingCard({
           disabled={!recordingAvailable}
           onClick={onWatchRecording}
           sx={{
-            gridColumn: { lg: '1 / -1' }, // full width on large screens
+            gridColumn: { lg: '1 / -1' },
             minWidth: 0,
             minHeight: 34,
             px: 1.25,
             borderRadius: '8px',
             bgcolor: COLORS.blue,
             boxShadow: 'none',
-            fontSize: '0.74rem',
+            fontSize: FONT.caption,
             fontWeight: 700,
             textTransform: 'none',
             whiteSpace: 'nowrap',

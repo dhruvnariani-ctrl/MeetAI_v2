@@ -1,9 +1,11 @@
+
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 
 import HeroIllustration from './HeroIllustration'
 import { COLORS } from './constants'
+import { FONT } from '../../utils/dashboardFonts'
 
 /* Top card: label, title, intro text and the laptop illustration. */
 export default function HowItWorksHeader() {
@@ -13,7 +15,7 @@ export default function HowItWorksHeader() {
       sx={{
         p: { xs: 1.75, md: 2.25 },
         border: `1px solid ${COLORS.border}`,
-        borderRadius: '14px',
+        borderRadius: '12px',
         background:
           'linear-gradient(110deg, #FFFFFF 0%, #F5FAFE 64%, #EAF5FC 100%)',
         overflow: 'hidden',
@@ -32,7 +34,7 @@ export default function HowItWorksHeader() {
           <Typography
             sx={{
               color: COLORS.blue,
-              fontSize: '.65rem',
+              fontSize: FONT.headerGreeting,
               fontWeight: 800,
               letterSpacing: '.09em',
               textTransform: 'uppercase',
@@ -46,7 +48,7 @@ export default function HowItWorksHeader() {
             sx={{
               mt: 0.65,
               color: COLORS.navy,
-              fontSize: { xs: '1.2rem', md: '1.5rem' },
+              fontSize: FONT.scheduleHeading,
               fontWeight: 800,
               lineHeight: 1.25,
               letterSpacing: '-.02em',
@@ -60,7 +62,7 @@ export default function HowItWorksHeader() {
               mt: 0.8,
               maxWidth: 470,
               color: COLORS.muted,
-              fontSize: '.8rem',
+              fontSize: FONT.small,
               lineHeight: 1.65,
             }}
           >

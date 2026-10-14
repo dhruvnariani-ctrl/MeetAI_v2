@@ -34,7 +34,7 @@ const controlRowSx = {
   px: 1.5,
   py: 1.25,
   border: '1px solid #e1e6ec',
-  borderRadius: 2,
+  borderRadius: '16px',
   cursor: 'pointer',
   userSelect: 'none',
   '&:hover': {
@@ -87,7 +87,7 @@ function SettingRow({
       <Box sx={{ pr: 2 }}>
         <Typography
           sx={{
-            fontSize: '0.85rem',
+            fontSize: '0.875rem',
             fontWeight: 600,
           }}
         >
@@ -97,7 +97,7 @@ function SettingRow({
         <Typography
           sx={{
             mt: 0.25,
-            fontSize: '0.72rem',
+            fontSize: '0.75rem',
             lineHeight: 1.45,
             color: 'text.secondary',
           }}
@@ -206,7 +206,7 @@ export default function MeetAISettingsDialog({
       <DialogContent>
         <Typography
           sx={{
-            fontSize: '0.82rem',
+            fontSize: '0.8125rem',
             lineHeight: 1.6,
             color: 'text.secondary',
             mb: 2.25,
@@ -271,7 +271,7 @@ export default function MeetAISettingsDialog({
           <Typography
             sx={{
               mt: 1.25,
-              fontSize: '0.7rem',
+              fontSize: '0.75rem',
               lineHeight: 1.45,
               color: 'text.secondary',
             }}
@@ -292,7 +292,7 @@ export default function MeetAISettingsDialog({
           onClick={handleClose}
           sx={{
             textTransform: 'none',
-            fontSize: '0.8rem',
+            fontSize: '0.8125rem',
           }}
         >
           Cancel
@@ -304,7 +304,7 @@ export default function MeetAISettingsDialog({
           disabled={disabled}
           sx={{
             textTransform: 'none',
-            fontSize: '0.8rem',
+            fontSize: '0.8125rem',
             fontWeight: 600,
           }}
         >

@@ -62,12 +62,12 @@ function SidebarTooltip({ title, show, children }) {
           sx: {
             bgcolor: TOOLTIP_BG,
             color: '#fff',
-            fontSize: '0.72rem',
+            fontSize: '0.75rem',
             fontWeight: 600,
             letterSpacing: '0.01em',
             px: 1.25,
             py: 0.6,
-            borderRadius: '6px',
+            borderRadius: '8px',
             boxShadow: '0 6px 18px rgba(8, 46, 78, 0.28)',
             animation: `${tooltipIn} 220ms cubic-bezier(0.22, 1, 0.36, 1)`,
           },
@@ -312,7 +312,7 @@ export default function Sidebar({
               flexShrink: 0,
               mb: 0.6,
               px: 1,
-              borderRadius: '6px',
+              borderRadius: '8px',
               color: '#fff',
               bgcolor: '#239b55',
               fontSize: '0.75rem',
@@ -402,7 +402,7 @@ export default function Sidebar({
             flexShrink: 0,
             bgcolor: '#dceafa',
             color: '#15517c',
-            fontSize: '0.62rem',
+            fontSize: '0.75rem',
             fontWeight: 700,
           }}
         >
@@ -414,7 +414,7 @@ export default function Sidebar({
             <Typography
               noWrap
               sx={{
-                fontSize: '0.65rem',
+                fontSize: '0.75rem',
                 lineHeight: 1.35,
                 fontWeight: 650,
                 color: '#fff',
@@ -427,7 +427,7 @@ export default function Sidebar({
               noWrap
               sx={{
                 mt: 0.15,
-                fontSize: '0.59rem',
+                fontSize: '0.75rem',
                 lineHeight: 1.3,
                 color: '#b7cee2',
               }}

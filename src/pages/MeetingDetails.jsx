@@ -91,10 +91,10 @@ export default function MeetingDetails() {
       >
         <Paper
           elevation={0}
-          sx={{ border: '1px solid #dce3eb', borderRadius: 3, p: 3 }}
+          sx={{ border: '1px solid #dce3eb', borderRadius: '12px', p: 3 }}
         >
           <Typography
-            sx={{ fontSize: '.9rem', color: 'text.secondary', mb: 2 }}
+            sx={{ fontSize: '0.875rem', color: 'text.secondary', mb: 2 }}
           >
             The meeting may have been removed or is no longer available.
           </Typography>
@@ -150,7 +150,7 @@ export default function MeetingDetails() {
 
   return (
     <PageShell title="" subtitle="">
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1.75, md: 2.25 } }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap:2 }}>
         {/* Back */}
         <Button
           startIcon={<ArrowBackOutlinedIcon />}
@@ -158,7 +158,7 @@ export default function MeetingDetails() {
           sx={{
             alignSelf: 'flex-start',
             textTransform: 'none',
-            fontSize: '.78rem',
+            fontSize: '0.8125rem',
             color: '#52657d',
             px: 0,
             '&:hover': { bgcolor: 'transparent', color: 'primary.main' },
@@ -193,7 +193,7 @@ export default function MeetingDetails() {
                 mr: { xs: 1, sm: 2.5 },
                 px: 0.5,
                 textTransform: 'none',
-                fontSize: '.84rem',
+                fontSize: '0.8125rem',
                 fontWeight: 600,
                 color: '#66778d',
               },

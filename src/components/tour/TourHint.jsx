@@ -7,7 +7,7 @@ export default function TourHint({ label, children }) {
     <Box
       sx={{
         p: 1.25,
-        borderRadius: '9px',
+        borderRadius: '10px',
         bgcolor: '#F3F7F9',
         border: '1px solid #E0E8ED',
         borderLeft: '3px solid #16815B',
@@ -15,7 +15,7 @@ export default function TourHint({ label, children }) {
     >
       <Typography
         sx={{
-          fontSize: '0.67rem',
+          fontSize: '0.75rem',
           fontWeight: 800,
           letterSpacing: '0.07em',
           textTransform: 'uppercase',
@@ -28,7 +28,7 @@ export default function TourHint({ label, children }) {
       <Typography
         sx={{
           mt: 0.45,
-          fontSize: '0.78rem',
+          fontSize: '0.8125rem',
           lineHeight: 1.6,
           color: '#536879',
           overflowWrap: 'anywhere',

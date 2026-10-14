@@ -38,7 +38,7 @@ function PlatformOption({ platform, selected, onClick }) {
         textAlign: 'left',
         font: 'inherit',
         cursor: 'pointer',
-        borderRadius: '9px',
+        borderRadius: '10px',
         borderColor: selected ? C.blue : C.border,
         bgcolor: selected ? C.paleBlue : '#fff',
         '&:hover': { borderColor: C.blue },
@@ -63,11 +63,11 @@ function PlatformOption({ platform, selected, onClick }) {
       />
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Typography sx={{ fontSize: '0.76rem', fontWeight: 700, color: C.navy }}>
+        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: C.navy }}>
           {platform.label}
         </Typography>
 
-        <Typography sx={{ fontSize: '0.67rem', color: C.muted }}>
+        <Typography sx={{ fontSize: '0.75rem', color: C.muted }}>
           {platform.description}
         </Typography>
       </Box>
@@ -149,13 +149,13 @@ export default function WhereStep({ form, compactHeight }) {
           subtitle="Let MeetAI help after your meeting."
         />
 
-        <Box sx={{ p: 1, borderRadius: '9px', bgcolor: C.paleGreen }}>
+        <Box sx={{ p: 1, borderRadius: '10px', bgcolor: C.paleGreen }}>
           <FormControlLabel
             sx={{
               ml: -0.5,
               my: -0.25,
               '& .MuiFormControlLabel-label': {
-                fontSize: '0.79rem',
+                fontSize: '0.8125rem',
                 fontWeight: 750,
                 color: C.navy,
               },
@@ -180,7 +180,7 @@ export default function WhereStep({ form, compactHeight }) {
           <Typography
             sx={{
               ml: 3.5,
-              fontSize: '0.71rem',
+              fontSize: '0.75rem',
               lineHeight: 1.45,
               color: '#506B5A',
             }}
@@ -214,7 +214,7 @@ export default function WhereStep({ form, compactHeight }) {
                 label="Enable video recording"
               />
 
-              <Typography sx={{ ml: 3.5, fontSize: '0.68rem', color: '#506B5A' }}>
+              <Typography sx={{ ml: 3.5, fontSize: '0.75rem', color: '#506B5A' }}>
                 Separate video file · 7-day retention
               </Typography>
             </>
@@ -226,7 +226,7 @@ export default function WhereStep({ form, compactHeight }) {
             sx={{ color: C.green, fontSize: 16, flexShrink: 0 }}
           />
 
-          <Typography sx={{ fontSize: '0.69rem', color: C.muted, lineHeight: 1.45 }}>
+          <Typography sx={{ fontSize: '0.75rem', color: C.muted, lineHeight: 1.45 }}>
             Spend less time writing notes and more time on your work.
           </Typography>
         </Box>

@@ -1,4 +1,6 @@
+
 import { useMemo, useState } from 'react'
+
 import PageShell, { EmptyPanel } from '../components/PageShell'
 import TaskFilters from '../components/tasks/TaskFilters'
 import TaskCard from '../components/tasks/TaskCard'
@@ -9,17 +11,19 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
+import usePage from '../components/usePage'
+import usePageTitle from '../hooks/usePageTitle'
+import useCurrentUser from '../hooks/useCurrentUser'
+
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined'
 import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined'
 import EventOutlinedIcon from '@mui/icons-material/EventOutlined'
 import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined'
 
-import usePageTitle from '../hooks/usePageTitle'
-import useCurrentUser from '../hooks/useCurrentUser'
-
 import {
   TASK_SORT_OPTIONS,
   getTasksFromDashboard,
+  TASK_GRID_COLUMNS,
   filterAndSortTasks,
   normalizeTaskPriority,
   normalizeTaskStatus,
@@ -27,13 +31,13 @@ import {
 } from '../data/tasks'
 
 import { updateMeetingActionItemStatus } from '../data/meetings'
+import { FONT } from '../utils/dashboardFonts'
 
 const COLORS = {
   navy: '#123A59',
   blue: '#075A9C',
   muted: '#718398',
   border: '#E0E8F0',
-  background: '#F4F8FC',
 }
 
 function SummaryCard({ title, value, subtitle, icon, tone, onClick }) {
@@ -53,7 +57,7 @@ function SummaryCard({ title, value, subtitle, icon, tone, onClick }) {
         textAlign: 'left',
         font: 'inherit',
         border: `1px solid ${COLORS.border}`,
-        borderRadius: '13px',
+        borderRadius: '12px',
         bgcolor: '#FFFFFF',
         cursor: onClick ? 'pointer' : 'default',
         transition: 'border-color 160ms ease, box-shadow 160ms ease',
@@ -72,7 +76,7 @@ function SummaryCard({ title, value, subtitle, icon, tone, onClick }) {
           flexShrink: 0,
           display: 'grid',
           placeItems: 'center',
-          borderRadius: '11px',
+          borderRadius: '10px',
           bgcolor: tone.bg,
           color: tone.fg,
         }}
@@ -84,7 +88,7 @@ function SummaryCard({ title, value, subtitle, icon, tone, onClick }) {
         <Typography
           sx={{
             color: '#526A80',
-            fontSize: '0.76rem',
+            fontSize: FONT.caption,
             fontWeight: 650,
             lineHeight: 1.35,
           }}
@@ -96,7 +100,7 @@ function SummaryCard({ title, value, subtitle, icon, tone, onClick }) {
           sx={{
             mt: 0.15,
             color: COLORS.navy,
-            fontSize: '1.35rem',
+            fontSize: FONT.statValue,
             lineHeight: 1.25,
             fontWeight: 800,
             fontVariantNumeric: 'tabular-nums',
@@ -110,7 +114,7 @@ function SummaryCard({ title, value, subtitle, icon, tone, onClick }) {
             sx={{
               mt: 0.2,
               color: COLORS.muted,
-              fontSize: '0.68rem',
+              fontSize: FONT.caption,
               lineHeight: 1.3,
             }}
           >
@@ -131,21 +135,19 @@ export default function MyTasks() {
     getTasksFromDashboard(currentUser),
   )
 
-  // Everything TaskFilters can change lives here
   const [filter, setFilter] = useState('All')
   const [priority, setPriority] = useState('All')
   const [dueDate, setDueDate] = useState('default')
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('My Order')
 
-  // Summary numbers use the normalized helpers, so "Completed", "done",
-  // "high priority" etc. are all counted correctly.
   const isDone = (task) => normalizeTaskStatus(task.status) === 'Done'
 
   const completedCount = tasks.filter(isDone).length
 
   const highPriorityCount = tasks.filter(
-    (task) => normalizeTaskPriority(task.priority) === 'High' && !isDone(task),
+    (task) =>
+      normalizeTaskPriority(task.priority) === 'High' && !isDone(task),
   ).length
 
   const today = new Date()
@@ -158,12 +160,13 @@ export default function MyTasks() {
 
     if (!due) return false
 
-    const daysAway = Math.round((due.getTime() - today.getTime()) / 86400000)
+    const daysAway = Math.round(
+      (due.getTime() - today.getTime()) / 86400000,
+    )
 
     return daysAway >= 0 && daysAway <= 7
   }).length
 
-  // Status + priority + due date + search, then sorting: all in one place
   const filteredTasks = useMemo(
     () =>
       filterAndSortTasks(
@@ -172,6 +175,11 @@ export default function MyTasks() {
         sortBy,
       ),
     [tasks, filter, priority, dueDate, search, sortBy],
+  )
+
+  const { rows, pager } = usePage(
+    filteredTasks,
+    [filter, priority, dueDate, search, sortBy].join('|'),
   )
 
   const hasActiveFilters =
@@ -187,9 +195,7 @@ export default function MyTasks() {
     setSearch('')
   }
 
-  const firstActionableIndex = filteredTasks.findIndex(
-    (task) => !isDone(task),
-  )
+  const firstActionableIndex = rows.findIndex((task) => !isDone(task))
 
   const handleMarkDone = (taskId) => {
     const task = tasks.find((item) => item.id === taskId)
@@ -211,7 +217,7 @@ export default function MyTasks() {
       subtitle="Stay on top of your action items and commitments."
     >
       <Stack spacing={2}>
-        {/* Executive summary (cards also work as quick filters) */}
+        {/* Executive summary */}
         <Box
           sx={{
             display: 'grid',
@@ -288,43 +294,47 @@ export default function MyTasks() {
 
         {/* Task table */}
         <Paper
+          role="table"
+          aria-label="My tasks"
           elevation={0}
           sx={{
             minWidth: 0,
             overflow: 'hidden',
-            border: `1px solid ${COLORS.border}`,
-            borderRadius: '13px',
+            border: filteredTasks.length
+              ? `1px solid ${COLORS.border}`
+              : 0,
+            borderRadius: '12px',
             bgcolor: '#FFFFFF',
           }}
         >
           {filteredTasks.length === 0 ? (
-            <Box sx={{ p: 2 }}>
-              <EmptyPanel title="No tasks found">
-                Try another status, priority, due date or search term.
-                {hasActiveFilters && (
-                  <Box sx={{ mt: 1.25 }}>
-                    <Button
-                      onClick={clearFilters}
-                      sx={{
-                        color: '#2369A5',
-                        fontWeight: 700,
-                        textTransform: 'none',
-                      }}
-                    >
-                      Clear filters
-                    </Button>
-                  </Box>
-                )}
-              </EmptyPanel>
-            </Box>
+            <EmptyPanel title="No tasks found">
+              Try another status, priority, due date or search term.
+
+              {hasActiveFilters && (
+                <Box sx={{ mt: 1.25 }}>
+                  <Button
+                    onClick={clearFilters}
+                    sx={{
+                      color: '#2369A5',
+                      fontSize: FONT.body,
+                      fontWeight: 700,
+                      textTransform: 'none',
+                    }}
+                  >
+                    Clear filters
+                  </Button>
+                </Box>
+              )}
+            </EmptyPanel>
           ) : (
             <>
               {/* Table column headers */}
               <Box
+                role="row"
                 sx={{
-                  display: { xs: 'none', md: 'grid' },
-                  gridTemplateColumns:
-                    'minmax(220px, 2.6fr) minmax(90px, .8fr) minmax(105px, 1fr) minmax(125px, 1.1fr) minmax(95px, .9fr) 32px',
+                  display: { xs: 'none', lg: 'grid' },
+                  gridTemplateColumns: TASK_GRID_COLUMNS,
                   alignItems: 'center',
                   gap: 1.25,
                   px: 2,
@@ -333,13 +343,14 @@ export default function MyTasks() {
                   borderBottom: `1px solid ${COLORS.border}`,
                 }}
               >
-                {['Task', 'Priority', 'Due date', 'Owner', 'Status', ''].map(
+                {['', 'Task', 'Priority', 'Due date', 'Owner', 'Status', ''].map(
                   (label, index) => (
                     <Typography
                       key={`${label}-${index}`}
+                      role="columnheader"
                       sx={{
                         color: '#60768A',
-                        fontSize: '0.69rem',
+                        fontSize: FONT.caption,
                         fontWeight: 750,
                         textTransform: 'uppercase',
                         letterSpacing: '.035em',
@@ -352,7 +363,7 @@ export default function MyTasks() {
               </Box>
 
               <Box data-tour="task-card">
-                {filteredTasks.map((task, index) => (
+                {rows.map((task, index) => (
                   <TaskCard
                     key={task.id}
                     task={task}
@@ -361,6 +372,8 @@ export default function MyTasks() {
                   />
                 ))}
               </Box>
+              <Box sx={{m:'10px'}}>{pager}</Box>
+              
             </>
           )}
         </Paper>

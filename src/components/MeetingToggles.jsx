@@ -9,7 +9,7 @@ import MeetAISettingsDialog, { switchSx } from './MeetAISettingDialog'
 import { isRecordingEnabled } from './meetings/meetingHelpers'
 
 const toggleLabelSx = {
-  fontSize: '0.7rem',
+  fontSize: '0.75rem',
   fontWeight: 500,
   color: 'text.primary',
   transition: 'color 120ms ease',

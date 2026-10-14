@@ -40,7 +40,7 @@ function PersonRow({ person, muted = false }) {
           flexShrink: 0,
           bgcolor: '#E3EEF8',
           color: '#245F94',
-          fontSize: '0.8rem',
+          fontSize: '0.8125rem',
           fontWeight: 700,
         }}
       >
@@ -51,7 +51,7 @@ function PersonRow({ person, muted = false }) {
         <Typography
           sx={{
             color: NAVY,
-            fontSize: '0.84rem',
+            fontSize: '0.8125rem',
             fontWeight: 700,
             lineHeight: 1.35,
             overflowWrap: 'anywhere',
@@ -62,7 +62,7 @@ function PersonRow({ person, muted = false }) {
 
         {person.role && (
           <Typography
-            sx={{ color: MUTED, fontSize: '0.74rem', lineHeight: 1.35 }}
+            sx={{ color: MUTED, fontSize: '0.75rem', lineHeight: 1.35 }}
           >
             {person.role}
           </Typography>
@@ -80,7 +80,7 @@ function PeopleCard({ title, people, emptyText, muted }) {
         minWidth: 0,
         p: { xs: 1.75, md: 2 },
         border: `1px solid ${BORDER}`,
-        borderRadius: '14px',
+        borderRadius: '12px',
         bgcolor: '#FFFFFF',
       }}
     >
@@ -89,7 +89,7 @@ function PeopleCard({ title, people, emptyText, muted }) {
         sx={{
           mb: 1.5,
           color: NAVY,
-          fontSize: '0.92rem',
+          fontSize: '0.875rem',
           fontWeight: 800,
         }}
       >
@@ -97,7 +97,7 @@ function PeopleCard({ title, people, emptyText, muted }) {
       </Typography>
 
       {people.length === 0 ? (
-        <Typography sx={{ color: MUTED, fontSize: '0.78rem' }}>
+        <Typography sx={{ color: MUTED, fontSize: '0.8125rem' }}>
           {emptyText}
         </Typography>
       ) : (

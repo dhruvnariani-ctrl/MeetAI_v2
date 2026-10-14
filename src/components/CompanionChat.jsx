@@ -27,8 +27,8 @@ const C = {
   ink: '#1D3249',
 }
 
-const LOGO_SRC = '/images/avaada-logo.png'
-const ROBOT_SRC = '/images/companion-robot.svg'
+const LOGO_SRC = `${import.meta.env.BASE_URL}/images/avaada-logo.png`
+const ROBOT_SRC = `${import.meta.env.BASE_URL}/images/companion-robot.svg`
 
 const SUGGESTIONS = [
   'Summarise my last meeting',
@@ -91,7 +91,7 @@ function Bubble({ role, text }) {
           maxWidth: '86%',
           px: 1.5,
           py: 1,
-          fontSize: '0.8rem',
+          fontSize: '0.8125rem',
           lineHeight: 1.55,
           whiteSpace: 'pre-wrap',
           overflowWrap: 'anywhere',
@@ -279,13 +279,13 @@ export default function CompanionChat({ open, onClose, onSend }) {
           />
 
           <Box sx={{ minWidth: 0 }}>
-            <Typography sx={{ color: C.navy, fontSize: '0.88rem', fontWeight: 750, lineHeight: 1.25 }}>
+            <Typography sx={{ color: C.navy, fontSize: '0.875rem', fontWeight: 750, lineHeight: 1.25 }}>
               Companion
             </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
               <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: C.green }} />
-              <Typography sx={{ color: C.muted, fontSize: '0.7rem', lineHeight: 1.4 }}>
+              <Typography sx={{ color: C.muted, fontSize: '0.75rem', lineHeight: 1.4 }}>
                 Your MeetAI assistant
               </Typography>
             </Box>
@@ -326,7 +326,7 @@ export default function CompanionChat({ open, onClose, onSend }) {
                     border: `1px solid ${C.border}`,
                     bgcolor: '#fff',
                     color: C.blue,
-                    fontSize: '0.74rem',
+                    fontSize: '0.75rem',
                     fontWeight: 600,
                     lineHeight: 1.3,
                     textAlign: 'left',
@@ -385,7 +385,7 @@ export default function CompanionChat({ open, onClose, onSend }) {
               maxRows={4}
               fullWidth
               inputProps={{ 'aria-label': 'Message Companion' }}
-              sx={{ py: 0.4, fontSize: '0.8rem', color: C.ink, lineHeight: 1.5 }}
+              sx={{ py: 0.4, fontSize: '0.8125rem', color: C.ink, lineHeight: 1.5 }}
             />
 
             <IconButton
@@ -406,7 +406,7 @@ export default function CompanionChat({ open, onClose, onSend }) {
             </IconButton>
           </Box>
 
-          <Typography sx={{ mt: 0.75, textAlign: 'center', color: C.muted, fontSize: '0.64rem', lineHeight: 1.4 }}>
+          <Typography sx={{ mt: 0.75, textAlign: 'center', color: C.muted, fontSize: '0.75rem', lineHeight: 1.4 }}>
             AI can make mistakes. Check important details before acting on them.
           </Typography>
         </Box>

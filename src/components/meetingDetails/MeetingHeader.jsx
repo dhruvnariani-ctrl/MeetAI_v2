@@ -15,6 +15,8 @@ import {
   isMeetingEnded,
 } from './designHelpers'
 
+import { FONT } from '../../utils/dashboardFonts'
+
 const NAVY = '#123A59'
 const MUTED = '#6E8397'
 const BORDER = '#DFE8F0'
@@ -83,7 +85,7 @@ export default function MeetingHeader({
             component="h1"
             sx={{
               color: NAVY,
-              fontSize: { xs: '1.15rem', md: '1.3rem' },
+              fontSize: FONT.meetingTitle,
               lineHeight: 1.3,
               fontWeight: 800,
               letterSpacing: '-0.01em',
@@ -111,7 +113,7 @@ export default function MeetingHeader({
                     position: 'relative',
                     pl: '14px',
                     color: MUTED,
-                    fontSize: '0.8rem',
+                    fontSize: FONT.small,
                     lineHeight: 1.5,
                     whiteSpace: 'nowrap',
                     '&::before': {
@@ -143,7 +145,7 @@ export default function MeetingHeader({
             borderRadius: '999px',
             bgcolor: status.bgcolor,
             color: status.color,
-            fontSize: '0.8rem',
+            fontSize: FONT.small,
             fontWeight: 750,
           }}
         />
@@ -154,7 +156,7 @@ export default function MeetingHeader({
         sx={{
           p: 1.25,
           border: `1px solid ${BORDER}`,
-          borderRadius: '14px',
+          borderRadius: '12px',
           bgcolor: '#F8FBFD',
         }}
       >
@@ -181,7 +183,11 @@ export default function MeetingHeader({
           </Box>
 
           <Typography
-            sx={{ color: NAVY, fontSize: '0.84rem', fontWeight: 800 }}
+            sx={{
+              color: NAVY,
+              fontSize: FONT.small,
+              fontWeight: 800,
+            }}
           >
             MeetAI
           </Typography>
@@ -192,10 +198,10 @@ export default function MeetingHeader({
             sx={{
               height: 22,
               ml: 'auto',
-              borderRadius: '7px',
+              borderRadius: '8px',
               bgcolor: meetAIInvited ? '#E3F3E7' : '#EEF2F6',
               color: meetAIInvited ? '#216B3B' : '#52657D',
-              fontSize: '0.7rem',
+              fontSize: FONT.caption,
               fontWeight: 750,
               '& .MuiChip-label': { px: 0.9 },
             }}
@@ -220,11 +226,14 @@ export default function MeetingHeader({
                 minHeight: 38,
                 borderRadius: '10px',
                 bgcolor: '#075A9C',
-                fontSize: '0.8rem',
+                fontSize: FONT.small,
                 fontWeight: 700,
                 textTransform: 'none',
                 '&:hover': { bgcolor: '#064A80' },
-                '&.Mui-disabled': { bgcolor: '#EDF1F5', color: '#9AA9B7' },
+                '&.Mui-disabled': {
+                  bgcolor: '#EDF1F5',
+                  color: '#9AA9B7',
+                },
               }}
             >
               Open Meeting

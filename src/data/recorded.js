@@ -1,5 +1,6 @@
 import { matchesDateFilter } from '../utils/dateFilters'
 
+export const RECORDED_GRID_COLUMNS = 'minmax(0, 1fr) 105px 185px 240px'
 export const RECORDED_SORT_OPTIONS = ['Newest', 'Oldest', 'Meeting title']
 
 /*

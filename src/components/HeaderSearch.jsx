@@ -103,7 +103,7 @@ export default function HeaderSearch({ query, onQueryChange }) {
           sx={{
             flex: 1,
             minWidth: 0,
-            fontSize: '0.9rem',
+            fontSize: '0.875rem',
             '& input::placeholder': { opacity: 1, color: 'text.secondary' },
           }}
         />

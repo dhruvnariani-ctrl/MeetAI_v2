@@ -14,6 +14,7 @@ import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlin
 import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined'
 
 import { getAllMeetings } from '../../data/meetings'
+import { FONT } from '../../utils/dashboardFonts'
 
 const PRIORITY_STYLES = {
   high: {
@@ -35,10 +36,10 @@ const PRIORITY_STYLES = {
 
 const chipSx = (bgcolor, color) => ({
   height: 22,
-  borderRadius: '6px',
+  borderRadius: '8px',
   bgcolor,
   color,
-  fontSize: '0.68rem',
+  fontSize: FONT.caption,
   fontWeight: 700,
   '& .MuiChip-label': { px: 0.85 },
 })
@@ -213,7 +214,7 @@ function TaskRow({ item, last }) {
             flexShrink: 0,
             display: 'grid',
             placeItems: 'center',
-            borderRadius: '9px',
+            borderRadius: '10px',
             bgcolor: priority.bgcolor,
             color: priority.color,
           }}
@@ -225,7 +226,7 @@ function TaskRow({ item, last }) {
           <Typography
             sx={{
               color: '#173C59',
-              fontSize: '0.875rem',
+              fontSize: FONT.body,
               fontWeight: 700,
               lineHeight: 1.4,
               overflowWrap: 'anywhere',
@@ -278,7 +279,7 @@ function TaskRow({ item, last }) {
               <Typography
                 component="span"
                 sx={{
-                  fontSize: '0.73rem',
+                  fontSize: FONT.caption,
                   lineHeight: 1.4,
                   whiteSpace: 'nowrap',
                 }}
@@ -407,6 +408,9 @@ export default function ActionItemsCard({
       variant="outlined"
       sx={{
         minWidth: 0,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
         p: { xs: 1.5, sm: 2 },
         borderRadius: '16px',
         bgcolor: '#FFFFFF',
@@ -454,7 +458,7 @@ export default function ActionItemsCard({
               component="h2"
               sx={{
                 color: '#123A59',
-                fontSize: '0.95rem',
+                fontSize: FONT.heading,
                 fontWeight: 750,
                 lineHeight: 1.35,
               }}
@@ -466,7 +470,7 @@ export default function ActionItemsCard({
               sx={{
                 mt: 0.2,
                 color: '#718397',
-                fontSize: '0.74rem',
+                fontSize: FONT.caption,
                 lineHeight: 1.4,
               }}
             >
@@ -482,10 +486,10 @@ export default function ActionItemsCard({
             height: 24,
             flexShrink: 0,
             ml: 'auto',
-            borderRadius: '7px',
+            borderRadius: '8px',
             bgcolor: '#E8F7F0',
             color: '#187B62',
-            fontSize: '0.7rem',
+            fontSize: FONT.caption,
             fontWeight: 750,
             '& .MuiChip-label': { px: 0.9 },
           }}
@@ -505,7 +509,7 @@ export default function ActionItemsCard({
           <Typography
             sx={{
               color: '#123A59',
-              fontSize: '0.87rem',
+              fontSize: FONT.body,
               fontWeight: 700,
             }}
           >
@@ -516,7 +520,7 @@ export default function ActionItemsCard({
             sx={{
               mt: 0.35,
               color: '#718397',
-              fontSize: '0.75rem',
+              fontSize: FONT.caption,
             }}
           >
             No pending or in-progress action items.
@@ -526,6 +530,7 @@ export default function ActionItemsCard({
         <Box
           sx={{
             maxHeight: maxListHeight,
+            mb: 0.5,
             overflowY: 'auto',
             overscrollBehavior: 'contain',
             pr: 0.5,
@@ -536,7 +541,7 @@ export default function ActionItemsCard({
         </Box>
       )}
 
-      <Divider sx={{ mt: 0.5, borderColor: '#EDF1F5' }} />
+      <Divider sx={{ mt: 'auto', borderColor: '#EDF1F5' }} />
 
       <Box
         sx={{
@@ -551,7 +556,7 @@ export default function ActionItemsCard({
           sx={{
             minWidth: 0,
             color: '#718397',
-            fontSize: '0.7rem',
+            fontSize: FONT.caption,
             lineHeight: 1.4,
           }}
         >
@@ -571,7 +576,7 @@ export default function ActionItemsCard({
             ml: 'auto',
             flexShrink: 0,
             color: '#2369A5',
-            fontSize: '0.77rem',
+            fontSize: FONT.caption,
             fontWeight: 700,
             textTransform: 'none',
             '&:hover': {

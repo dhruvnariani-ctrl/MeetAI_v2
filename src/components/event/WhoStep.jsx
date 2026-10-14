@@ -47,7 +47,7 @@ export default function WhoStep({ form, searchDirectory }) {
 
         {/* Compact participant badges */}
         <Box sx={{ mt: 1.5 }}>
-          <Typography sx={{ fontSize: '0.69rem', color: C.muted, mb: 0.7 }}>
+          <Typography sx={{ fontSize: '0.75rem', color: C.muted, mb: 0.7 }}>
             {participants.length === 0
               ? 'No participants added yet'
               : `${participants.length} ${
@@ -73,7 +73,7 @@ export default function WhoStep({ form, searchDirectory }) {
                       px: 1,
                       py: 0.55,
                       border: `1px solid ${C.border}`,
-                      borderRadius: '20px',
+                      borderRadius: '16px',
                       bgcolor: C.paleBlue,
                       color: C.navy,
                     }}
@@ -88,7 +88,7 @@ export default function WhoStep({ form, searchDirectory }) {
                         flexShrink: 0,
                         bgcolor: '#D9EAF5',
                         color: C.navy,
-                        fontSize: '0.63rem',
+                        fontSize: '0.75rem',
                         fontWeight: 800,
                       }}
                     >
@@ -97,7 +97,7 @@ export default function WhoStep({ form, searchDirectory }) {
 
                     <Typography
                       sx={{
-                        fontSize: '0.72rem',
+                        fontSize: '0.75rem',
                         fontWeight: 650,
                         overflowWrap: 'anywhere',
                       }}

@@ -72,7 +72,7 @@ export default function MeetingListItem({
           width: '100%',
           minWidth: 0,
           border: `1px solid ${theme.border}`,
-          borderRadius: '14px',
+          borderRadius: '12px',
           bgcolor: theme.bg,
           overflow: 'hidden',
           cursor: 'pointer',

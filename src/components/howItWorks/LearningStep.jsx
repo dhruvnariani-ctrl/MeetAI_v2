@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
 
 import { COLORS } from './constants'
+import { FONT } from '../../utils/dashboardFonts'
 
 export default function LearningStep({ step, number, last, onStartTour }) {
   const Icon = step.icon
@@ -30,7 +31,7 @@ export default function LearningStep({ step, number, last, onStartTour }) {
         px: 1.15,
         py: 1.6,
         border: `1px solid ${COLORS.border}`,
-        borderRadius: '11px',
+        borderRadius: '10px',
         bgcolor: '#FFFFFF',
         transition: 'border-color 160ms ease, transform 160ms ease',
         '&:hover': {
@@ -51,7 +52,7 @@ export default function LearningStep({ step, number, last, onStartTour }) {
           borderRadius: '50%',
           bgcolor: COLORS.blue,
           color: '#FFFFFF',
-          fontSize: '.66rem',
+          fontSize: FONT.caption,
           fontWeight: 800,
         }}
       >
@@ -77,7 +78,7 @@ export default function LearningStep({ step, number, last, onStartTour }) {
       <Typography
         sx={{
           color: COLORS.navy,
-          fontSize: '.75rem',
+          fontSize: FONT.caption,
           fontWeight: 750,
           lineHeight: 1.45,
           minHeight: 33,
@@ -90,7 +91,7 @@ export default function LearningStep({ step, number, last, onStartTour }) {
         sx={{
           mt: 0.55,
           color: COLORS.muted,
-          fontSize: '.67rem',
+          fontSize: FONT.caption,
           lineHeight: 1.55,
           flex: 1,
         }}

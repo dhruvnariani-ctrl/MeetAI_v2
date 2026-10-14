@@ -1,5 +1,7 @@
-import { useMemo } from 'react'
+
+import { useMemo, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
+
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -12,22 +14,55 @@ import CalendarFilters, {
 } from '../components/calendar/CalendarFilters'
 import CalendarMeetingList from '../components/calendar/CalendarMeetingList'
 
+import SlidingSegmented from '../components/SlidingSegmented'
+import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded'
+import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded'
+
 import useCalendarState from '../hooks/useCalenderState'
 import useCurrentUser from '../hooks/useCurrentUser'
+import { FONT } from '../utils/dashboardFonts'
+import { readJSON, writeJSON } from '../utils/storage'
+
+const LAYOUT_KEY = 'calendar-meeting-layout'
+
+const LAYOUT_OPTIONS = [
+  { value: 'list', label: 'List', icon: <ViewListRoundedIcon /> },
+  { value: 'grid', label: 'Grid', icon: <GridViewRoundedIcon /> },
+]
+
+function readSavedLayout() {
+  const saved = readJSON(LAYOUT_KEY, null)
+
+  if (saved === 'grid' || saved === 'list') {
+    return saved
+  }
+
+  try {
+    const legacy =
+      typeof window !== 'undefined'
+        ? window.localStorage.getItem(LAYOUT_KEY)
+        : null
+
+    if (legacy === 'grid' || legacy === 'list') {
+      writeJSON(LAYOUT_KEY, legacy)
+      return legacy
+    }
+  } catch {
+    // Use list layout when storage is unavailable.
+  }
+
+  return 'list'
+}
 
 export default function CalendarPage() {
-  // Opens the one "New meeting" dialog (it asks what to do).
   const { openNewMeeting } = useOutletContext()
   const currentUser = useCurrentUser()
   const calendar = useCalendarState(currentUser)
 
+  const [layout, setLayout] = useState(readSavedLayout)
+
   const count = calendar.visibleMeetings.length
 
-  // Counts for each status filter.
-  // Uses the meetings of the selected period BEFORE the status filter is
-  // applied (so choosing "Live" does not turn the other counts into 0).
-  // If your hook exposes `periodMeetings`, it is used; otherwise it falls
-  // back to all meetings.
   const statusCounts = useMemo(
     () =>
       getStatusCounts(
@@ -37,12 +72,22 @@ export default function CalendarPage() {
     [calendar.periodMeetings, calendar.meetings],
   )
 
+  const handleLayoutChange = (nextLayout) => {
+    if (nextLayout !== 'list' && nextLayout !== 'grid') {
+      return
+    }
+
+    setLayout(nextLayout)
+    writeJSON(LAYOUT_KEY, nextLayout)
+  }
+
   return (
     <PageShell
       title="Calendar"
       subtitle="Manage your meetings and schedule"
     >
-      <Stack spacing={2}>
+      <Stack spacing={2} sx={{ minWidth: 0 }}>
+        {/* Calendar navigation and actions */}
         <Box data-tour="calendar-date-navigation">
           <CalendarToolbar
             view={calendar.view}
@@ -60,6 +105,7 @@ export default function CalendarPage() {
           />
         </Box>
 
+        {/* Calendar content */}
         <Box
           sx={{
             display: 'grid',
@@ -67,65 +113,98 @@ export default function CalendarPage() {
               xs: 'minmax(0, 1fr)',
               lg: '250px minmax(0, 1fr)',
             },
-            gap: { xs: 2, md: 2.5 },
+            gap: 2,
             alignItems: 'start',
+            minWidth: 0,
           }}
         >
-          <Stack spacing={2}>
+          {/* Left: date picker */}
+          <Box sx={{ minWidth: 0 }}>
             <CalendarSidebar
               selectedDate={calendar.selectedDate}
               view={calendar.view}
               meetings={calendar.meetings}
               onSelectDate={calendar.selectDay}
             />
+          </Box>
 
+          {/* Right: filters and meetings */}
+          <Stack spacing={1.5} sx={{ minWidth: 0, width: '100%' }}>
+            {/* Meeting filters */}
             <Box
+              data-tour="calendar-filters"
               sx={{
-                p: 2,
-                border: '1px solid #E0E8F0',
-                borderRadius: '14px',
+                p: { xs: 1.5, sm: 1.75 },
+                border: '1px solid #DFE7EC',
+                borderRadius: '12px',
                 bgcolor: '#FFFFFF',
+                boxShadow: '0 2px 8px rgba(18,58,89,0.025)',
+                minWidth: 0,
               }}
             >
-              <Typography
-                sx={{
-                  mb: 1.5,
-                  color: '#123A59',
-                  fontSize: '0.9rem',
-                  fontWeight: 750,
-                }}
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                alignItems={{ xs: 'flex-start', sm: 'center' }}
+                spacing={{ xs: 1, sm: 2 }}
               >
-                Meeting filters
-              </Typography>
+                <Box sx={{ flexShrink: 0 }}>
+                  <Typography
+                    sx={{
+                      color: '#123A59',
+                      fontSize: FONT.body,
+                      fontWeight: 750,
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    Meeting filters
+                  </Typography>
 
-              <Box data-tour="calendar-filters">
-                <CalendarFilters
-                  value={calendar.filter}
-                  onChange={calendar.setFilter}
-                  counts={statusCounts}
-                />
-              </Box>
+                  <Typography
+                    sx={{
+                      mt: 0.25,
+                      color: '#71818D',
+                      fontSize: FONT.caption,
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    Filter meetings by status
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    flex: 1,
+                    minWidth: 0,
+                    width: { xs: '100%', sm: 'auto' },
+                  }}
+                >
+                  <CalendarFilters
+                    value={calendar.filter}
+                    onChange={calendar.setFilter}
+                    counts={statusCounts}
+                  />
+                </Box>
+              </Stack>
             </Box>
-          </Stack>
 
-          <Box sx={{ minWidth: 0 }}>
+            {/* Date/count on the left; List/Grid on the right */}
             <Box
               sx={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
-                gap: 1,
-                mb: 1.5,
+                gap: 1.5,
+                minWidth: 0,
               }}
             >
-              <Box>
+              <Box sx={{ minWidth: 0 }}>
                 <Typography
                   component="h2"
                   sx={{
                     m: 0,
                     color: '#123A59',
-                    fontSize: '1.08rem',
+                    fontSize: FONT.meetingTitle,
                     lineHeight: 1.4,
                     fontWeight: 750,
                   }}
@@ -136,24 +215,37 @@ export default function CalendarPage() {
                 <Typography
                   sx={{
                     mt: 0.35,
-                    color: '#74869A',
-                    fontSize: '0.78rem',
+                    color: '#71818D',
+                    fontSize: FONT.small,
                   }}
                 >
                   {count} {count === 1 ? 'meeting' : 'meetings'}
                 </Typography>
               </Box>
+
+              <Box sx={{ flexShrink: 0 }}>
+                <SlidingSegmented
+                  dataTour="calendar-layout-toggle"
+                  ariaLabel="Meeting layout"
+                  options={LAYOUT_OPTIONS}
+                  value={layout}
+                  onChange={handleLayoutChange}
+                  sx={{ bgcolor: '#EDF4FA' }}
+                />
+              </Box>
             </Box>
 
-            <Box data-tour="calendar-meeting-list">
+            {/* Meeting cards; layout is controlled by this page */}
+            <Box data-tour="calendar-meeting-list" sx={{ minWidth: 0 }}>
               <CalendarMeetingList
                 meetings={calendar.visibleMeetings}
                 view={calendar.view}
+                layout={layout}
                 settings={calendar.settings}
                 onSettingsChange={calendar.onSettingsChange}
               />
             </Box>
-          </Box>
+          </Stack>
         </Box>
       </Stack>
     </PageShell>

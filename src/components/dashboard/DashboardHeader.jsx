@@ -1,14 +1,19 @@
+
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import Chip from '@mui/material/Chip'
 
 import AddIcon from '@mui/icons-material/Add'
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined'
+import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined'
+
+import { FONT } from '../../utils/dashboardFonts'
 
 const BANNER_URL = `${import.meta.env.BASE_URL}/images/avaada_banner_clean.png`
-// Original banner is 3:1. A bigger first number makes the header shorter.
-// Keep it at or below about 4.5 so the button doesn't touch the bottom edge.
-const BANNER_RATIO = '4.2 / 1'
+
+const BANNER_RATIO_MD = '4.2 / 1'
+const BANNER_RATIO_LG = '3.8 / 1'
 
 const dateFmt = new Intl.DateTimeFormat('en-US', {
   weekday: 'long',
@@ -26,7 +31,9 @@ function getGreeting(hour) {
 export default function DashboardHeader({
   now = new Date(),
   firstName = 'Dhruv',
-  onCreate, // opens the one "New meeting" dialog
+  onCreate,
+  activeCount = 0,
+  liveCount = 0,
 }) {
   const currentDate = now instanceof Date ? now : new Date(now)
 
@@ -34,9 +41,8 @@ export default function DashboardHeader({
     <Box
       data-tour="dashboard-welcome"
       sx={{
-        // Container so text/button scale with the banner width (cqw units)
         containerType: 'inline-size',
-        mb: 2.5,
+        height: '100%',
         border: '1px solid #dce8f1',
         borderRadius: { xs: '18px', md: '22px' },
         overflow: 'hidden',
@@ -49,22 +55,23 @@ export default function DashboardHeader({
           position: 'relative',
           isolation: 'isolate',
           width: '100%',
-          // Desktop/tablet: fixed proportions, so the header height follows its width.
-          aspectRatio: { xs: 'auto', md: BANNER_RATIO },
-          // Mobile: no fixed ratio, so the content decides the height.
-          minHeight: { xs: 240, md: 0 },
+          aspectRatio: {
+            xs: 'auto',
+            md: BANNER_RATIO_MD,
+            lg: BANNER_RATIO_LG,
+          },
+          minHeight: { xs: 280, md: 0 },
           display: 'flex',
           alignItems: { xs: 'center', md: 'flex-start' },
           pl: { xs: 2.5, sm: 3.5, md: '4.1cqw' },
-          pr: { xs: 2.5, sm: 3.5, md: 0 },
-          pt: { xs: 2.5, md: '7.2cqw' }, // sits below the banner's baked-in tagline
-          pb: { xs: 2.5, md: 0 },
+          pr: { xs: 2.5, sm: 3.5, md: 2 },
+          pt: { xs: 2.5, md: '5.2cqw' },
+          pb: { xs: 2.5, md: 2 },
           backgroundImage: `url('${BANNER_URL}')`,
           backgroundRepeat: 'no-repeat',
-          // Desktop: full width, crop only the bottom (grass). Mobile: cover.
           backgroundSize: { xs: 'cover', md: '100% auto' },
           backgroundPosition: { xs: 'right center', md: 'top center' },
-          // Soft white fade on small screens only, so text stays readable.
+
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -72,11 +79,11 @@ export default function DashboardHeader({
             zIndex: -1,
             display: { xs: 'block', md: 'none' },
             background:
-              'linear-gradient(90deg, rgba(246,251,255,.94) 0%, rgba(246,251,255,.78) 55%, rgba(246,251,255,.15) 100%)',
+              'linear-gradient(90deg, rgba(246,251,255,.95) 0%, rgba(246,251,255,.82) 60%, rgba(246,251,255,.25) 100%)',
           },
         }}
       >
-        <Box sx={{ minWidth: 0, maxWidth: { xs: '100%', md: '48cqw' } }}>
+        <Box sx={{ width: '100%', minWidth: 0 }}>
           {/* Date */}
           <Box
             sx={{
@@ -88,12 +95,13 @@ export default function DashboardHeader({
           >
             <CalendarMonthOutlinedIcon
               aria-hidden="true"
-              sx={{ fontSize: 'clamp(18px, 1.6cqw, 30px)' }}
+              sx={{ fontSize: FONT.headerIcon }}
             />
+
             <Typography
               component="p"
               sx={{
-                fontSize: 'clamp(.82rem, 1.15cqw, 1.2rem)',
+                fontSize: FONT.headerDate,
                 fontWeight: 500,
                 color: 'inherit',
               }}
@@ -106,8 +114,8 @@ export default function DashboardHeader({
           <Typography
             component="h1"
             sx={{
-              mt: 'clamp(4px, .8cqw, 14px)',
-              fontSize: 'clamp(1.5rem, 3cqw, 3.2rem)',
+              mt: 'clamp(3px, .5cqw, 8px)',
+              fontSize: FONT.headerGreeting,
               lineHeight: 1.1,
               letterSpacing: '-.02em',
               fontWeight: 800,
@@ -121,8 +129,8 @@ export default function DashboardHeader({
           {/* Intro */}
           <Typography
             sx={{
-              mt: 'clamp(4px, .8cqw, 14px)',
-              fontSize: 'clamp(.85rem, 1.15cqw, 1.2rem)',
+              mt: 'clamp(3px, .5cqw, 8px)',
+              fontSize: FONT.headerIntro,
               lineHeight: 1.45,
               color: '#5d7596',
             }}
@@ -130,26 +138,28 @@ export default function DashboardHeader({
             Your meetings, decisions and next steps — all in one place.
           </Typography>
 
-          {/* Single action: opens the dialog that asks what to do */}
+          {/* Actions and meeting count on the same row */}
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
-              mt: 'clamp(10px, 1.5cqw, 26px)',
+              flexWrap: 'wrap',
+              gap: 1.25,
+              mt: 'clamp(8px, 1cqw, 16px)',
             }}
           >
             <Button
               data-tour="dashboard-new-meeting"
               variant="contained"
               disableElevation
-              startIcon={<AddIcon />}
+              startIcon={<AddIcon sx={{ fontSize: '1rem !important' }} />}
               onClick={onCreate}
               sx={{
-                minHeight: 'clamp(38px, 3.3cqw, 56px)',
-                px: 'clamp(18px, 2.4cqw, 38px)',
+                minHeight: 'clamp(34px, 2.7cqw, 46px)',
+                px: 'clamp(12px, 1.5cqw, 24px)',
                 borderRadius: 999,
                 bgcolor: '#16824a',
-                fontSize: 'clamp(.82rem, 1.05cqw, 1.05rem)',
+                fontSize: FONT.headerButton,
                 fontWeight: 700,
                 textTransform: 'none',
                 whiteSpace: 'nowrap',
@@ -158,6 +168,62 @@ export default function DashboardHeader({
             >
               Schedule or Join with MeetAI
             </Button>
+
+            {/* Translucent meeting count */}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: 1,
+                px: 1.5,
+                py: 0.9,
+                minHeight: 38,
+                borderRadius: '12px',
+                border: '1px solid rgba(18,58,89,.18)',
+                bgcolor: 'rgba(255,255,255,.68)',
+                backdropFilter: 'blur(6px)',
+                boxShadow: '0 3px 10px rgba(18,58,89,.06)',
+              }}
+            >
+              <EventAvailableOutlinedIcon
+                sx={{
+                  fontSize: '1rem',
+                  color: '#2369a5',
+                }}
+              />
+
+              <Typography
+                sx={{
+                  color: '#123a59',
+                  fontSize: FONT.body,
+                  fontWeight: 750,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {activeCount === 0
+                  ? 'No meetings left today'
+                  : `${activeCount} ${
+                      activeCount === 1 ? 'meeting' : 'meetings'
+                    } left today`}
+              </Typography>
+
+              {liveCount > 0 && (
+                <Chip
+                  size="small"
+                  label={liveCount === 1 ? '1 live now' : `${liveCount} live now`}
+                  sx={{
+                    height: 23,
+                    bgcolor: 'rgba(255,240,239,.95)',
+                    color: '#bf4148',
+                    border: '1px solid rgba(191,65,72,.15)',
+                    fontSize: FONT.caption,
+                    fontWeight: 800,
+                    borderRadius: '8px',
+                  }}
+                />
+              )}
+            </Box>
           </Box>
         </Box>
       </Box>

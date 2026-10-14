@@ -1,18 +1,24 @@
 
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
+import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
-import { asDate, formatRange } from '../../utils/time'
+
 import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded'
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 import VideoCallRoundedIcon from '@mui/icons-material/VideoCallRounded'
+
 import MeetingToggles from '../MeetingToggles'
+import { asDate, formatRange } from '../../utils/time'
+import { FONT } from '../../utils/dashboardFonts'
 
 const ICON_SIZE = 40
 const ICON_GAP = 12
@@ -43,12 +49,36 @@ export default function UpNextCard({
   status,
 }) {
   const navigate = useNavigate()
+  const [open, setOpen] = useState(false)
+
+  /*
+   * Let TourRunner expand this card automatically when the tour
+   * reaches the Join meeting step.
+   */
+  useEffect(() => {
+    const handleTourExpand = () => {
+      setOpen(true)
+    }
+
+    window.addEventListener(
+      'meetai-tour-expand-up-next',
+      handleTourExpand,
+    )
+
+    return () => {
+      window.removeEventListener(
+        'meetai-tour-expand-up-next',
+        handleTourExpand,
+      )
+    }
+  }, [])
 
   if (!meeting) return null
 
   const currentTime = asDate(now) ?? new Date()
   const meetingStatus = status || getMeetingStatus(meeting, currentTime)
-  const isLive = meetingStatus === 'Live' || meetingStatus === 'In progress'
+  const isLive =
+    meetingStatus === 'Live' || meetingStatus === 'In progress'
   const isDone = meetingStatus === 'Done'
 
   const colors = isLive
@@ -105,7 +135,7 @@ export default function UpNextCard({
     px: 3,
     py: 0,
     borderRadius: '8px',
-    fontSize: '0.8rem',
+    fontSize: FONT.small,
     fontWeight: 700,
     lineHeight: 1,
     textTransform: 'none',
@@ -124,7 +154,7 @@ export default function UpNextCard({
         width: '100%',
         minWidth: 0,
         p: { xs: 1.75, sm: 2.25 },
-        borderRadius: '14px',
+        borderRadius: '12px',
         borderColor: colors.border,
         bgcolor: colors.background,
         boxShadow: 'none',
@@ -156,7 +186,7 @@ export default function UpNextCard({
             gridRow: 1,
             width: ICON_SIZE,
             height: ICON_SIZE,
-            borderRadius: '11px',
+            borderRadius: '10px',
             display: 'grid',
             placeItems: 'center',
             color: colors.icon,
@@ -193,7 +223,7 @@ export default function UpNextCard({
             <Typography
               sx={{
                 color: colors.title,
-                fontSize: '0.98rem',
+                fontSize: FONT.heading,
                 lineHeight: 1.3,
                 fontWeight: 750,
               }}
@@ -206,22 +236,41 @@ export default function UpNextCard({
               label={meetingStatus}
               sx={{
                 height: 22,
-                borderRadius: '7px',
+                borderRadius: '8px',
                 bgcolor: colors.chipBackground,
                 color: colors.chipText,
                 border: `1px solid ${colors.border}`,
-                fontSize: '0.7rem',
+                fontSize: FONT.caption,
                 fontWeight: 750,
                 '& .MuiChip-label': { px: 0.9 },
               }}
             />
+
+            <IconButton
+              size="small"
+              onClick={(event) => {
+                event.stopPropagation()
+                setOpen((value) => !value)
+              }}
+              onDoubleClick={stopDouble}
+              aria-expanded={open}
+              aria-label={open ? 'Collapse meeting' : 'Expand meeting'}
+              sx={{ ml: 'auto', color: colors.icon }}
+            >
+              <ExpandMoreRoundedIcon
+                sx={{
+                  transform: open ? 'rotate(180deg)' : 'none',
+                  transition: 'transform .2s',
+                }}
+              />
+            </IconButton>
           </Box>
 
           <Typography
             sx={{
               mt: 0.2,
               color: colors.subtitle,
-              fontSize: '0.78rem',
+              fontSize: FONT.small,
               lineHeight: 1.35,
             }}
           >
@@ -233,146 +282,153 @@ export default function UpNextCard({
           </Typography>
         </Box>
 
-        {/* Meeting title, time and platform */}
-        <Box
-          sx={{
-            gridColumn: 2,
-            gridRow: 2,
-            minWidth: 0,
-          }}
-        >
-          <Typography
-            component="h3"
-            sx={{
-              color: '#163C5A',
-              fontSize: '1.05rem',
-              lineHeight: '28px',
-              fontWeight: 750,
-              overflowWrap: 'anywhere',
-            }}
-          >
-            {getMeetingTitle(meeting)}
-          </Typography>
-
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0.75,
-              mt: 0.5,
-              color: '#536F86',
-            }}
-          >
-            <AccessTimeRoundedIcon sx={{ fontSize: 17 }} />
-            <Typography
+        {open && (
+          <>
+            {/* Meeting title, time and platform */}
+            <Box
               sx={{
-                fontSize: '0.82rem',
-                lineHeight: 1.4,
-                fontWeight: 600,
+                gridColumn: 2,
+                gridRow: 2,
+                minWidth: 0,
               }}
             >
-              {formatRange(meeting.start, meeting.end)}
-            </Typography>
-          </Box>
+              <Typography
+                component="h3"
+                sx={{
+                  color: '#163C5A',
+                  fontSize: FONT.meetingTitle,
+                  lineHeight: '28px',
+                  fontWeight: 750,
+                  overflowWrap: 'anywhere',
+                }}
+              >
+                {getMeetingTitle(meeting)}
+              </Typography>
 
-          {meeting.platform && (
-            <Typography
-              sx={{
-                mt: 0.4,
-                color: '#687F92',
-                fontSize: '0.78rem',
-                lineHeight: 1.4,
-              }}
-            >
-              {meeting.platform}
-            </Typography>
-          )}
-        </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  mt: 0.5,
+                  color: '#536F86',
+                }}
+              >
+                <AccessTimeRoundedIcon sx={{ fontSize: 17 }} />
 
-        {/* MeetAI toggles */}
-        {!isDone && (
-          <Box
-            onDoubleClick={stopDouble}
-            sx={{
-              gridColumn: { xs: 2, sm: 3 },
-              gridRow: { xs: 3, sm: 2 },
-              justifySelf: { xs: 'start', sm: 'end' },
-              display: 'flex',
-              alignItems: 'center',
-              minHeight: 28,
-              minWidth: 0,
-            }}
-          >
-            <MeetingToggles
-              meeting={meeting}
-              settings={meetingSettings}
-              onChange={handleSettingsChange}
-            />
-          </Box>
-        )}
+                <Typography
+                  sx={{
+                    fontSize: FONT.small,
+                    lineHeight: 1.4,
+                    fontWeight: 600,
+                  }}
+                >
+                  {formatRange(meeting.start, meeting.end)}
+                </Typography>
+              </Box>
 
-        {/* Meeting actions */}
-        <Box
-          sx={{
-            gridColumn: '1 / -1',
-            gridRow: { xs: 4, sm: 3 },
-            minWidth: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: { xs: 'stretch', sm: 'flex-end' },
-            gap: 1,
-          }}
-        >
-          <Button
-            variant="outlined"
-            onClick={openMeeting}
-            onDoubleClick={stopDouble}
-            endIcon={
-              <ChevronRightRoundedIcon sx={{ fontSize: '18px !important' }} />
-            }
-            sx={{
-              ...buttonBase,
-              ml: { xs: 0, sm: 'auto' },
-              borderColor: colors.button,
-              color: colors.button,
-              bgcolor: 'rgba(255,255,255,.6)',
-              '&:hover': {
-                borderColor: colors.buttonHover,
-                color: colors.buttonHover,
-                bgcolor: colors.iconBackground,
-                boxShadow: 'none',
-              },
-            }}
-          >
-            View meeting details
-          </Button>
+              {meeting.platform && (
+                <Typography
+                  sx={{
+                    mt: 0.4,
+                    color: '#687F92',
+                    fontSize: FONT.small,
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {meeting.platform}
+                </Typography>
+              )}
+            </Box>
 
-          {isLive && (
-            <Button
-              data-tour="dashboard-join-meeting"
-              variant="contained"
-              disableElevation
-              onClick={openMeeting}
-              onDoubleClick={stopDouble}
-              endIcon={
-                <ArrowForwardRoundedIcon
-                  sx={{ fontSize: '17px !important' }}
+            {/* MeetAI toggles */}
+            {!isDone && (
+              <Box
+                onDoubleClick={stopDouble}
+                sx={{
+                  gridColumn: { xs: 2, sm: 3 },
+                  gridRow: { xs: 3, sm: 2 },
+                  justifySelf: { xs: 'start', sm: 'end' },
+                  display: 'flex',
+                  alignItems: 'center',
+                  minHeight: 28,
+                  minWidth: 0,
+                }}
+              >
+                <MeetingToggles
+                  meeting={meeting}
+                  settings={meetingSettings}
+                  onChange={handleSettingsChange}
                 />
-              }
+              </Box>
+            )}
+
+            {/* Meeting actions */}
+            <Box
               sx={{
-                ...buttonBase,
-                bgcolor: colors.button,
-                color: '#fff',
-                '&:hover': {
-                  bgcolor: colors.buttonHover,
-                  boxShadow: 'none',
-                },
+                gridColumn: '1 / -1',
+                gridRow: { xs: 4, sm: 3 },
+                minWidth: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: { xs: 'stretch', sm: 'flex-end' },
+                gap: 1,
               }}
             >
-              Join meeting
-            </Button>
-          )}
-        </Box>
+              <Button
+                variant="outlined"
+                onClick={openMeeting}
+                onDoubleClick={stopDouble}
+                endIcon={
+                  <ChevronRightRoundedIcon
+                    sx={{ fontSize: '18px !important' }}
+                  />
+                }
+                sx={{
+                  ...buttonBase,
+                  ml: { xs: 0, sm: 'auto' },
+                  borderColor: colors.button,
+                  color: colors.button,
+                  bgcolor: 'rgba(255,255,255,.6)',
+                  '&:hover': {
+                    borderColor: colors.buttonHover,
+                    color: colors.buttonHover,
+                    bgcolor: colors.iconBackground,
+                    boxShadow: 'none',
+                  },
+                }}
+              >
+                View meeting details
+              </Button>
+
+              {isLive && (
+                <Button
+                  data-tour="dashboard-join-meeting"
+                  variant="contained"
+                  disableElevation
+                  onClick={openMeeting}
+                  onDoubleClick={stopDouble}
+                  endIcon={
+                    <ArrowForwardRoundedIcon
+                      sx={{ fontSize: '17px !important' }}
+                    />
+                  }
+                  sx={{
+                    ...buttonBase,
+                    bgcolor: colors.button,
+                    color: '#fff',
+                    '&:hover': {
+                      bgcolor: colors.buttonHover,
+                      boxShadow: 'none',
+                    },
+                  }}
+                >
+                  Join meeting
+                </Button>
+              )}
+            </Box>
+          </>
+        )}
       </Box>
     </Paper>
   )

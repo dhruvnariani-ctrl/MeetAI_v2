@@ -23,6 +23,7 @@ import {
 } from '../components/howItWorks/constants'
 
 import { PAGE_TOURS } from '../data/pageTours'
+import { FONT } from '../utils/dashboardFonts'
 
 export default function HowItWorks() {
   usePageTitle('How it works')
@@ -37,17 +38,14 @@ export default function HowItWorks() {
   const handleStartTour = (tourId) => {
     const page = pages.find((item) => item.tour === tourId)
 
-    // Find the specific tour configuration.
     const selectedTour = PAGE_TOURS.find(
       (item) => item.id === tourId,
     )
 
-    // Navigate to the page the user wants to learn.
     if (page?.path) {
       navigate(page.path)
     }
 
-    // Start only the selected page's tour.
     if (
       selectedTour &&
       Array.isArray(selectedTour.steps) &&
@@ -57,7 +55,6 @@ export default function HowItWorks() {
       return
     }
 
-    // Fallback for an item that does not have an individual tour.
     if (Array.isArray(APP_TOUR_STEPS) && APP_TOUR_STEPS.length > 0) {
       startAppTour(APP_TOUR_STEPS)
     }
@@ -71,7 +68,7 @@ export default function HowItWorks() {
 
   return (
     <PageShell title="" subtitle="">
-      <Stack spacing={2.25}>
+      <Stack spacing={2}>
         <HowItWorksHeader />
 
         {/* Individual page tour shortcuts */}
@@ -82,7 +79,7 @@ export default function HowItWorks() {
               xs: 'repeat(2, minmax(0, 1fr))',
               md: 'repeat(4, minmax(0, 1fr))',
             },
-            gap: 1.1,
+            gap: 1.25,
           }}
         >
           {pages.map((item) => (
@@ -100,12 +97,12 @@ export default function HowItWorks() {
 
         {/* Simple numbered learning steps */}
         <Box>
-          <Box sx={{ mb: 1.3 }}>
+          <Box sx={{ mb: 1.25 }}>
             <Typography
               component="h2"
               sx={{
                 color: COLORS.navy,
-                fontSize: '.98rem',
+                fontSize: FONT.heading,
                 fontWeight: 800,
               }}
             >
@@ -121,7 +118,7 @@ export default function HowItWorks() {
                 sm: 'repeat(3, minmax(0, 1fr))',
                 lg: 'repeat(5, minmax(0, 1fr))',
               },
-              gap: { xs: 1.1, lg: 2.2 },
+              gap: { xs: 1.25, lg: 2 },
             }}
           >
             {LEARNING_STEPS.map((step, index) => (

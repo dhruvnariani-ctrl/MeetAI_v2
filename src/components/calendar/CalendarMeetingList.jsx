@@ -1,51 +1,16 @@
 
-import { useState } from 'react'
-
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
 import EventBusyOutlinedIcon from '@mui/icons-material/EventBusyOutlined'
-import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded'
-import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded'
 
-import SlidingSegmented from '../SlidingSegmented'
+import usePage from '../usePage'
 import MeetingListItem from '../meetings/MeetingListItem'
 import MeetingGridCard from '../meetings/MeetingGridCard'
-import { readJSON, writeJSON } from '../../utils/storage'
 
-const LAYOUT_KEY = 'calendar-meeting-layout'
-
-const LAYOUT_OPTIONS = [
-  { value: 'list', label: 'List', icon: <ViewListRoundedIcon /> },
-  { value: 'grid', label: 'Grid', icon: <GridViewRoundedIcon /> },
-]
-
-function readSavedLayout() {
-  const saved = readJSON(LAYOUT_KEY, null)
-
-  if (saved === 'grid' || saved === 'list') {
-    return saved
-  }
-
-  // Migrate the older plain-string localStorage value.
-  try {
-    const legacy =
-      typeof window !== 'undefined'
-        ? window.localStorage.getItem(LAYOUT_KEY)
-        : null
-
-    if (legacy === 'grid' || legacy === 'list') {
-      writeJSON(LAYOUT_KEY, legacy)
-      return legacy
-    }
-  } catch {
-    // Fall back to list layout if storage is unavailable.
-  }
-
-  return 'list'
-}
+import { FONT } from '../../utils/dashboardFonts'
 
 function formatDateHeading(dateString) {
   if (!dateString) return ''
@@ -60,7 +25,7 @@ function formatDateHeading(dateString) {
 
   return new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
-    month: 'short',
+    month: 'long',
     day: 'numeric',
     year: 'numeric',
   }).format(date)
@@ -83,19 +48,14 @@ function groupByDate(meetings) {
 export default function CalendarMeetingList({
   meetings = [],
   view = 'week',
+  layout = 'list',
   settings = {},
   onSettingsChange,
 }) {
-  const [layout, setLayout] = useState(readSavedLayout)
-
-  const handleLayoutChange = (nextLayout) => {
-    if (nextLayout !== 'list' && nextLayout !== 'grid') {
-      return
-    }
-
-    setLayout(nextLayout)
-    writeJSON(LAYOUT_KEY, nextLayout)
-  }
+  const { rows, pager } = usePage(
+    meetings,
+    `/${meetings.length}-${meetings[0]?.id}`,
+  )
 
   if (meetings.length === 0) {
     return (
@@ -104,7 +64,7 @@ export default function CalendarMeetingList({
         sx={{
           p: 4,
           border: '1px solid #E0E8F0',
-          borderRadius: '14px',
+          borderRadius: '12px',
           bgcolor: '#FFFFFF',
           textAlign: 'center',
         }}
@@ -128,7 +88,7 @@ export default function CalendarMeetingList({
         <Typography
           sx={{
             color: '#123A59',
-            fontSize: '0.95rem',
+            fontSize: FONT.heading,
             fontWeight: 750,
           }}
         >
@@ -139,7 +99,7 @@ export default function CalendarMeetingList({
           sx={{
             mt: 0.5,
             color: '#74869A',
-            fontSize: '0.8rem',
+            fontSize: FONT.small,
           }}
         >
           Try selecting another date or changing the meeting filters.
@@ -148,89 +108,79 @@ export default function CalendarMeetingList({
     )
   }
 
-  const groupedMeetings = groupByDate(meetings)
+  const groupedMeetings = groupByDate(rows)
+  const dateGroups = Object.entries(groupedMeetings)
+
+  const normalizedView = String(view).toLowerCase()
+  const isDayView = normalizedView === 'day'
+
+  // Keep date headings when multiple dates are shown.
+  // A single-day result uses the heading already shown by CalendarPage.
+  const showGroupHeadings =
+    !isDayView && dateGroups.length > 1
 
   return (
     <Stack spacing={1.75} sx={{ minWidth: 0 }}>
-      {Object.entries(groupedMeetings).map(
-        ([date, dateMeetings], groupIndex) => (
-          <Box key={date} sx={{ minWidth: 0 }}>
-            <Box
+      {dateGroups.map(([date, dateMeetings]) => (
+        <Box key={date} sx={{ minWidth: 0 }}>
+          {showGroupHeadings && (
+            <Typography
+              component="h3"
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 1,
+                color: '#123A59',
+                fontSize: FONT.heading,
+                lineHeight: 1.4,
+                fontWeight: 800,
                 mb: 1.1,
-                minHeight: 34,
               }}
             >
-              <Typography
-                component="h3"
-                sx={{
-                  color: '#123A59',
-                  fontSize: '0.95rem',
-                  lineHeight: 1.4,
-                  fontWeight: 800,
-                }}
-              >
-                {formatDateHeading(date)}
-              </Typography>
+              {formatDateHeading(date)}
+            </Typography>
+          )}
 
-              {groupIndex === 0 && (
-                <SlidingSegmented
-                  dataTour="calendar-layout-toggle"
-                  ariaLabel="Meeting layout"
-                  options={LAYOUT_OPTIONS}
-                  value={layout}
-                  onChange={handleLayoutChange}
-                  sx={{ bgcolor: '#EDF4FA' }}
+          {layout === 'grid' ? (
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: {
+                  xs: 'minmax(0, 1fr)',
+                  sm: 'repeat(2, minmax(0, 1fr))',
+                },
+                gap: 1.25,
+                alignItems: 'stretch',
+              }}
+            >
+              {dateMeetings.map((meeting, index) => (
+                <MeetingGridCard
+                  key={meeting.id}
+                  meeting={meeting}
+                  status={meeting.type}
+                  timeLabel={meeting.time}
+                  settings={settings}
+                  onSettingsChange={onSettingsChange}
+                  tourTarget={index === 0}
                 />
-              )}
+              ))}
             </Box>
+          ) : (
+            <Stack spacing={1}>
+              {dateMeetings.map((meeting, index) => (
+                <MeetingListItem
+                  key={meeting.id}
+                  meeting={meeting}
+                  status={meeting.type}
+                  timeLabel={meeting.time}
+                  settings={settings}
+                  onSettingsChange={onSettingsChange}
+                  tourTarget={index === 0}
+                />
+              ))}
+            </Stack>
+          )}
+        </Box>
+      ))}
 
-            {layout === 'list' ? (
-              <Stack spacing={1}>
-                {dateMeetings.map((meeting) => (
-                  <MeetingListItem
-                    key={meeting.id}
-                    meeting={meeting}
-                    status={meeting.type}
-                    timeLabel={meeting.time}
-                    settings={settings}
-                    onSettingsChange={onSettingsChange}
-                    tourTarget={dateMeetings[0]?.id === meeting.id}
-                  />
-                ))}
-              </Stack>
-            ) : (
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: {
-                    xs: 'minmax(0, 1fr)',
-                    sm: 'repeat(2, minmax(0, 1fr))',
-                  },
-                  gap: 1.25,
-                  alignItems: 'stretch',
-                }}
-              >
-                {dateMeetings.map((meeting) => (
-                  <MeetingGridCard
-                    key={meeting.id}
-                    meeting={meeting}
-                    status={meeting.type}
-                    timeLabel={meeting.time}
-                    settings={settings}
-                    onSettingsChange={onSettingsChange}
-                    tourTarget={dateMeetings[0]?.id === meeting.id}
-                  />
-                ))}
-              </Box>
-            )}
-          </Box>
-        ),
-      )}
+      {pager}
     </Stack>
   )
 }

@@ -300,7 +300,7 @@ export default function MeetingActionsHero({
         containerType: 'inline-size',
         p: 1.5,
         border: '1px solid #DFE8F0',
-        borderRadius: '20px',
+        borderRadius: '16px',
         bgcolor: '#FFFFFF',
         boxShadow: '0 6px 22px rgba(18, 58, 89, 0.05)',
       }}

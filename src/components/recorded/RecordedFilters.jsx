@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 
 import Box from '@mui/material/Box'
@@ -11,16 +12,18 @@ import TextField from '@mui/material/TextField'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 
+import { FONT } from '../../utils/dashboardFonts'
+
 const dropdownButtonSx = {
   minWidth: 125,
   minHeight: 38,
   px: 1.25,
   justifyContent: 'space-between',
   border: '1px solid #E5EDF5',
-  borderRadius: '9px',
+  borderRadius: '10px',
   bgcolor: '#FFFFFF',
   color: '#526B83',
-  fontSize: '0.76rem',
+  fontSize: FONT.caption,
   fontWeight: 650,
   textTransform: 'none',
   whiteSpace: 'nowrap',
@@ -37,7 +40,7 @@ const menuPaperSx = {
   boxShadow: '0 8px 24px rgba(18,58,89,0.12)',
   '& .MuiMenuItem-root': {
     minHeight: 37,
-    fontSize: '0.8rem',
+    fontSize: FONT.body,
     color: '#34536E',
   },
   '& .Mui-selected': {
@@ -94,7 +97,7 @@ export default function RecordedFilters({
             startAdornment: (
               <InputAdornment position="start">
                 <SearchRoundedIcon
-                  sx={{ fontSize: 19, color: '#8197AB' }}
+                  sx={{ color: '#8197AB' }}
                 />
               </InputAdornment>
             ),
@@ -104,10 +107,10 @@ export default function RecordedFilters({
             gridColumn: { xs: '1 / -1', md: 'auto' },
             '& .MuiOutlinedInput-root': {
               height: 38,
-              borderRadius: '9px',
+              borderRadius: '10px',
               bgcolor: '#FFFFFF',
               color: '#23445F',
-              fontSize: '0.78rem',
+              fontSize: FONT.body,
               '& fieldset': {
                 borderColor: '#E5EDF5',
               },
@@ -126,7 +129,7 @@ export default function RecordedFilters({
           data-tour="recorded-filters"
           size="small"
           variant="outlined"
-          endIcon={<KeyboardArrowDownRoundedIcon sx={{ fontSize: 18 }} />}
+          endIcon={<KeyboardArrowDownRoundedIcon />}
           onClick={(event) => setDateAnchorEl(event.currentTarget)}
           sx={dropdownButtonSx}
         >
@@ -158,7 +161,7 @@ export default function RecordedFilters({
           data-tour="recorded-sort"
           size="small"
           variant="outlined"
-          endIcon={<KeyboardArrowDownRoundedIcon sx={{ fontSize: 18 }} />}
+          endIcon={<KeyboardArrowDownRoundedIcon />}
           onClick={(event) => setSortAnchorEl(event.currentTarget)}
           sx={dropdownButtonSx}
         >

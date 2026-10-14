@@ -22,12 +22,12 @@ export function SectionHeading({ icon, title, subtitle }) {
       </Box>
 
       <Box sx={{ minWidth: 0 }}>
-        <Typography sx={{ fontSize: '0.85rem', fontWeight: 750, color: C.navy }}>
+        <Typography sx={{ fontSize: '0.875rem', fontWeight: 750, color: C.navy }}>
           {title}
         </Typography>
 
         {subtitle && (
-          <Typography sx={{ fontSize: '0.71rem', color: C.muted, mt: 0.15 }}>
+          <Typography sx={{ fontSize: '0.75rem', color: C.muted, mt: 0.15 }}>
             {subtitle}
           </Typography>
         )}
@@ -42,7 +42,7 @@ export function SectionCard({ children, sx = {} }) {
       variant="outlined"
       sx={{
         p: { xs: 1.25, sm: 1.6 },
-        borderRadius: '11px',
+        borderRadius: '10px',
         borderColor: C.border,
         boxShadow: 'none',
         bgcolor: '#fff',

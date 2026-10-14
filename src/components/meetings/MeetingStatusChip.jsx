@@ -1,7 +1,9 @@
+
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 
 import { getStatusStyle } from './meetingHelpers'
+import { FONT } from '../../utils/dashboardFonts'
 
 const stop = (event) => event.stopPropagation()
 
@@ -24,18 +26,18 @@ export default function MeetingStatusChip({ status }) {
         label={status}
         size="small"
         sx={{
-  height: 26,
-  minWidth: 0,
-  borderRadius: '7px',
-  backgroundColor: statusStyle.backgroundColor,
-  color: statusStyle.color,
-  fontSize: '0.72rem',
-  fontWeight: 750,
-  userSelect: 'none',
-  '& .MuiChip-label': {
-    px: 1,
-  },
-}}
+          height: 26,
+          minWidth: 0,
+          borderRadius: '8px',
+          backgroundColor: statusStyle.backgroundColor,
+          color: statusStyle.color,
+          fontSize: FONT.caption,
+          fontWeight: 750,
+          userSelect: 'none',
+          '& .MuiChip-label': {
+            px: 1,
+          },
+        }}
       />
     </Box>
   )

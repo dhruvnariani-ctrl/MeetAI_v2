@@ -1,3 +1,4 @@
+
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
@@ -32,7 +33,7 @@ function InfoItem({ icon, label, children }) {
         {icon}
         <Typography
           component="span"
-          sx={{ color: MUTED, fontSize: '0.72rem', fontWeight: 650 }}
+          sx={{ color: MUTED, fontSize: '0.75rem', fontWeight: 650 }}
         >
           {label}
         </Typography>
@@ -45,7 +46,7 @@ function InfoItem({ icon, label, children }) {
 
 const valueSx = {
   color: NAVY,
-  fontSize: '0.82rem',
+  fontSize: '0.8125rem',
   fontWeight: 700,
   lineHeight: 1.5,
   overflowWrap: 'anywhere',
@@ -73,7 +74,7 @@ export default function OverviewTab({
           xl: 'minmax(0, 1fr) 380px',
         },
         gap: 2,
-        alignItems: 'start',
+        alignItems: 'stretch',
       }}
     >
       {/* Left: summary + attendees */}
@@ -91,16 +92,23 @@ export default function OverviewTab({
           sx={{
             p: { xs: 1.75, md: 2.25 },
             border: `1px solid ${BORDER}`,
-            borderRadius: '14px',
+            borderRadius: '12px',
             bgcolor: '#FFFFFF',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.25 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              mb: 1.25,
+            }}
+          >
             <NotesOutlinedIcon sx={{ fontSize: 20, color: '#1769AA' }} />
 
             <Typography
               component="h2"
-              sx={{ color: NAVY, fontSize: '0.95rem', fontWeight: 800 }}
+              sx={{ color: NAVY, fontSize: '1rem', fontWeight: 800 }}
             >
               Meeting Summary
             </Typography>
@@ -110,7 +118,7 @@ export default function OverviewTab({
             <Typography
               sx={{
                 color: '#425D74',
-                fontSize: '0.84rem',
+                fontSize: '0.8125rem',
                 lineHeight: 1.75,
                 whiteSpace: 'pre-line',
               }}
@@ -163,13 +171,15 @@ export default function OverviewTab({
                     display: 'block',
                     color: '#1565C0',
                     fontWeight: 600,
-                    fontSize: '0.78rem',
+                    fontSize: '0.8125rem',
                   }}
                 >
                   {link}
                 </Link>
               ) : (
-                <Typography sx={{ ...valueSx, color: MUTED, fontWeight: 500 }}>
+                <Typography
+                  sx={{ ...valueSx, color: MUTED, fontWeight: 500 }}
+                >
                   Not available
                 </Typography>
               )}
@@ -185,15 +195,22 @@ export default function OverviewTab({
         />
       </Box>
 
-      {/* Right: hero banner and quick actions */}
-      <MeetingActionsHero
-        ended={ended}
-        joinDisabled={!link}
-        onJoin={() => window.open(link, '_blank', 'noopener,noreferrer')}
-        onRecording={() => onSelectTab?.('recording')}
-        onTranscript={() => onSelectTab?.('transcript')}
-        onActions={() => onSelectTab?.('actions')}
-      />
+      {/* Right: match the combined height of the left panels */}
+      <Box
+        sx={{
+          minWidth: 0,
+          height: '100%',
+        }}
+      >
+        <MeetingActionsHero
+          ended={ended}
+          joinDisabled={!link}
+          onJoin={() => window.open(link, '_blank', 'noopener,noreferrer')}
+          onRecording={() => onSelectTab?.('recording')}
+          onTranscript={() => onSelectTab?.('transcript')}
+          onActions={() => onSelectTab?.('actions')}
+        />
+      </Box>
     </Box>
   )
 }

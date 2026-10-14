@@ -14,7 +14,7 @@ export default function App() {
     <>
     <Routes>
       <Route element={<AppLayout />}>
-        <Route index element={<Dashboard />} />
+        <Route path='/' element={<Dashboard />} />
         <Route path="calendar" element={<CalendarPage />} />
         <Route path="recorded" element={<RecordedMeetings />} />
         <Route path="tasks" element={<MyTasks />} />

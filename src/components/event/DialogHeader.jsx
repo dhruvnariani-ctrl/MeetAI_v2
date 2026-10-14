@@ -25,7 +25,7 @@ export default function DialogHeader({
     >
       <Box
         component="img"
-        src="/images/Pastel Blue Network Waves.png"
+        src={`${import.meta.env.BASE_URL}/images/Pastel Blue Network Waves.png`}
         alt="Wind turbines and solar panels in a green landscape"
         sx={{
           position: 'absolute',
@@ -63,7 +63,7 @@ export default function DialogHeader({
 
             <Typography
               sx={{
-                fontSize: '0.62rem',
+                fontSize: '0.75rem',
                 color: C.green,
                 fontWeight: 750,
                 letterSpacing: '0.065em',
@@ -89,7 +89,7 @@ export default function DialogHeader({
 
           <Typography
             id={descId}
-            sx={{ mt: 0.3, fontSize: '0.72rem', color: '#405C6D' }}
+            sx={{ mt: 0.3, fontSize: '0.75rem', color: '#405C6D' }}
           >
             {subtitle}
           </Typography>

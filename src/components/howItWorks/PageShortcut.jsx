@@ -4,6 +4,7 @@ import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 
 import { COLORS } from './constants'
+import { FONT } from '../../utils/dashboardFonts'
 
 export default function PageShortcut({ item, active, onTour }) {
   const Icon = item.icon
@@ -14,7 +15,7 @@ export default function PageShortcut({ item, active, onTour }) {
       sx={{
         minWidth: 0,
         border: `1px solid ${active ? COLORS.blue : COLORS.border}`,
-        borderRadius: '11px',
+        borderRadius: '10px',
         bgcolor: active ? COLORS.blue : '#FFFFFF',
         overflow: 'hidden',
         transition: 'border-color 160ms ease, box-shadow 160ms ease',
@@ -47,7 +48,7 @@ export default function PageShortcut({ item, active, onTour }) {
             display: 'grid',
             placeItems: 'center',
             flexShrink: 0,
-            borderRadius: '9px',
+            borderRadius: '10px',
             bgcolor: active ? 'rgba(255,255,255,.18)' : item.bg,
             color: active ? '#FFFFFF' : item.color,
           }}
@@ -58,7 +59,7 @@ export default function PageShortcut({ item, active, onTour }) {
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography
             sx={{
-              fontSize: '.76rem',
+              fontSize: FONT.caption,
               lineHeight: 1.35,
               fontWeight: 750,
               color: active ? '#FFFFFF' : COLORS.navy,
@@ -70,7 +71,7 @@ export default function PageShortcut({ item, active, onTour }) {
           <Typography
             sx={{
               mt: 0.35,
-              fontSize: '.66rem',
+              fontSize: FONT.caption,
               lineHeight: 1.4,
               color: active ? 'rgba(255,255,255,.82)' : COLORS.muted,
             }}

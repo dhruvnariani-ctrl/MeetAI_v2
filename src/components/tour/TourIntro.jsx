@@ -1,3 +1,4 @@
+
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Fade from '@mui/material/Fade'
@@ -9,6 +10,8 @@ import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
 import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined'
+
+import { FONT } from '../../utils/dashboardFonts'
 
 const C = {
   navy: '#123A59',
@@ -63,7 +66,7 @@ export default function TourIntro({ onStart, onSkip }) {
             maxHeight: 'min(680px, calc(100dvh - 32px))',
             display: 'flex',
             flexDirection: 'column',
-            borderRadius: { xs: '14px', sm: '18px' },
+            borderRadius: { xs: '12px', sm: '18px' },
             border: `1px solid ${C.border}`,
             boxShadow: '0 24px 80px rgba(0,0,0,0.28)',
             overflow: 'hidden',
@@ -123,7 +126,7 @@ export default function TourIntro({ onStart, onSkip }) {
                   display: 'grid',
                   placeItems: 'center',
                   flexShrink: 0,
-                  borderRadius: '11px',
+                  borderRadius: '10px',
                   bgcolor: 'rgba(255,255,255,0.1)',
                   border: '1px solid rgba(255,255,255,0.18)',
                   color: '#A6DCC0',
@@ -135,7 +138,7 @@ export default function TourIntro({ onStart, onSkip }) {
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography
                   sx={{
-                    fontSize: '0.68rem',
+                    fontSize: FONT.caption,
                     fontWeight: 700,
                     letterSpacing: '0.12em',
                     color: '#A9C8DA',
@@ -148,7 +151,7 @@ export default function TourIntro({ onStart, onSkip }) {
                   component="h1"
                   sx={{
                     mt: 0.45,
-                    fontSize: { xs: '1.22rem', sm: '1.45rem' },
+                    fontSize: FONT.scheduleHeading,
                     lineHeight: 1.28,
                     fontWeight: 700,
                     letterSpacing: '-0.025em',
@@ -162,7 +165,7 @@ export default function TourIntro({ onStart, onSkip }) {
                   sx={{
                     mt: 0.65,
                     maxWidth: 370,
-                    fontSize: '0.82rem',
+                    fontSize: FONT.small,
                     lineHeight: 1.55,
                     color: 'rgba(255,255,255,0.76)',
                   }}
@@ -214,7 +217,7 @@ export default function TourIntro({ onStart, onSkip }) {
 
                 <Typography
                   sx={{
-                    fontSize: '0.92rem',
+                    fontSize: FONT.body,
                     fontWeight: 700,
                     color: C.navy,
                   }}
@@ -225,7 +228,7 @@ export default function TourIntro({ onStart, onSkip }) {
 
               <Typography
                 sx={{
-                  fontSize: '0.81rem',
+                  fontSize: FONT.small,
                   lineHeight: 1.6,
                   color: C.muted,
                 }}
@@ -245,7 +248,7 @@ export default function TourIntro({ onStart, onSkip }) {
                     alignItems: 'center',
                     gap: 1.5,
                     p: 1.25,
-                    borderRadius: '11px',
+                    borderRadius: '10px',
                     border: `1px solid ${C.border}`,
                     bgcolor: '#FCFDFE',
                     transition:
@@ -266,7 +269,7 @@ export default function TourIntro({ onStart, onSkip }) {
                       borderRadius: '10px',
                       bgcolor: C.greenLight,
                       color: C.green,
-                      fontSize: '0.82rem',
+                      fontSize: FONT.small,
                       fontWeight: 800,
                     }}
                   >
@@ -276,7 +279,7 @@ export default function TourIntro({ onStart, onSkip }) {
                   <Box sx={{ minWidth: 0 }}>
                     <Typography
                       sx={{
-                        fontSize: '0.85rem',
+                        fontSize: FONT.body,
                         fontWeight: 700,
                         lineHeight: 1.4,
                         color: C.navy,
@@ -288,7 +291,7 @@ export default function TourIntro({ onStart, onSkip }) {
                     <Typography
                       sx={{
                         mt: 0.3,
-                        fontSize: '0.78rem',
+                        fontSize: FONT.small,
                         lineHeight: 1.5,
                         color: C.muted,
                       }}
@@ -300,7 +303,7 @@ export default function TourIntro({ onStart, onSkip }) {
               ))}
             </Stack>
 
-            {/* Short instruction, replacing the large information panel */}
+            {/* Short instruction */}
             <Box
               sx={{
                 mt: 1.5,
@@ -309,7 +312,7 @@ export default function TourIntro({ onStart, onSkip }) {
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: 1,
-                borderRadius: '9px',
+                borderRadius: '10px',
                 bgcolor: '#F2F6F9',
                 border: `1px solid ${C.border}`,
               }}
@@ -325,7 +328,7 @@ export default function TourIntro({ onStart, onSkip }) {
 
               <Typography
                 sx={{
-                  fontSize: '0.75rem',
+                  fontSize: FONT.caption,
                   lineHeight: 1.55,
                   color: C.muted,
                 }}
@@ -355,9 +358,9 @@ export default function TourIntro({ onStart, onSkip }) {
               sx={{
                 minHeight: 40,
                 px: 1,
-                borderRadius: '9px',
+                borderRadius: '10px',
                 color: C.muted,
-                fontSize: '0.83rem',
+                fontSize: FONT.small,
                 fontWeight: 600,
                 textTransform: 'none',
                 whiteSpace: 'nowrap',
@@ -377,10 +380,10 @@ export default function TourIntro({ onStart, onSkip }) {
               sx={{
                 minHeight: 42,
                 px: { xs: 1.75, sm: 2.25 },
-                borderRadius: '9px',
+                borderRadius: '10px',
                 bgcolor: C.navy,
                 color: C.white,
-                fontSize: '0.84rem',
+                fontSize: FONT.small,
                 fontWeight: 700,
                 textTransform: 'none',
                 whiteSpace: 'nowrap',

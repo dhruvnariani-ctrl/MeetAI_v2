@@ -154,8 +154,7 @@ export default function AppLayout() {
             border: { md: '1px solid #DDE5EF' },
             px: { xs: 1.5, sm: 2, lg: 2.5 },
             pt: { xs: 1.5, md: 1 },
-            pb: 12,
-            scrollbarGutter: 'stable',
+            pb: {xs:4, md:4},
           }}
         >
           <Outlet

@@ -1,4 +1,3 @@
-
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
@@ -7,6 +6,7 @@ import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined
 import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined'
 import RadioButtonCheckedOutlinedIcon from '@mui/icons-material/RadioButtonCheckedOutlined'
 import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined'
+import { FONT } from '../../utils/dashboardFonts'
 
 const METRICS = [
   {
@@ -46,10 +46,12 @@ export default function DashboardOverview({ values = {} }) {
         display: 'grid',
         gridTemplateColumns: {
           xs: 'repeat(2, minmax(0, 1fr))',
-          lg: 'repeat(4, minmax(0, 1fr))',
+          md: 'repeat(4, minmax(0, 1fr))',
+          lg: 'repeat(2, minmax(0, 1fr))',
         },
-        gap: { xs: 1.25, md: 1.75 },
-        mb: 2.5,
+        gridAutoRows: { lg: '1fr' },
+        height: '100%',
+        gap: 1.25,
       }}
     >
       {METRICS.map(({ key, label, Icon, tone, tint }) => (
@@ -57,7 +59,7 @@ export default function DashboardOverview({ values = {} }) {
           key={key}
           variant="outlined"
           sx={{
-            p: { xs: 1.6, sm: 2 },
+            p: { xs: 1.25, sm: 1.5 },
             minWidth: 0,
             borderRadius: '16px',
             borderColor: '#e1e9ef',
@@ -65,7 +67,7 @@ export default function DashboardOverview({ values = {} }) {
             boxShadow: '0 3px 12px rgba(16,58,92,.035)',
             display: 'flex',
             alignItems: 'center',
-            gap: 1.5,
+            gap: 1.25,
             transition: 'transform 160ms ease, box-shadow 160ms ease',
             '&:hover': {
               transform: 'translateY(-2px)',
@@ -75,9 +77,9 @@ export default function DashboardOverview({ values = {} }) {
         >
           <Box
             sx={{
-              width: 42,
-              height: 42,
-              borderRadius: '13px',
+              width: 36,
+              height: 36,
+              borderRadius: '12px',
               display: 'grid',
               placeItems: 'center',
               bgcolor: tint,
@@ -85,13 +87,13 @@ export default function DashboardOverview({ values = {} }) {
               flexShrink: 0,
             }}
           >
-            <Icon sx={{ fontSize: 22 }} />
+            <Icon sx={{ fontSize: 20 }} />
           </Box>
 
           <Box sx={{ minWidth: 0 }}>
             <Typography
               sx={{
-                fontSize: '.75rem',
+                fontSize: FONT.caption,
                 color: '#65798b',
                 lineHeight: 1.35,
                 fontWeight: 600,
@@ -103,7 +105,7 @@ export default function DashboardOverview({ values = {} }) {
             <Typography
               sx={{
                 mt: 0.25,
-                fontSize: { xs: '1.45rem', md: '1.65rem' },
+                fontSize: FONT.statValue,
                 lineHeight: 1.15,
                 fontWeight: 800,
                 letterSpacing: '-.04em',

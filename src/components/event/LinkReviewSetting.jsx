@@ -49,7 +49,7 @@ function OptionRow({ checked, onChange, title, description, ariaLabel }) {
           <Typography
             sx={{
               color: C.navy,
-              fontSize: '0.85rem',
+              fontSize: '0.875rem',
               fontWeight: 700,
               lineHeight: 1.4,
             }}
@@ -64,7 +64,7 @@ function OptionRow({ checked, onChange, title, description, ariaLabel }) {
           mt: 0.5,
           ml: 0.4,
           color: C.body,
-          fontSize: '0.76rem',
+          fontSize: '0.75rem',
           lineHeight: 1.5,
         }}
       >
@@ -99,7 +99,7 @@ export default function LinkReviewSettings({
         boxSizing: 'border-box',
         p: { xs: 1.5, sm: 1.75 },
         border: 'none',
-        borderRadius: '14px',
+        borderRadius: '12px',
         boxShadow: 'none',
         bgcolor: '#fff',
       }}
@@ -126,7 +126,7 @@ export default function LinkReviewSettings({
             component="h2"
             sx={{
               color: C.navy,
-              fontSize: '0.95rem',
+              fontSize: '1rem',
               fontWeight: 750,
               lineHeight: 1.35,
             }}
@@ -134,7 +134,7 @@ export default function LinkReviewSettings({
             MeetAI assistant
           </Typography>
           <Typography
-            sx={{ color: C.muted, fontSize: '0.76rem', lineHeight: 1.45 }}
+            sx={{ color: C.muted, fontSize: '0.75rem', lineHeight: 1.45 }}
           >
             Let MeetAI help after your meeting.
           </Typography>
@@ -175,7 +175,7 @@ export default function LinkReviewSettings({
           sx={{ color: C.green, fontSize: 17, flexShrink: 0 }}
         />
         <Typography
-          sx={{ color: C.body, fontSize: '0.76rem', lineHeight: 1.45 }}
+          sx={{ color: C.body, fontSize: '0.75rem', lineHeight: 1.45 }}
         >
           Spend less time writing notes and more time on your work.
         </Typography>

@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography'
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded'
 
 import TaskStatusBadge from './TaskStatusBadge'
+import { TASK_GRID_COLUMNS } from '../../data/tasks'
+import { FONT } from '../../utils/dashboardFonts'
 
 function formatDueDate(value) {
   if (!value || value === '—') return 'No due date'
@@ -43,10 +45,10 @@ function PriorityBadge({ priority }) {
         justifyContent: 'center',
         px: 1.05,
         py: 0.4,
-        borderRadius: '7px',
+        borderRadius: '8px',
         bgcolor: style.bg,
         color: style.color,
-        fontSize: '0.7rem',
+        fontSize: FONT.caption,
         fontWeight: 750,
         whiteSpace: 'nowrap',
       }}
@@ -58,6 +60,7 @@ function PriorityBadge({ priority }) {
 
 function OwnerLabel({ owner }) {
   const name = owner || 'Unassigned'
+
   const initials = name
     .split(/\s+/)
     .filter(Boolean)
@@ -83,7 +86,7 @@ function OwnerLabel({ owner }) {
           borderRadius: '50%',
           bgcolor: '#E8F0F7',
           color: '#245678',
-          fontSize: '0.65rem',
+          fontSize: FONT.caption,
           fontWeight: 750,
         }}
       >
@@ -98,7 +101,7 @@ function OwnerLabel({ owner }) {
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
           color: '#526A80',
-          fontSize: '0.73rem',
+          fontSize: FONT.caption,
         }}
       >
         {name}
@@ -122,17 +125,18 @@ export default function TaskCard({
 
   return (
     <Box
+      role="row"
       data-tour="task-details"
       sx={{
         display: 'grid',
         gridTemplateColumns: {
-  xs: '30px minmax(0, 1fr) 30px',
-  md: '30px minmax(180px, 2.6fr) minmax(75px, .8fr) minmax(95px, 1fr) minmax(115px, 1.1fr) minmax(85px, .9fr) 30px',
-},
+          xs: '30px minmax(0, 1fr) 30px',
+          lg: TASK_GRID_COLUMNS,
+        },
         alignItems: 'center',
-        gap: { xs: 0.75, md: 1.25 },
-        px: { xs: 1.25, md: 2 },
-        py: { xs: 1.25, md: 1.1 },
+        gap: { xs: 0.75, lg: 1.25 },
+        px: { xs: 1.25, lg: 2 },
+        py: { xs: 1.25, lg: 1.1 },
         borderBottom: '1px solid #EDF1F5',
         bgcolor: '#FFFFFF',
         transition: 'background-color 140ms ease',
@@ -140,7 +144,7 @@ export default function TaskCard({
         '&:hover': { bgcolor: '#FAFCFE' },
       }}
     >
-      {/* Completion checkbox and task description */}
+      {/* Completion checkbox */}
       <Checkbox
         checked={isDone}
         disabled={isDone}
@@ -164,18 +168,18 @@ export default function TaskCard({
         }}
       />
 
+      {/* Task description */}
       <Box
-        data-tour="task-details"
         sx={{
           minWidth: 0,
-          gridColumn: { xs: '2 / 3', md: 'auto' },
-          gridRow: { xs: '1 / 2', md: 'auto' },
+          gridColumn: { xs: '2 / 3', lg: 'auto' },
+          gridRow: { xs: '1 / 2', lg: 'auto' },
         }}
       >
         <Typography
           sx={{
             color: isDone ? '#75869A' : '#173C59',
-            fontSize: '0.79rem',
+            fontSize: FONT.body,
             fontWeight: 700,
             lineHeight: 1.4,
             textDecoration: isDone ? 'line-through' : 'none',
@@ -190,7 +194,7 @@ export default function TaskCard({
             sx={{
               mt: 0.3,
               color: '#7B8FA2',
-              fontSize: '0.7rem',
+              fontSize: FONT.caption,
               lineHeight: 1.4,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -203,22 +207,31 @@ export default function TaskCard({
           </Typography>
         )}
 
-        {/* Compact metadata on narrow screens */}
+        {/* Compact metadata on narrow screens.
+            Gap goes in sx: Stack's `gap` prop is not applied in newer MUI,
+            which is what ran the date, owner and status together. */}
         <Stack
           direction="row"
           alignItems="center"
           flexWrap="wrap"
-          useFlexGap
-          gap={1}
-          sx={{ mt: 0.65, display: { xs: 'flex', md: 'none' } }}
+          sx={{
+            mt: 0.65,
+            columnGap: 1,
+            rowGap: 0.75,
+            display: { xs: 'flex', lg: 'none' },
+          }}
         >
           <PriorityBadge priority={task?.priority} />
 
-          <Typography sx={{ color: '#6E8397', fontSize: '0.69rem' }}>
+          <Typography
+            sx={{ color: '#6E8397', fontSize: FONT.caption }}
+          >
             {formatDueDate(task?.due)}
           </Typography>
 
-          <Typography sx={{ color: '#6E8397', fontSize: '0.69rem' }}>
+          <Typography
+            sx={{ color: '#6E8397', fontSize: FONT.caption }}
+          >
             {task?.owner || 'Unassigned'}
           </Typography>
 
@@ -227,32 +240,33 @@ export default function TaskCard({
       </Box>
 
       {/* Desktop columns */}
-      <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+      <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
         <PriorityBadge priority={task?.priority} />
       </Box>
 
       <Typography
         sx={{
-          display: { xs: 'none', md: 'block' },
+          display: { xs: 'none', lg: 'block' },
           color: '#526A80',
-          fontSize: '0.73rem',
+          fontSize: FONT.caption,
           whiteSpace: 'nowrap',
         }}
       >
         {formatDueDate(task?.due)}
       </Typography>
 
-      <Box sx={{ display: { xs: 'none', md: 'block' }, minWidth: 0 }}>
+      <Box sx={{ display: { xs: 'none', lg: 'block' }, minWidth: 0 }}>
         <OwnerLabel owner={task?.owner} />
       </Box>
 
       <Box
         data-tour="task-status"
-        sx={{ display: { xs: 'none', md: 'block' }, minWidth: 0 }}
+        sx={{ display: { xs: 'none', lg: 'block' }, minWidth: 0 }}
       >
         <TaskStatusBadge status={task?.status || 'Pending'} />
       </Box>
 
+      {/* Task actions */}
       <Tooltip title="Task actions">
         <IconButton
           size="small"

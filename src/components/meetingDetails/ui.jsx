@@ -16,7 +16,7 @@ export function SectionCard({
       elevation={0}
       sx={{
         border: '1px solid #dce3eb',
-        borderRadius: 2.5,
+        borderRadius: '12px',
         bgcolor: '#fff',
         p: {
           xs: 1.75,
@@ -48,7 +48,7 @@ export function SectionCard({
 
         <Typography
           sx={{
-            fontSize: '0.9rem',
+            fontSize: '0.875rem',
             fontWeight: 700,
             color: '#24364d',
           }}
@@ -72,7 +72,7 @@ export function InfoCard({
       elevation={0}
       sx={{
         border: '1px solid #dce3eb',
-        borderRadius: 2.5,
+        borderRadius: '12px',
         bgcolor: '#fff',
         p: 1.75,
       }}
@@ -89,7 +89,7 @@ export function InfoCard({
 
         <Typography
           sx={{
-            fontSize: '0.68rem',
+            fontSize: '0.75rem',
             color: '#7b8ba1',
           }}
         >
@@ -100,7 +100,7 @@ export function InfoCard({
       <Typography
         sx={{
           mt: 0.8,
-          fontSize: '0.92rem',
+          fontSize: '0.875rem',
           fontWeight: 700,
           color: '#24364d',
         }}
@@ -142,7 +142,7 @@ export function NotReadyMessage({
     >
       <Typography
         sx={{
-          fontSize: '0.76rem',
+          fontSize: '0.75rem',
           lineHeight: 1.65,
           color: '#66778d',
         }}

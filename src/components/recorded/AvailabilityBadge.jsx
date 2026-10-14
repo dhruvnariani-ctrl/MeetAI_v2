@@ -12,10 +12,10 @@ export default function AvailabilityBadge({ icon, label, available }) {
         gap: 0.6,
         px: 0.85,
         py: 0.4,
-        borderRadius: '6px',
+        borderRadius: '8px',
         bgcolor: isAvailable ? '#EAF6EF' : '#F2F5F8',
         color: isAvailable ? '#23764B' : '#8493A2',
-        fontSize: '0.67rem',
+        fontSize: '0.75rem',
         fontWeight: 650,
         lineHeight: 1.3,
         whiteSpace: 'nowrap',
@@ -40,7 +40,7 @@ export default function AvailabilityBadge({ icon, label, available }) {
         component="span"
         sx={{
           ml: 0.15,
-          fontSize: '0.62rem',
+          fontSize: '0.75rem',
           fontWeight: 700,
         }}
       >

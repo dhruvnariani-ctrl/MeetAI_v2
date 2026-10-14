@@ -22,7 +22,7 @@ export default function MeetingTabs({ value, onChange }) {
       elevation={0}
       sx={{
         border: '1px solid #dce3eb',
-        borderRadius: 2.5,
+        borderRadius: '12px',
         bgcolor: '#fff',
         overflow: 'hidden',
       }}
@@ -39,7 +39,7 @@ export default function MeetingTabs({ value, onChange }) {
             minHeight: 54,
             minWidth: { xs: 105, sm: 125 },
             textTransform: 'none',
-            fontSize: '.78rem',
+            fontSize: '0.8125rem',
             fontWeight: 600,
             color: '#66778d',
           },

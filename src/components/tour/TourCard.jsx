@@ -17,6 +17,7 @@ import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlin
 
 import TourHint from './TourHint'
 import { getTourIcon } from './TourIcons'
+import { FONT } from '../../utils/dashboardFonts'
 
 const C = {
   navy: '#123A59',
@@ -51,7 +52,7 @@ const TourCard = forwardRef(function TourCard(
           top: { xs: 'auto', sm: position?.top ?? -9999 },
           left: { xs: 16, sm: position?.left ?? -9999 },
           bottom: { xs: 16, sm: 'auto' },
-          borderRadius: '14px',
+          borderRadius: '12px',
           overflow: 'hidden',
           bgcolor: C.white,
           border: `1px solid ${C.border}`,
@@ -105,7 +106,7 @@ const TourCard = forwardRef(function TourCard(
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography
                 sx={{
-                  fontSize: '0.67rem',
+                  fontSize: FONT.caption,
                   fontWeight: 700,
                   letterSpacing: '0.11em',
                   textTransform: 'uppercase',
@@ -119,7 +120,7 @@ const TourCard = forwardRef(function TourCard(
                 component="h2"
                 sx={{
                   mt: 0.4,
-                  fontSize: '1rem',
+                  fontSize: FONT.heading,
                   fontWeight: 700,
                   lineHeight: 1.35,
                   color: C.navy,
@@ -153,7 +154,7 @@ const TourCard = forwardRef(function TourCard(
         <Box sx={{ px: 2.25, py: 2 }}>
           <Typography
             sx={{
-              fontSize: '0.85rem',
+              fontSize: FONT.body,
               lineHeight: 1.75,
               color: C.text,
               overflowWrap: 'anywhere',
@@ -193,7 +194,7 @@ const TourCard = forwardRef(function TourCard(
                   borderRadius: '50%',
                   bgcolor: C.greenLight,
                   color: C.green,
-                  fontSize: '0.8rem',
+                  fontSize: FONT.small,
                   fontWeight: 800,
                 }}
               >
@@ -202,7 +203,7 @@ const TourCard = forwardRef(function TourCard(
 
               <Typography
                 sx={{
-                  fontSize: '0.78rem',
+                  fontSize: FONT.small,
                   fontWeight: 600,
                   color: C.muted,
                 }}
@@ -213,7 +214,7 @@ const TourCard = forwardRef(function TourCard(
 
             <Typography
               sx={{
-                fontSize: '0.72rem',
+                fontSize: FONT.caption,
                 fontWeight: 600,
                 color: C.muted,
               }}
@@ -243,7 +244,7 @@ const TourCard = forwardRef(function TourCard(
               minWidth: 0,
               px: 0.75,
               color: C.muted,
-              fontSize: '0.8rem',
+              fontSize: FONT.small,
               fontWeight: 600,
               textTransform: 'none',
               '&:hover': { bgcolor: '#EDF2F5', color: C.navy },
@@ -263,7 +264,7 @@ const TourCard = forwardRef(function TourCard(
                   borderRadius: '8px',
                   borderColor: '#CAD7E0',
                   color: C.navy,
-                  fontSize: '0.81rem',
+                  fontSize: FONT.small,
                   fontWeight: 600,
                   textTransform: 'none',
                   '&:hover': {
@@ -292,7 +293,7 @@ const TourCard = forwardRef(function TourCard(
                 borderRadius: '8px',
                 bgcolor: C.navy,
                 color: C.white,
-                fontSize: '0.81rem',
+                fontSize: FONT.small,
                 fontWeight: 700,
                 textTransform: 'none',
                 boxShadow: 'none',

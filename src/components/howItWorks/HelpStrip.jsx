@@ -36,7 +36,7 @@ export default function HelpStrip({ onStartTour }) {
               height: 36,
               display: 'grid',
               placeItems: 'center',
-              borderRadius: '9px',
+              borderRadius: '10px',
               bgcolor: '#FFFFFF',
               color: COLORS.blue,
               flexShrink: 0,
@@ -48,7 +48,7 @@ export default function HelpStrip({ onStartTour }) {
           <Typography
             sx={{
               color: '#4F6F88',
-              fontSize: '.73rem',
+              fontSize: '0.75rem',
               lineHeight: 1.55,
             }}
           >
@@ -69,11 +69,11 @@ export default function HelpStrip({ onStartTour }) {
           sx={{
             minHeight: 38,
             px: 1.7,
-            borderRadius: '9px',
+            borderRadius: '10px',
             bgcolor: COLORS.blue,
             boxShadow: 'none',
             color: '#FFFFFF',
-            fontSize: '.75rem',
+            fontSize: '0.75rem',
             fontWeight: 750,
             textTransform: 'none',
             whiteSpace: 'nowrap',

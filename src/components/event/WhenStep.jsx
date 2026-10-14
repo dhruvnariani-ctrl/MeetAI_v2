@@ -85,7 +85,7 @@ export default function WhenStep({ form, compactHeight, fullScreen }) {
               <Typography
                 sx={{
                   pb: 0.35,
-                  fontSize: '0.68rem',
+                  fontSize: '0.75rem',
                   color: instant ? C.green : C.muted,
                   lineHeight: 1.3,
                 }}
@@ -114,7 +114,7 @@ export default function WhenStep({ form, compactHeight, fullScreen }) {
                     minWidth: 0,
                     '& .MuiCheckbox-root': { p: 0.7, mr: 0.35 },
                     '& .MuiFormControlLabel-label': {
-                      fontSize: '0.8rem',
+                      fontSize: '0.8125rem',
                       fontWeight: 700,
                       color: C.navy,
                     },

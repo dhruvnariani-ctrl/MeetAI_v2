@@ -17,7 +17,7 @@ import ParticipantPicker from '../instant/ParticipantPicker'
 import { C } from './constants'
 
 const titleSx = {
-  fontSize: '0.9rem',
+  fontSize: '0.875rem',
   fontWeight: 750,
   color: C.navy,
   lineHeight: 1.35,
@@ -71,7 +71,7 @@ function SectionIntro({ icon, title, subtitle, compact = false }) {
         <Typography
           sx={{
             mt: 0.25,
-            fontSize: '0.77rem',
+            fontSize: '0.75rem',
             lineHeight: 1.45,
             color: C.muted,
           }}
@@ -89,7 +89,7 @@ function SummaryItem({ label, children }) {
       <Typography
         sx={{
           mb: 0.4,
-          fontSize: '0.68rem',
+          fontSize: '0.75rem',
           fontWeight: 750,
           letterSpacing: '0.045em',
           color: C.muted,
@@ -101,7 +101,7 @@ function SummaryItem({ label, children }) {
 
       <Typography
         sx={{
-          fontSize: '0.82rem',
+          fontSize: '0.8125rem',
           lineHeight: 1.5,
           color: C.navy,
           overflowWrap: 'anywhere',
@@ -213,7 +213,7 @@ export default function LinkStep({
               gap: 0.8,
               bgcolor: C.paleBlue,
               border: '1px solid #DCE8F1',
-              borderRadius: '9px',
+              borderRadius: '10px',
             }}
           >
             <InfoOutlinedIcon
@@ -221,7 +221,7 @@ export default function LinkStep({
             />
             <Typography
               sx={{
-                fontSize: '0.76rem',
+                fontSize: '0.75rem',
                 lineHeight: 1.5,
                 color: C.text,
               }}
@@ -253,7 +253,7 @@ export default function LinkStep({
             <Typography
               sx={{
                 mt: 1,
-                fontSize: '0.76rem',
+                fontSize: '0.75rem',
                 lineHeight: 1.5,
                 color: C.muted,
               }}
@@ -301,7 +301,7 @@ export default function LinkStep({
                 component="h3"
                 sx={{
                   ...titleSx,
-                  fontSize: '0.98rem',
+                  fontSize: '1rem',
                 }}
               >
                 MeetAI settings
@@ -332,7 +332,7 @@ export default function LinkStep({
                 <Box sx={{ minWidth: 0 }}>
                   <Typography
                     sx={{
-                      fontSize: '0.86rem',
+                      fontSize: '0.875rem',
                       fontWeight: 750,
                       lineHeight: 1.4,
                       color: C.navy,
@@ -344,7 +344,7 @@ export default function LinkStep({
                   <Typography
                     sx={{
                       mt: 0.5,
-                      fontSize: '0.79rem',
+                      fontSize: '0.8125rem',
                       lineHeight: 1.55,
                       color: C.muted,
                     }}
@@ -370,7 +370,7 @@ export default function LinkStep({
                     alignItems: 'flex-start',
                     '& .MuiFormControlLabel-label': {
                       pt: '3px',
-                      fontSize: '0.82rem',
+                      fontSize: '0.8125rem',
                       fontWeight: 700,
                       lineHeight: 1.45,
                       color: C.navy,
@@ -410,7 +410,7 @@ export default function LinkStep({
                         <Typography
                           component="span"
                           sx={{
-                            fontSize: '0.82rem',
+                            fontSize: '0.8125rem',
                             fontWeight: 700,
                             color: C.navy,
                           }}
@@ -440,7 +440,7 @@ export default function LinkStep({
                   mt: 'auto',
                   px: 1.25,
                   py: 1,
-                  borderRadius: '9px',
+                  borderRadius: '10px',
                   bgcolor: linkRecordVideo ? C.paleGreen : C.paleBlue,
                   border: '1px solid',
                   borderColor: linkRecordVideo ? '#CDE8D8' : '#DCE8F1',
@@ -448,7 +448,7 @@ export default function LinkStep({
               >
                 <Typography
                   sx={{
-                    fontSize: '0.76rem',
+                    fontSize: '0.75rem',
                     lineHeight: 1.5,
                     fontWeight: 600,
                     color: C.navy,
@@ -475,7 +475,7 @@ export default function LinkStep({
                 component="h3"
                 sx={{
                   ...titleSx,
-                  fontSize: '0.98rem',
+                  fontSize: '1rem',
                 }}
               >
                 Meeting summary

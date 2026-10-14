@@ -18,7 +18,7 @@ function SummaryItem({ icon, label, children }) {
       <Box sx={{ minWidth: 0 }}>
         <Typography
           sx={{
-            fontSize: '0.62rem',
+            fontSize: '0.75rem',
             color: C.muted,
             fontWeight: 750,
             letterSpacing: '0.035em',
@@ -30,7 +30,7 @@ function SummaryItem({ icon, label, children }) {
 
         <Typography
           sx={{
-            fontSize: '0.72rem',
+            fontSize: '0.75rem',
             color: C.text,
             fontWeight: 650,
             overflowWrap: 'anywhere',
@@ -48,11 +48,11 @@ const pillSx = {
   px: 1,
   py: 0.55,
   border: `1px solid ${C.border}`,
-  borderRadius: '20px',
+  borderRadius: '16px',
 }
 
 const sectionTitleSx = {
-  fontSize: '0.76rem',
+  fontSize: '0.75rem',
   fontWeight: 750,
   color: C.navy,
   mb: 0.8,
@@ -134,7 +134,7 @@ export default function SummaryStep({ form }) {
                     ...pillSx,
                     bgcolor: C.paleBlue,
                     color: C.navy,
-                    fontSize: '0.72rem',
+                    fontSize: '0.75rem',
                   }}
                 >
                   {name}
@@ -144,7 +144,7 @@ export default function SummaryStep({ form }) {
             })}
           </Box>
         ) : (
-          <Typography sx={{ fontSize: '0.72rem', color: C.muted }}>
+          <Typography sx={{ fontSize: '0.75rem', color: C.muted }}>
             No participants added.
           </Typography>
         )}
@@ -158,7 +158,7 @@ export default function SummaryStep({ form }) {
             sx={{
               ...pillSx,
               bgcolor: inviteMeetAI ? C.paleGreen : C.bg,
-              fontSize: '0.7rem',
+              fontSize: '0.75rem',
               color: C.text,
             }}
           >
@@ -166,12 +166,12 @@ export default function SummaryStep({ form }) {
           </Box>
 
           {inviteMeetAI && (
-            <Box sx={{ ...pillSx, bgcolor: C.bg, fontSize: '0.7rem', color: C.text }}>
+            <Box sx={{ ...pillSx, bgcolor: C.bg, fontSize: '0.75rem', color: C.text }}>
               Video recording: {recordVideo ? 'Enabled' : 'Disabled'}
             </Box>
           )}
 
-          <Box sx={{ ...pillSx, bgcolor: C.bg, fontSize: '0.7rem', color: C.text }}>
+          <Box sx={{ ...pillSx, bgcolor: C.bg, fontSize: '0.75rem', color: C.text }}>
             {instant ? 'Instant Join' : 'Scheduled meeting'}
           </Box>
         </Box>

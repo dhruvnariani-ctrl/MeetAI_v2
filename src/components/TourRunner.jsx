@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -30,7 +31,10 @@ export default function TourRunner() {
 
   const cardRef = useRef(null)
 
-  const step = useMemo(() => tour?.steps?.[tour.index] || null, [tour])
+  const step = useMemo(
+    () => tour?.steps?.[tour.index] || null,
+    [tour],
+  )
 
   const resetTarget = () => {
     setTargetRect(null)
@@ -45,6 +49,7 @@ export default function TourRunner() {
     const onStart = () => {
       const next = readTour()
       if (!next) return
+
       setTour(next)
       resetTarget()
     }
@@ -68,10 +73,16 @@ export default function TourRunner() {
 
   /*
    * Navigate to the step's page, then find the target element.
-   * If the target never shows up, SKIP the step instead of freezing the tour.
+   * If the target never shows up, skip the step instead of freezing the tour.
+   *
+   * Special case:
+   * Before locating the Join meeting button, ask UpNextCard to expand itself.
+   * The locator below retries while React renders the expanded card.
    */
   useEffect(() => {
-    if (!tour || !step || tour.phase === 'intro') return undefined
+    if (!tour || !step || tour.phase === 'intro') {
+      return undefined
+    }
 
     if (step.path && step.path !== location.pathname) {
       resetTarget()
@@ -85,35 +96,51 @@ export default function TourRunner() {
 
     resetTarget()
 
+    // Expand UpNextCard before searching for its Join button.
+    const targetSelector = String(step.target || '')
+    const isJoinStep = targetSelector.includes(
+      'dashboard-join-meeting',
+    )
+
+    if (isJoinStep) {
+      window.dispatchEvent(
+        new Event('meetai-tour-expand-up-next'),
+      )
+    }
+
     const locate = () => {
       if (cancelled) return
 
       const target = findTarget(step.target)
 
       if (!target) {
-        // Give the page up to 5 seconds to render the target.
+        // Give the page and expanded card up to 5 seconds to render.
         if (Date.now() - started < 5000) {
           timer = window.setTimeout(locate, 100)
           return
         }
 
-        // Still missing: move on so one bad selector can't brick the tour.
+        // Still missing: move on so one bad selector cannot freeze the tour.
         if (tour.index >= tour.steps.length - 1) {
           stopAppTour()
           return
         }
 
-        const skipped = { ...tour, index: tour.index + 1 }
+        const skipped = {
+          ...tour,
+          index: tour.index + 1,
+        }
+
         saveTour(skipped)
         setTour(skipped)
         return
       }
 
       target.scrollIntoView({
-  behavior: 'smooth',
-  block: step.scrollBlock || 'center',
-  inline: 'nearest',
-})
+        behavior: 'smooth',
+        block: step.scrollBlock || 'center',
+        inline: 'nearest',
+      })
 
       timer = window.setTimeout(() => {
         if (cancelled) return
@@ -138,7 +165,9 @@ export default function TourRunner() {
    * Keep highlight + card positioned on scroll / resize.
    */
   useEffect(() => {
-    if (!tour || !step || !targetFound) return undefined
+    if (!tour || !step || !targetFound) {
+      return undefined
+    }
 
     const update = () => {
       const rect = rectOf(findTarget(step.target))
@@ -154,7 +183,11 @@ export default function TourRunner() {
       const cardBox = cardRef.current?.getBoundingClientRect()
 
       setCardPosition(
-        positionCard(rect, cardBox?.width || 360, cardBox?.height || 300),
+        positionCard(
+          rect,
+          cardBox?.width || 360,
+          cardBox?.height || 300,
+        ),
       )
     }
 
@@ -165,6 +198,7 @@ export default function TourRunner() {
 
     const observerTarget = findTarget(step.target)
     const observer = observerTarget ? new ResizeObserver(update) : null
+
     observer?.observe(observerTarget)
 
     return () => {
@@ -178,14 +212,18 @@ export default function TourRunner() {
    * Re-position when the card itself changes size.
    */
   useEffect(() => {
-    if (!tour || !step || !targetFound || !cardRef.current) return undefined
+    if (!tour || !step || !targetFound || !cardRef.current) {
+      return undefined
+    }
 
     const updateCard = () => {
       if (!targetRect || !cardRef.current) return
 
       const cardRect = cardRef.current.getBoundingClientRect()
 
-      setCardPosition(positionCard(targetRect, cardRect.width, cardRect.height))
+      setCardPosition(
+        positionCard(targetRect, cardRect.width, cardRect.height),
+      )
     }
 
     updateCard()
@@ -204,7 +242,11 @@ export default function TourRunner() {
       <TourIntro
         onSkip={stopAppTour}
         onStart={() => {
-          const startedTour = { ...tour, phase: 'tour' }
+          const startedTour = {
+            ...tour,
+            phase: 'tour',
+          }
+
           saveTour(startedTour)
           setTour(startedTour)
           resetTarget()
@@ -220,7 +262,10 @@ export default function TourRunner() {
 
   const goTo = (index) => {
     const nextStep = tour.steps[index]
-    const nextTour = { ...tour, index }
+    const nextTour = {
+      ...tour,
+      index,
+    }
 
     saveTour(nextTour)
     setTour(nextTour)
@@ -236,6 +281,7 @@ export default function TourRunner() {
       stopAppTour()
       return
     }
+
     goTo(tour.index + 1)
   }
 

@@ -43,10 +43,10 @@ export default function SelectField({
         sx={{
           ...inputSx,
           minHeight: 42,
-          borderRadius: '9px',
+          borderRadius: '10px',
           bgcolor: '#FFFFFF',
           color: NAVY,
-          fontSize: '0.82rem',
+          fontSize: '0.8125rem',
           '& .MuiSelect-select': {
             py: '10px',
             px: 1.4,
@@ -72,7 +72,7 @@ export default function SelectField({
               '& .MuiMenuItem-root': {
                 minHeight: 38,
                 color: NAVY,
-                fontSize: '0.8rem',
+                fontSize: '0.8125rem',
               },
               '& .MuiMenuItem-root.Mui-selected': {
                 bgcolor: '#EAF3FC',

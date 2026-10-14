@@ -45,7 +45,7 @@ function SummaryItem({ label, value, icon: Icon, last = false }) {
           component="div"
           sx={{
             color: C.muted,
-            fontSize: '0.66rem',
+            fontSize: '0.75rem',
             fontWeight: 700,
             letterSpacing: '.035em',
             lineHeight: 1.4,
@@ -61,7 +61,7 @@ function SummaryItem({ label, value, icon: Icon, last = false }) {
         component="div"
         sx={{
           color: C.navy,
-          fontSize: '0.78rem',
+          fontSize: '0.8125rem',
           fontWeight: 500,
           lineHeight: 1.5,
           overflowWrap: 'anywhere',
@@ -113,7 +113,7 @@ export default function LinkMeetingSummary({
         boxSizing: 'border-box',
         p: { xs: 1.5, sm: 1.75 },
         borderColor: C.border,
-        borderRadius: '14px',
+        borderRadius: '12px',
         boxShadow: 'none',
         bgcolor: '#fff',
       }}
@@ -137,7 +137,7 @@ export default function LinkMeetingSummary({
             placeItems: 'center',
             bgcolor: C.paleBlue,
             color: C.blue,
-            borderRadius: '9px',
+            borderRadius: '10px',
           }}
         >
           <CalendarMonthOutlinedIcon sx={{ fontSize: 18 }} />
@@ -147,7 +147,7 @@ export default function LinkMeetingSummary({
           component="h2"
           sx={{
             color: C.navy,
-            fontSize: '0.95rem',
+            fontSize: '1rem',
             fontWeight: 750,
             lineHeight: 1.3,
           }}

@@ -70,7 +70,7 @@ export default function ModeStep({ onChoose }) {
               minHeight: { xs: 175, sm: 190 },
               p: { xs: 1.5, sm: 1.75 },
               textAlign: 'left',
-              borderRadius: '14px',
+              borderRadius: '12px',
               border: `1px solid ${C.border}`,
               bgcolor: '#fff',
               transition: 'border-color 160ms ease, box-shadow 160ms ease',
@@ -116,7 +116,7 @@ export default function ModeStep({ onChoose }) {
               <Typography
                 sx={{
                   mt: 0.45,
-                  fontSize: '0.78rem',
+                  fontSize: '0.8125rem',
                   lineHeight: 1.5,
                   color: C.muted,
                 }}

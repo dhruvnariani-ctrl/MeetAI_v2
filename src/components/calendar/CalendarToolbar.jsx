@@ -7,6 +7,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
 
 import SlidingSegmented from '../SlidingSegmented'
+import { FONT } from '../../utils/dashboardFonts'
 
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined'
@@ -36,8 +37,6 @@ export default function CalendarToolbar({
   autoJoin = false,
   onAutoJoinChange,
   onNewMeeting,
-  // PageShell already renders the "Calendar" title and subtitle, so the
-  // toolbar does not repeat them. Set to true only if you use it without PageShell.
   showHeading = false,
 }) {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -48,7 +47,7 @@ export default function CalendarToolbar({
     borderRadius: '10px',
     border: '1px solid #DCE7F0',
     color: '#234C6A',
-    fontSize: '0.8rem',
+    fontSize: FONT.body,
     fontWeight: 650,
     lineHeight: 1,
     textTransform: 'none',
@@ -65,10 +64,14 @@ export default function CalendarToolbar({
     borderRadius: '10px',
     color: '#234C6A',
     bgcolor: '#FFFFFF',
-    '&:hover': { bgcolor: '#F1F7FC', borderColor: '#AFC8DD' },
+    '&:hover': {
+      bgcolor: '#F1F7FC',
+      borderColor: '#AFC8DD',
+    },
   }
 
-  const currentMonthLabel = monthLabel || selectedDateLabel || 'Calendar'
+  const currentMonthLabel =
+    monthLabel || selectedDateLabel || 'Calendar'
 
   const quickActions = [
     { label: 'Today', action: onToday },
@@ -83,7 +86,7 @@ export default function CalendarToolbar({
           <Typography
             sx={{
               color: '#123A59',
-              fontSize: '1.45rem',
+              fontSize: FONT.meetingTitle,
               lineHeight: 1.25,
               fontWeight: 800,
               letterSpacing: '-0.025em',
@@ -93,14 +96,18 @@ export default function CalendarToolbar({
           </Typography>
 
           <Typography
-            sx={{ mt: 0.35, color: '#72869A', fontSize: '0.82rem' }}
+            sx={{
+              mt: 0.35,
+              color: '#72869A',
+              fontSize: FONT.small,
+            }}
           >
             Manage your meetings and schedule
           </Typography>
         </Box>
       )}
 
-      {/* One toolbar row: date navigation on the left, actions on the right */}
+      {/* Date navigation on the left, actions on the right */}
       <Box
         sx={{
           display: 'flex',
@@ -111,7 +118,7 @@ export default function CalendarToolbar({
           rowGap: 1.5,
         }}
       >
-        {/* Left: previous / current label / next / Today */}
+        {/* Date navigation */}
         <Box
           sx={{
             display: 'flex',
@@ -147,7 +154,7 @@ export default function CalendarToolbar({
             <Typography
               sx={{
                 color: '#173F5D',
-                fontSize: '0.92rem',
+                fontSize: FONT.heading,
                 fontWeight: 750,
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
@@ -168,77 +175,86 @@ export default function CalendarToolbar({
           </IconButton>
         </Box>
 
-        {/* Right: date menu, view switch, New meeting */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            justifyContent: { xs: 'flex-start', md: 'flex-end' },
-            gap: 1,
-            minWidth: 0,
-            flex: { xs: '1 1 100%', md: '0 1 auto' },
-          }}
-        >
-          <Button
-            data-tour="calendar-date-menu"
-            onClick={(event) => setAnchorEl(event.currentTarget)}
-            startIcon={<CalendarTodayOutlinedIcon sx={{ fontSize: 17 }} />}
-            endIcon={<KeyboardArrowDownRoundedIcon sx={{ fontSize: 18 }} />}
-            sx={{
-              ...controlSx,
-              px: 1.25,
-              minWidth: 130,
-              justifyContent: 'space-between',
-            }}
-          >
-            {selectedDateLabel}
-          </Button>
+        {/* Date menu, view switch, and new meeting */}
+        
+{/* Date menu, view switch, and new meeting */}
+<Box
+  sx={{
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-end',
+    gap: 1,
+    minWidth: 0,
+    width: { xs: '100%', md: 'auto' },
+    flex: { xs: '1 1 100%', md: '0 1 auto' },
+  }}
+>
+  <Button
+    data-tour="calendar-date-menu"
+    onClick={(event) => setAnchorEl(event.currentTarget)}
+    startIcon={<CalendarTodayOutlinedIcon />}
+    endIcon={<KeyboardArrowDownRoundedIcon />}
+    sx={{
+      ...controlSx,
+      px: 1.25,
+      minWidth: 130,
+      justifyContent: 'space-between',
+    }}
+  >
+    {selectedDateLabel}
+  </Button>
 
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={() => setAnchorEl(null)}
-          >
-            {quickActions.map((item) => (
-              <MenuItem
-                key={item.label}
-                onClick={() => {
-                  setAnchorEl(null)
-                  item.action?.()
-                }}
-                sx={{ fontSize: '0.84rem' }}
-              >
-                {item.label}
-              </MenuItem>
-            ))}
-          </Menu>
+  <Menu
+    anchorEl={anchorEl}
+    open={Boolean(anchorEl)}
+    onClose={() => setAnchorEl(null)}
+  >
+    {quickActions.map((item) => (
+      <MenuItem
+        key={item.label}
+        onClick={() => {
+          setAnchorEl(null)
+          item.action?.()
+        }}
+        sx={{ fontSize: FONT.body }}
+      >
+        {item.label}
+      </MenuItem>
+    ))}
+  </Menu>
 
-          {/* View switch */}
-          <SlidingSegmented
-            dataTour="calendar-view"
-            ariaLabel="Calendar view"
-            options={VIEW_OPTIONS}
-            value={view}
-            onChange={onViewChange}
-            sx={{ height: CONTROL_HEIGHT, bgcolor: '#EDF4FA' }}
-          />
+  <SlidingSegmented
+    dataTour="calendar-view"
+    ariaLabel="Calendar view"
+    options={VIEW_OPTIONS}
+    value={view}
+    onChange={onViewChange}
+    sx={{
+      height: CONTROL_HEIGHT,
+      bgcolor: '#EDF4FA',
+    }}
+  />
 
-          <Button
-            data-tour="new-meeting"
-            onClick={onNewMeeting}
-            startIcon={<AddRoundedIcon />}
-            variant="contained"
-            sx={{
-              ...controlSx,
-              px: 1.75,
-              color: '#FFFFFF',
-              bgcolor: '#16824a',
-            }}
-          >
-            Schedule or Join with MeetAI
-          </Button>
-        </Box>
+  <Button
+    data-tour="new-meeting"
+    onClick={onNewMeeting}
+    startIcon={<AddRoundedIcon />}
+    variant="contained"
+    sx={{
+      ...controlSx,
+      px: 1.75,
+      color: '#FFFFFF',
+      bgcolor: '#16824a',
+      '&:hover': {
+        bgcolor: '#126B3D',
+      },
+    }}
+  >
+    Schedule or Join with MeetAI
+  </Button>
+</Box>
+
       </Box>
     </Box>
   )
