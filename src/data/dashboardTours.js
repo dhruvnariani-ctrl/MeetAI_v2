@@ -57,6 +57,7 @@ export const DASHBOARD_TOUR_STEPS = [
       'Action items are follow-up tasks from your meetings. This section helps you remember what needs to be done.',
     action: 'Look at the action items shown on the dashboard.',
     tip: 'You can open My Tasks to see all of your action items together.',
+    scrollBlock: 'start',
   },
 
   {

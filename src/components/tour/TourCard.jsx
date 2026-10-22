@@ -47,17 +47,29 @@ const TourCard = forwardRef(function TourCard(
         sx={{
           position: 'fixed',
           zIndex: 1402,
-          width: { xs: 'calc(100vw - 32px)', sm: 370 },
-          maxWidth: 370,
-          top: { xs: 'auto', sm: position?.top ?? -9999 },
-          left: { xs: 16, sm: position?.left ?? -9999 },
-          bottom: { xs: 16, sm: 'auto' },
-          borderRadius: '12px',
-          overflow: 'hidden',
+          width: {
+            xs: 'calc(100vw - 20px)',
+            sm: 370,
+          },
+          maxWidth: 'calc(100vw - 20px)',
+          // Keep the card compact on phones; never make the card itself scroll.
+          top: { xs: position?.top ?? 10, sm: position?.top ?? -9999 },
+          left: { xs: position?.left ?? 10, sm: position?.left ?? -9999 },
+          right: { xs: 'auto', sm: 'auto' },
+          bottom: 'auto',
+          maxHeight: 'none',
+          overflow: 'visible',
+          borderRadius: { xs: '9px', sm: '12px' },
           bgcolor: C.white,
           border: `1px solid ${C.border}`,
           boxShadow: '0 16px 48px rgba(12, 41, 64, 0.22)',
           transition: 'top 180ms ease, left 180ms ease',
+          '& *': { minWidth: 0 },
+          '@media (max-width: 360px)': {
+            '& .MuiButton-root': {
+              fontSize: '0.75rem',
+            },
+          },
         }}
       >
         {/* Brand accent and progress */}
@@ -80,17 +92,17 @@ const TourCard = forwardRef(function TourCard(
         {/* Header */}
         <Box
           sx={{
-            px: 2.25,
-            pt: 2,
-            pb: 1.75,
+            px: { xs: 1.1, sm: 2.25 },
+            pt: { xs: 0.8, sm: 2 },
+            pb: { xs: 0.7, sm: 1.75 },
             borderBottom: `1px solid ${C.border}`,
           }}
         >
-          <Stack direction="row" alignItems="flex-start" spacing={1.25}>
+          <Stack direction="row" alignItems="flex-start" spacing={{ xs: 1, sm: 1.25 }}>
             <Box
               sx={{
-                width: 38,
-                height: 38,
+                width: { xs: 28, sm: 38 },
+                height: { xs: 28, sm: 38 },
                 flexShrink: 0,
                 display: 'grid',
                 placeItems: 'center',
@@ -106,7 +118,7 @@ const TourCard = forwardRef(function TourCard(
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography
                 sx={{
-                  fontSize: FONT.caption,
+                  fontSize: { xs: '0.62rem', sm: FONT.caption },
                   fontWeight: 700,
                   letterSpacing: '0.11em',
                   textTransform: 'uppercase',
@@ -119,8 +131,8 @@ const TourCard = forwardRef(function TourCard(
               <Typography
                 component="h2"
                 sx={{
-                  mt: 0.4,
-                  fontSize: FONT.heading,
+                  mt: 0.25,
+                  fontSize: { xs: '0.95rem', sm: FONT.heading },
                   fontWeight: 700,
                   lineHeight: 1.35,
                   color: C.navy,
@@ -151,26 +163,30 @@ const TourCard = forwardRef(function TourCard(
         </Box>
 
         {/* Step description */}
-        <Box sx={{ px: 2.25, py: 2 }}>
+        <Box sx={{ px: { xs: 1.1, sm: 2.25 }, py: { xs: 0.75, sm: 2 } }}>
           <Typography
             sx={{
-              fontSize: FONT.body,
-              lineHeight: 1.75,
+              fontSize: { xs: '0.8rem', sm: FONT.body },
+              lineHeight: { xs: 1.35, sm: 1.75 },
               color: C.text,
               overflowWrap: 'anywhere',
+              display: { xs: '-webkit-box', sm: 'block' },
+              WebkitBoxOrient: { xs: 'vertical', sm: 'initial' },
+              WebkitLineClamp: { xs: 2, sm: 'unset' },
+              overflow: { xs: 'hidden', sm: 'visible' },
             }}
           >
             {step.body}
           </Typography>
 
           {step.action && (
-            <Box sx={{ mt: 1.5 }}>
+            <Box sx={{ mt: 1.5, display: { xs: 'none', sm: 'block' } }}>
               <TourHint label="TRY THIS">{step.action}</TourHint>
             </Box>
           )}
 
           {step.tip && (
-            <Box sx={{ mt: 1 }}>
+            <Box sx={{ mt: 1, display: { xs: 'none', sm: 'block' } }}>
               <TourHint label="HELPFUL TIP">{step.tip}</TourHint>
             </Box>
           )}
@@ -178,10 +194,13 @@ const TourCard = forwardRef(function TourCard(
           {/* Step count */}
           <Box
             sx={{
-              mt: 2,
+              mt: { xs: 0.6, sm: 2 },
               display: 'flex',
-              alignItems: 'center',
+              alignItems: { xs: 'flex-start', sm: 'center' },
               justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              rowGap: 0.75,
+              columnGap: 1,
             }}
           >
             <Stack direction="row" spacing={0.6} alignItems="center">
@@ -214,6 +233,7 @@ const TourCard = forwardRef(function TourCard(
 
             <Typography
               sx={{
+                display: { xs: 'none', sm: 'block' },
                 fontSize: FONT.caption,
                 fontWeight: 600,
                 color: C.muted,
@@ -227,14 +247,15 @@ const TourCard = forwardRef(function TourCard(
         {/* Actions */}
         <Box
           sx={{
-            px: 2.25,
-            py: 1.5,
+            px: { xs: 0.75, sm: 2.25 },
+            py: { xs: 0.5, sm: 1.5 },
             bgcolor: '#F8FAFB',
             borderTop: `1px solid ${C.border}`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: 1,
+            gap: 0.75,
+            flexWrap: 'wrap',
           }}
         >
           <Button
@@ -253,14 +274,15 @@ const TourCard = forwardRef(function TourCard(
             Skip tour
           </Button>
 
-          <Stack direction="row" spacing={1}>
+          <Stack direction="row" spacing={{ xs: 0.5, sm: 1 }} sx={{ flexShrink: 0 }}>
             {index > 0 && (
               <Button
                 onClick={onBack}
                 variant="outlined"
                 startIcon={<ArrowBackRoundedIcon />}
                 sx={{
-                  minHeight: 38,
+                  minHeight: { xs: 32, sm: 38 },
+                  px: { xs: 0.8, sm: 1.2 },
                   borderRadius: '8px',
                   borderColor: '#CAD7E0',
                   color: C.navy,
@@ -288,8 +310,9 @@ const TourCard = forwardRef(function TourCard(
                 )
               }
               sx={{
-                minHeight: 38,
-                px: 1.75,
+                minHeight: { xs: 32, sm: 38 },
+                px: { xs: 0.9, sm: 1.75 },
+                whiteSpace: 'nowrap',
                 borderRadius: '8px',
                 bgcolor: C.navy,
                 color: C.white,
