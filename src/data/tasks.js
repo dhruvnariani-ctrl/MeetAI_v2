@@ -1,11 +1,10 @@
-
 import { getAllMeetings } from './meetings'
 
 import { filterUserMeetings } from '../utils/meetingAccess'
 import { filterUserTasks } from '../utils/taskAccess'
 
 export const TASK_GRID_COLUMNS =
-  '32px minmax(0, 2.4fr) minmax(68px, 0.8fr) minmax(84px, 1fr) minmax(0, 1.1fr) minmax(76px, 0.9fr) 32px'
+  '32px minmax(0, 2.4fr) minmax(68px, 0.8fr) minmax(84px, 1fr) minmax(0, 1.1fr) minmax(76px, 0.9fr)'
 export const TASK_FILTERS = [
   'All',
   'Pending',

@@ -53,6 +53,15 @@ export default function AppLayout() {
     setNavOpen(desktop)
   }, [desktop])
 
+  // The app tour opens and closes the sidebar drawer on small screens.
+  useEffect(() => {
+    if (desktop) return undefined
+
+    const onTourSidebar = (event) => setNavOpen(Boolean(event.detail?.open))
+    window.addEventListener('meetai-tour-sidebar', onTourSidebar)
+    return () => window.removeEventListener('meetai-tour-sidebar', onTourSidebar)
+  }, [desktop])
+
   const toggleNavigation = () => {
     setNavOpen((open) => !open)
   }

@@ -17,6 +17,7 @@ const FIRST_MEETING_ID =
  */
 
 export const SIDEBAR_NAVIGATION_STEP = {
+  sidebar: true,
   path: '/',
   target:
     '[data-tour="sidebar-navigation"]',
@@ -31,6 +32,7 @@ export const SIDEBAR_NAVIGATION_STEP = {
 }
 
 export const SIDEBAR_INSTANT_JOIN_STEP = {
+  sidebar: true,
   path: '/',
   target:
     '[data-tour="Add MeetAI to a Meeting"]',
@@ -45,6 +47,7 @@ export const SIDEBAR_INSTANT_JOIN_STEP = {
 }
 
 export const SIDEBAR_CONTROLS_STEP = {
+  sidebar: true,
   path: '/',
   target:
     '[data-tour="sidebar-controls"]',

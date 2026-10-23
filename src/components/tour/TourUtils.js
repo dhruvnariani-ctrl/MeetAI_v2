@@ -6,7 +6,13 @@ export function findTarget(selector) {
   if (!selector) return null
 
   try {
-    return document.querySelector(selector)
+    // Responsive layouts can render the same data-tour twice (one hidden).
+    // Use the first copy that is actually displayed.
+    return (
+      Array.from(document.querySelectorAll(selector)).find(
+        (element) => element.getClientRects().length > 0,
+      ) || null
+    )
   } catch {
     return null
   }

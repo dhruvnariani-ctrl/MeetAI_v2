@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -19,6 +18,38 @@ import { findTarget, positionCard, rectOf } from './tour/TourUtils'
  * so it is re-exported here.
  */
 export { startAppTour, stopAppTour, TOUR_STORAGE_KEY }
+
+const SMALL_SCREEN_QUERY = '(max-width: 899.95px)'
+
+/*
+ * On small screens the sidebar is a drawer (see AppLayout). Ask AppLayout to
+ * open it for sidebar steps and close it otherwise. Returns the animation wait.
+ */
+function syncSidebarDrawer(open) {
+  if (!window.matchMedia(SMALL_SCREEN_QUERY).matches) return 0
+
+  window.dispatchEvent(
+    new CustomEvent('meetai-tour-sidebar', { detail: { open } }),
+  )
+
+  return open ? 300 : 0
+}
+
+/* Nearest ancestor that actually scrolls (the app scrolls <main>, not window). */
+function findScrollParent(element) {
+  let node = element?.parentElement
+  while (node && node !== document.body) {
+    const { overflowY } = window.getComputedStyle(node)
+    if (
+      (overflowY === 'auto' || overflowY === 'scroll') &&
+      node.scrollHeight > node.clientHeight
+    ) {
+      return node
+    }
+    node = node.parentElement
+  }
+  return window
+}
 
 export default function TourRunner() {
   const location = useLocation()
@@ -55,6 +86,7 @@ export default function TourRunner() {
     }
 
     const onStop = () => {
+      syncSidebarDrawer(false)
       setTour(null)
       resetTarget()
     }
@@ -101,6 +133,9 @@ export default function TourRunner() {
     const isJoinStep = targetSelector.includes(
       'dashboard-join-meeting',
     )
+
+    // Sidebar steps need the drawer open before the target can be measured.
+    const sidebarWait = syncSidebarDrawer(Boolean(step.sidebar))
 
     if (isJoinStep) {
       window.dispatchEvent(
@@ -154,7 +189,7 @@ export default function TourRunner() {
 
         setTargetRect(rect)
         setTargetFound(true)
-      }, mobile ? 80 : 350)
+      }, (mobile ? 80 : 350) + sidebarWait)
     }
 
     locate()
@@ -199,21 +234,10 @@ export default function TourRunner() {
       const spaceBelow = viewportHeight - targetBox.bottom
       const isTallTarget = targetBox.height > viewportHeight
 
-      // Tall mobile targets are handled specially: keep the card at the top
-      // and let the spotlight begin immediately after the card, showing as
-      // much of the tall target as fits in the remaining viewport.
-      if (isTallTarget) {
-        setCardPosition({
-          top: edge,
-          left: Math.max(edge, (viewportWidth - cardRect.width) / 2),
-        })
-        setTargetRect(rectOf(target) || targetBox)
-        return
-      }
-
       // Prefer the side with enough room. If both fit, use the side with more
       // room so the target and card remain fully separated.
-      if (spaceAbove >= needed || spaceBelow >= needed) {
+      // Tall targets skip this branch: the card would cover their top edge.
+      if (!isTallTarget && (spaceAbove >= needed || spaceBelow >= needed)) {
         const useAbove = spaceAbove >= needed && (spaceBelow < needed || spaceAbove >= spaceBelow)
         const top = useAbove
           ? Math.max(edge, targetBox.top - pad - gap - cardHeight)
@@ -238,9 +262,7 @@ export default function TourRunner() {
         const delta = targetNow.top - desiredTargetTop
 
         if (Math.abs(delta) > 2) {
-          // Scroll the nearest scrollable ancestors via scrollIntoView first;
-          // then adjust the document viewport for the final pixel alignment.
-          window.scrollBy({ top: delta, left: 0, behavior: 'auto' })
+          findScrollParent(target).scrollBy({ top: delta, left: 0, behavior: 'auto' })
         }
 
         finishTimer = window.setTimeout(() => {
