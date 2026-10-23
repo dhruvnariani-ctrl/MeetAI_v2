@@ -1,15 +1,10 @@
-
 import { useState } from 'react'
 
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import InputAdornment from '@mui/material/InputAdornment'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import Paper from '@mui/material/Paper'
-import TextField from '@mui/material/TextField'
 
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 
 import { FONT } from '../../utils/dashboardFonts'
@@ -51,8 +46,6 @@ const menuPaperSx = {
 }
 
 export default function RecordedFilters({
-  search,
-  onSearchChange,
   dateFilters,
   dateFilter,
   onDateFilterChange,
@@ -64,130 +57,77 @@ export default function RecordedFilters({
   const [sortAnchorEl, setSortAnchorEl] = useState(null)
 
   return (
-    <Paper
-      elevation={0}
+    <Box
       sx={{
-        p: 0.75,
-        border: '1px solid #E3EBF3',
-        borderRadius: '12px',
-        bgcolor: '#FFFFFF',
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        gap: 0.75,
       }}
     >
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: {
-            xs: 'minmax(0, 1fr) minmax(0, 1fr)',
-            md: 'minmax(180px, 1fr) 140px 140px',
-          },
-          alignItems: 'center',
-          gap: 0.75,
-        }}
+      {/* Date filter */}
+      <Button
+        data-tour="recorded-filters"
+        size="small"
+        variant="outlined"
+        endIcon={<KeyboardArrowDownRoundedIcon />}
+        onClick={(event) => setDateAnchorEl(event.currentTarget)}
+        sx={dropdownButtonSx}
       >
-        {/* Search */}
-        <TextField
-          data-tour="recorded-search"
-          value={search}
-          onChange={(event) => onSearchChange(event.target.value)}
-          placeholder="Search meetings or people..."
-          size="small"
-          fullWidth
-          inputProps={{ 'aria-label': 'Search recorded meetings' }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchRoundedIcon
-                  sx={{ color: '#8197AB' }}
-                />
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            minWidth: 0,
-            gridColumn: { xs: '1 / -1', md: 'auto' },
-            '& .MuiOutlinedInput-root': {
-              height: 38,
-              borderRadius: '10px',
-              bgcolor: '#FFFFFF',
-              color: '#23445F',
-              fontSize: FONT.body,
-              '& fieldset': {
-                borderColor: '#E5EDF5',
-              },
-              '&:hover fieldset': {
-                borderColor: '#C9D9E8',
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: '#2680D9',
-              },
-            },
-          }}
-        />
+        {dateFilter}
+      </Button>
 
-        {/* Date filter */}
-        <Button
-          data-tour="recorded-filters"
-          size="small"
-          variant="outlined"
-          endIcon={<KeyboardArrowDownRoundedIcon />}
-          onClick={(event) => setDateAnchorEl(event.currentTarget)}
-          sx={dropdownButtonSx}
-        >
-          {dateFilter}
-        </Button>
+      <Menu
+        anchorEl={dateAnchorEl}
+        open={Boolean(dateAnchorEl)}
+        onClose={() => setDateAnchorEl(null)}
+        slotProps={{ paper: { sx: menuPaperSx } }}
+      >
+        {dateFilters.map((item) => (
+          <MenuItem
+            key={item}
+            selected={dateFilter === item}
+            onClick={() => {
+              onDateFilterChange(item)
+              setDateAnchorEl(null)
+            }}
+          >
+            {item}
+          </MenuItem>
+        ))}
+      </Menu>
 
-        <Menu
-          anchorEl={dateAnchorEl}
-          open={Boolean(dateAnchorEl)}
-          onClose={() => setDateAnchorEl(null)}
-          slotProps={{ paper: { sx: menuPaperSx } }}
-        >
-          {dateFilters.map((item) => (
-            <MenuItem
-              key={item}
-              selected={dateFilter === item}
-              onClick={() => {
-                onDateFilterChange(item)
-                setDateAnchorEl(null)
-              }}
-            >
-              {item}
-            </MenuItem>
-          ))}
-        </Menu>
+      {/* Sort */}
+      <Button
+        data-tour="recorded-sort"
+        size="small"
+        variant="outlined"
+        endIcon={<KeyboardArrowDownRoundedIcon />}
+        onClick={(event) => setSortAnchorEl(event.currentTarget)}
+        sx={dropdownButtonSx}
+      >
+        Sort: {sortBy}
+      </Button>
 
-        {/* Sort */}
-        <Button
-          data-tour="recorded-sort"
-          size="small"
-          variant="outlined"
-          endIcon={<KeyboardArrowDownRoundedIcon />}
-          onClick={(event) => setSortAnchorEl(event.currentTarget)}
-          sx={dropdownButtonSx}
-        >
-          Sort: {sortBy}
-        </Button>
-
-        <Menu
-          anchorEl={sortAnchorEl}
-          open={Boolean(sortAnchorEl)}
-          onClose={() => setSortAnchorEl(null)}
-          slotProps={{ paper: { sx: menuPaperSx } }}
-        >
-          {sortOptions.map((item) => (
-            <MenuItem
-              key={item}
-              selected={sortBy === item}
-              onClick={() => {
-                onSortChange(item)
-                setSortAnchorEl(null)
-              }}
-            >
-              {item}
-            </MenuItem>
-          ))}
-        </Menu>
-      </Box>
-    </Paper>
+      <Menu
+        anchorEl={sortAnchorEl}
+        open={Boolean(sortAnchorEl)}
+        onClose={() => setSortAnchorEl(null)}
+        slotProps={{ paper: { sx: menuPaperSx } }}
+      >
+        {sortOptions.map((item) => (
+          <MenuItem
+            key={item}
+            selected={sortBy === item}
+            onClick={() => {
+              onSortChange(item)
+              setSortAnchorEl(null)
+            }}
+          >
+            {item}
+          </MenuItem>
+        ))}
+      </Menu>
+    </Box>
   )
 }

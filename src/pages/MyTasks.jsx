@@ -1,5 +1,5 @@
-
 import { useMemo, useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 
 import PageShell, { EmptyPanel } from '../components/PageShell'
 import TaskFilters from '../components/tasks/TaskFilters'
@@ -130,6 +130,7 @@ export default function MyTasks() {
   usePageTitle('My Tasks')
 
   const currentUser = useCurrentUser()
+  const { query: search } = useOutletContext()
 
   const [tasks, setTasks] = useState(() =>
     getTasksFromDashboard(currentUser),
@@ -138,7 +139,6 @@ export default function MyTasks() {
   const [filter, setFilter] = useState('All')
   const [priority, setPriority] = useState('All')
   const [dueDate, setDueDate] = useState('default')
-  const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('My Order')
 
   const isDone = (task) => normalizeTaskStatus(task.status) === 'Done'
@@ -185,14 +185,12 @@ export default function MyTasks() {
   const hasActiveFilters =
     filter !== 'All' ||
     priority !== 'All' ||
-    dueDate !== 'default' ||
-    search.trim() !== ''
+    dueDate !== 'default'
 
   const clearFilters = () => {
     setFilter('All')
     setPriority('All')
     setDueDate('default')
-    setSearch('')
   }
 
   const firstActionableIndex = rows.findIndex((task) => !isDone(task))
@@ -277,7 +275,7 @@ export default function MyTasks() {
           />
         </Box>
 
-        {/* Status, priority, due date, sort and search */}
+        {/* Status, priority, due date and sort (search lives in the header) */}
         <TaskFilters
           filter={filter}
           onFilterChange={setFilter}
@@ -285,8 +283,6 @@ export default function MyTasks() {
           onPriorityChange={setPriority}
           dueDate={dueDate}
           onDueDateChange={setDueDate}
-          search={search}
-          onSearchChange={setSearch}
           sortOptions={TASK_SORT_OPTIONS}
           sortBy={sortBy}
           onSortChange={setSortBy}
@@ -320,6 +316,7 @@ export default function MyTasks() {
                       fontSize: FONT.body,
                       fontWeight: 700,
                       textTransform: 'none',
+                      minWidth: '20px',
                     }}
                   >
                     Clear filters
@@ -343,7 +340,7 @@ export default function MyTasks() {
                   borderBottom: `1px solid ${COLORS.border}`,
                 }}
               >
-                {['', 'Task', 'Priority', 'Due date', 'Owner', 'Status', ''].map(
+                {['', 'Task', 'Priority', 'Due date', 'Owner', 'Status'].map(
                   (label, index) => (
                     <Typography
                       key={`${label}-${index}`}

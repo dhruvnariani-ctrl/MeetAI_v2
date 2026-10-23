@@ -65,7 +65,7 @@ export const HEADER_SEARCH_BAR_STEP = {
   title: 'Search your meetings',
   icon: 'Search',
   body:
-    'Quickly find a meeting by searching its title, platform, or participants.',
+    'Search adapts to the page you are on: meetings, recorded meetings or tasks.',
   action:
     'Type a meeting name or person to see matching meetings.',
   tip:
@@ -171,11 +171,11 @@ export const RECORDED_MEETINGS_TOUR_STEPS = [
   {
     path: '/recorded',
     target:
-      '[data-tour="recorded-search"]',
+      '[data-tour="header-search"]',
     title: 'Search recorded meetings',
     icon: 'VideoLibrary',
     body:
-      'Use the search box to find recorded meetings by title, platform, or participant.',
+      'Use the search box in the header to find recorded meetings by title, platform, or participant.',
     action:
       'Try searching for a meeting or participant.',
     tip:
@@ -193,7 +193,7 @@ export const RECORDED_MEETINGS_TOUR_STEPS = [
     action:
       'Open the date filter and try one of the available options.',
     tip:
-      'You can combine the date filter with the search box.',
+      'You can combine the date filter with the header search.',
   },
 
   {

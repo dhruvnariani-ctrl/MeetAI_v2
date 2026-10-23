@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
 import InputBase from '@mui/material/InputBase'
@@ -8,7 +8,7 @@ import Paper from '@mui/material/Paper'
 import SearchIcon from '@mui/icons-material/Search'
 
 import SearchResults, { MAX_RESULTS } from './SearchResults'
-import { getTodaysMeetings } from '../data/meetings'
+import { getAllMeetings, getTodaysMeetings } from '../data/meetings'
 
 /* Matches title, platform, participant name or participant email. */
 function matches(meeting, searchValue) {
@@ -28,22 +28,39 @@ function matches(meeting, searchValue) {
   )
 }
 
-/* Header search box + results dropdown. The parent owns the query. */
+/*
+ * Pages that filter their own list with the header query (no dropdown).
+ * Every other page gets the meetings dropdown.
+ */
+const LIST_PAGES = {
+  '/recorded': 'Search recorded meetings',
+  '/tasks': 'Search tasks',
+}
+
+/* Header search box. The parent owns the query; the page decides what it does. */
 export default function HeaderSearch({ query, onQueryChange }) {
   const navigate = useNavigate()
+  const { pathname } = useLocation()
 
-  const meetings = useMemo(() => getTodaysMeetings(), [])
+  const listPlaceholder = LIST_PAGES[pathname]
+  const isListPage = Boolean(listPlaceholder)
+  const placeholder = listPlaceholder || 'Search meetings'
+
+  const meetings = useMemo(
+    () => (pathname === '/' ? getTodaysMeetings() : getAllMeetings()),
+    [pathname],
+  )
 
   const matchingMeetings = useMemo(() => {
     const searchValue = query.trim().toLowerCase()
-    if (!searchValue) return []
+    if (isListPage || !searchValue) return []
 
     return meetings
       .filter((meeting) => matches(meeting, searchValue))
       .slice(0, MAX_RESULTS)
-  }, [meetings, query])
+  }, [meetings, query, isListPage])
 
-  const showDropdown = query.trim().length > 0
+  const showDropdown = !isListPage && query.trim().length > 0
 
   const handleMeetingClick = (meeting) => {
     onQueryChange('')
@@ -81,7 +98,7 @@ export default function HeaderSearch({ query, onQueryChange }) {
           px: 2,
           borderRadius: '20px',
           border: '1px solid',
-          borderColor: showDropdown ? '#0d68c9' : 'divider',
+          borderColor: showDropdown || (isListPage && query) ? '#0d68c9' : 'divider',
           color: 'text.secondary',
           transition: 'border-color 160ms ease, box-shadow 160ms ease',
           '&:focus-within': {
@@ -95,11 +112,11 @@ export default function HeaderSearch({ query, onQueryChange }) {
 
         <InputBase
           type="search"
-          placeholder="Search meetings"
+          placeholder={placeholder}
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
           onKeyDown={handleKeyDown}
-          inputProps={{ 'aria-label': 'Search meetings', autoComplete: 'off' }}
+          inputProps={{ 'aria-label': placeholder, autoComplete: 'off' }}
           sx={{
             flex: 1,
             minWidth: 0,

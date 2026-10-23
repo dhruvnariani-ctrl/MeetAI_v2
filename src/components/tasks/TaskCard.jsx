@@ -287,29 +287,6 @@ export default function TaskCard({
         </Box>
 
         {/* Task actions */}
-        <Tooltip title="Task actions">
-          <IconButton
-            size="small"
-            aria-label={`Actions for ${taskTitle}`}
-            onClick={() => {
-              if (task?.id != null && !isDone) {
-                setConfirmOpen(true)
-              }
-            }}
-            sx={{
-              width: 30,
-              height: 30,
-              color: '#71869A',
-              justifySelf: 'end',
-              '&:hover': {
-                color: '#075A9C',
-                bgcolor: '#EDF5FC',
-              },
-            }}
-          >
-            <MoreHorizRoundedIcon sx={{ fontSize: 19 }} />
-          </IconButton>
-        </Tooltip>
       </Box>
 
       {/* Mark task as done confirmation dialog */}

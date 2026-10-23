@@ -1,6 +1,5 @@
-
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useOutletContext } from 'react-router-dom'
 
 import PageShell, { EmptyPanel } from '../components/PageShell'
 import RecordedFilters from '../components/recorded/RecordedFilters'
@@ -109,8 +108,8 @@ export default function RecordedMeetings() {
   usePageTitle('Recorded Meetings')
 
   const navigate = useNavigate()
+  const { query: search } = useOutletContext()
 
-  const [search, setSearch] = useState('')
   const [dateFilter, setDateFilter] = useState('All')
   const [sortBy, setSortBy] = useState('Newest')
 
@@ -145,10 +144,9 @@ export default function RecordedMeetings() {
   ).length
 
   const hasActiveFilters =
-    search.trim() !== '' || dateFilter !== 'All'
+    dateFilter !== 'All'
 
   const clearFilters = () => {
-    setSearch('')
     setDateFilter('All')
     setSortBy('Newest')
   }
@@ -198,18 +196,6 @@ export default function RecordedMeetings() {
           />
         </Box>
 
-        {/* Search and filters */}
-        <RecordedFilters
-          search={search}
-          onSearchChange={setSearch}
-          dateFilters={DATE_FILTERS}
-          dateFilter={dateFilter}
-          onDateFilterChange={setDateFilter}
-          sortOptions={RECORDED_SORT_OPTIONS}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-        />
-
         {/* Archive heading */}
         <Box
           sx={{
@@ -243,6 +229,25 @@ export default function RecordedMeetings() {
             </Typography>
           </Box>
 
+          {/* Filters + count, right aligned (search lives in the header) */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 0.75,
+              ml: 'auto',
+            }}
+          >
+          <RecordedFilters
+            dateFilters={DATE_FILTERS}
+            dateFilter={dateFilter}
+            onDateFilterChange={setDateFilter}
+            sortOptions={RECORDED_SORT_OPTIONS}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+          />
+
           <Box
             component="span"
             aria-live="polite"
@@ -260,6 +265,7 @@ export default function RecordedMeetings() {
           >
             {recordedMeetings.length}{' '}
             {recordedMeetings.length === 1 ? 'meeting' : 'meetings'}
+          </Box>
           </Box>
         </Box>
 

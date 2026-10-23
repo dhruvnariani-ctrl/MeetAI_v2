@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 
@@ -24,7 +23,11 @@ export default function AppLayout() {
       : false,
   )
 
-  const [query, setQuery] = useState('')
+  // Search text is tied to the page it was typed on, so each page starts empty.
+  const { pathname } = useLocation()
+  const [search, setSearch] = useState({ path: pathname, text: '' })
+  const query = search.path === pathname ? search.text : ''
+  const setQuery = (text) => setSearch({ path: pathname, text })
   const [lastSynced, setLastSynced] = useState(() => new Date())
 
   const [meetingOpen, setMeetingOpen] = useState(false)
@@ -33,7 +36,6 @@ export default function AppLayout() {
 
   const currentUser = useCurrentUser()
   const mainRef = useRef(null)
-  const { pathname } = useLocation()
   const firstRender = useRef(true)
 
   useEffect(() => {

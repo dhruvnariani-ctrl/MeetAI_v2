@@ -1,17 +1,13 @@
-
 import { useState } from 'react'
 
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import InputAdornment from '@mui/material/InputAdornment'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
-import TextField from '@mui/material/TextField'
 
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import FilterAltOffOutlinedIcon from '@mui/icons-material/FilterAltOffOutlined'
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 
 import { FONT } from '../../utils/dashboardFonts'
 
@@ -47,8 +43,6 @@ export default function TaskFilters({
   onPriorityChange = () => {},
   dueDate = 'default',
   onDueDateChange = () => {},
-  search = '',
-  onSearchChange = () => {},
   sortOptions = [],
   sortBy = '',
   onSortChange = () => {},
@@ -74,8 +68,7 @@ export default function TaskFilters({
   const hasActiveFilters =
     filter !== 'All' ||
     priority !== 'All' ||
-    dueDate !== 'default' ||
-    search.trim() !== ''
+    dueDate !== 'default'
 
   const clearFilters = () => {
     if (onClearFilters) {
@@ -86,7 +79,6 @@ export default function TaskFilters({
     onFilterChange('All')
     onPriorityChange('All')
     onDueDateChange('default')
-    onSearchChange('')
   }
 
   const openMenu = (event, name) => {
@@ -166,8 +158,8 @@ export default function TaskFilters({
           gridTemplateColumns: {
             xs: 'minmax(0, 1fr) minmax(0, 1fr)',
             sm: hasSort
-              ? 'auto auto auto auto minmax(160px, 1fr) auto'
-              : 'auto auto auto minmax(160px, 1fr) auto',
+              ? 'auto auto auto auto 1fr'
+              : 'auto auto auto 1fr',
           },
           gap: 0.75,
           alignItems: 'center',
@@ -293,41 +285,6 @@ export default function TaskFilters({
           </>
         )}
 
-        {/* Search */}
-        <TextField
-          fullWidth
-          size="small"
-          value={search}
-          onChange={(event) => onSearchChange(event.target.value)}
-          placeholder="Search tasks..."
-          sx={{
-            gridColumn: { xs: '1 / -1', sm: 'auto' },
-            minWidth: 0,
-            '& .MuiOutlinedInput-root': {
-              height: 38,
-              borderRadius: '10px',
-              bgcolor: '#FFFFFF',
-              color: '#23445F',
-              fontSize: FONT.body,
-              '& fieldset': { borderColor: '#E7EEF5' },
-              '&:hover fieldset': { borderColor: '#C9D9E8' },
-              '&.Mui-focused fieldset': { borderColor: '#2680D9' },
-            },
-          }}
-          slotProps={{
-            htmlInput: { 'aria-label': 'Search tasks' },
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchRoundedIcon
-                    sx={{ fontSize: 19, color: '#8197AB' }}
-                  />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-
         {/* Clear filters */}
         <Button
           onClick={clearFilters}
@@ -335,7 +292,7 @@ export default function TaskFilters({
           startIcon={<FilterAltOffOutlinedIcon sx={{ fontSize: 17 }} />}
           sx={{
             gridColumn: { xs: '1 / -1', sm: 'auto' },
-            justifySelf: { xs: 'end', sm: 'stretch' },
+            justifySelf: 'end',
             minHeight: 38,
             px: 1.4,
             borderRadius: '10px',
