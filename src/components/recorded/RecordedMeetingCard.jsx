@@ -21,6 +21,9 @@ const COLORS = {
   blue: '#075A9C',
   muted: '#71869A',
   border: '#E7EDF3',
+  iconMuted: '#7B90A3',
+  metadata: '#526E84',
+  buttonText: '#365974',
 }
 
 const ICON_SIZE = {
@@ -29,18 +32,7 @@ const ICON_SIZE = {
   heading: '1.15rem',
 }
 
-
-function formatMeetingDate(value) {
-  const date = new Date(value)
-
-  if (Number.isNaN(date.getTime())) return 'Date unavailable'
-
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date)
-}
+const DOT_SPACE = 14
 
 const secondaryButtonSx = {
   minWidth: 0,
@@ -48,7 +40,7 @@ const secondaryButtonSx = {
   px: 1,
   borderRadius: '8px',
   borderColor: '#D7E2EC',
-  color: '#365974',
+  color: COLORS.buttonText,
   fontSize: FONT.caption,
   fontWeight: 650,
   textTransform: 'none',
@@ -63,10 +55,82 @@ const secondaryButtonSx = {
   },
 }
 
-const DOT_SPACE = 14
+const primaryButtonSx = {
+  ...secondaryButtonSx,
+  minHeight: 34,
+  px: 1.25,
+  border: 0,
+  bgcolor: COLORS.blue,
+  color: '#FFFFFF',
+  boxShadow: 'none',
+  fontWeight: 700,
+  '&:hover': {
+    bgcolor: '#064A80',
+    boxShadow: 'none',
+  },
+  '&.Mui-disabled': {
+    bgcolor: '#EDF1F5',
+    color: '#9AA9B7',
+  },
+}
 
+const metadataRowSx = {
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  rowGap: 0.4,
+  ml: `-${DOT_SPACE}px`,
+}
 
-function MetaItem({ icon, children, sx }) {
+const compactBadgeRowSx = {
+  display: { xs: 'flex', lg: 'none' },
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  gap: 0.75,
+  mt: 1.1,
+}
+
+const contentBadgeSx = {
+  '& svg': {
+    fontSize: ICON_SIZE.body,
+  },
+}
+
+const BADGE_CONFIG = [
+  {
+    key: 'recording',
+    label: 'Recording',
+    Icon: PlayArrowRoundedIcon,
+    availabilityKey: 'recording',
+  },
+  {
+    key: 'transcript',
+    label: 'Transcript',
+    Icon: DescriptionOutlinedIcon,
+    availabilityKey: 'transcript',
+  },
+  {
+    key: 'notes',
+    label: 'Notes',
+    Icon: NotesOutlinedIcon,
+    availabilityKey: 'meetingNotes',
+    compactLabel: 'Notes',
+  },
+]
+
+function formatMeetingDate(value) {
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) return 'Date unavailable'
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date)
+}
+
+function MetaItem({ Icon, children, sx }) {
   return (
     <Box
       sx={[
@@ -95,10 +159,10 @@ function MetaItem({ icon, children, sx }) {
             transform: 'translateY(-50%)',
           },
         },
-        ...(Array.isArray(sx) ? sx : [sx]),
+        ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
       ]}
     >
-      {icon}
+      {Icon && <Icon aria-hidden="true" />}
 
       <Typography
         component="span"
@@ -114,12 +178,33 @@ function MetaItem({ icon, children, sx }) {
   )
 }
 
+function MeetingAvailability({ meeting, compact = false }) {
+  return (
+    <>
+      {BADGE_CONFIG.map(({ key, label, Icon, availabilityKey, compactLabel }) => {
+        const available = Boolean(meeting[availabilityKey]?.available)
+
+        return (
+          <AvailabilityBadge
+            key={key}
+            icon={<Icon sx={{ fontSize: ICON_SIZE.body }} />}
+            label={compact ? compactLabel || label : key === 'notes' ? 'Meeting notes' : label}
+            available={available}
+            {...(compact && key === 'recording'
+              ? { fontSize: ICON_SIZE.small }
+              : {})}
+          />
+        )
+      })}
+    </>
+  )
+}
 
 export default function RecordedMeetingCard({
   meeting,
   onWatchRecording,
   onViewTranscript,
-  onViewNotes,
+  onViewSummary,
 }) {
   const start = new Date(meeting.start)
   const end = new Date(meeting.end)
@@ -137,7 +222,29 @@ export default function RecordedMeetingCard({
 
   const recordingAvailable = Boolean(meeting.recording?.available)
   const transcriptAvailable = Boolean(meeting.transcript?.available)
-  const notesAvailable = Boolean(meeting.meetingNotes?.available)
+  const notesAvailable = Boolean(meeting.meetingSummary)
+
+  const actions = [
+    {
+      label: 'Watch recording',
+      Icon: PlayArrowRoundedIcon,
+      available: recordingAvailable,
+      onClick: onWatchRecording,
+      primary: true,
+    },
+    {
+      label: 'Transcript',
+      Icon: DescriptionOutlinedIcon,
+      available: transcriptAvailable,
+      onClick: onViewTranscript,
+    },
+    {
+      label: 'Summary',
+      Icon: NotesOutlinedIcon,
+      available: notesAvailable,
+      onClick: onViewSummary,
+    },
+  ]
 
   return (
     <Box
@@ -163,12 +270,7 @@ export default function RecordedMeetingCard({
       <Box
         role="cell"
         aria-label={`Meeting: ${meeting.title || 'Untitled meeting'}`}
-        sx={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: 1.25,
-          minWidth: 0,
-        }}
+        sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.25, minWidth: 0 }}
       >
         <Box
           aria-hidden="true"
@@ -184,9 +286,7 @@ export default function RecordedMeetingCard({
             color: COLORS.blue,
           }}
         >
-          
-<VideoFileOutlinedIcon sx={{ fontSize: ICON_SIZE.heading }} />
-
+          <VideoFileOutlinedIcon sx={{ fontSize: ICON_SIZE.heading }} />
         </Box>
 
         <Box sx={{ minWidth: 0 }}>
@@ -203,34 +303,21 @@ export default function RecordedMeetingCard({
           </Typography>
 
           <Box sx={{ mt: 0.5, overflow: 'hidden' }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                rowGap: 0.4,
-                ml: `-${DOT_SPACE}px`,
-              }}
-            >
-              <MetaItem
-                sx={{
-                  color: '#526E84',
-                  '& span': { fontWeight: 600 },
-                }}
-              >
+            <Box sx={metadataRowSx}>
+              <MetaItem sx={{ color: COLORS.metadata, '& span': { fontWeight: 600 } }}>
                 {meeting.platform || 'Meeting platform'}
               </MetaItem>
 
-              <MetaItem icon={<CalendarTodayOutlinedIcon sx={{fontSize: ICON_SIZE.small}}/>}>
+              <MetaItem Icon={CalendarTodayOutlinedIcon}>
                 {dateText}
               </MetaItem>
 
-              <MetaItem icon={<ScheduleOutlinedIcon sx={{fontSize: ICON_SIZE.small}}/>}>
+              <MetaItem Icon={ScheduleOutlinedIcon}>
                 {timeText}
               </MetaItem>
 
               <MetaItem
-                icon={<GroupsOutlinedIcon sx={{fontSize: ICON_SIZE.body}}/>}
+                Icon={GroupsOutlinedIcon}
                 sx={{ display: { xs: 'inline-flex', lg: 'none' } }}
               >
                 {participantCount} {participantLabel}
@@ -238,33 +325,8 @@ export default function RecordedMeetingCard({
             </Box>
           </Box>
 
-          <Box
-            sx={{
-              display: { xs: 'flex', lg: 'none' },
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: 0.75,
-              mt: 1.1,
-            }}
-          >
-            <AvailabilityBadge
-              icon={<PlayArrowRoundedIcon sx={{fontSize: ICON_SIZE.body}}/>}
-              label="Recording"
-              available={recordingAvailable}
-              fontSize={ICON_SIZE.small}
-            />
-
-            <AvailabilityBadge
-              icon={<DescriptionOutlinedIcon sx={{fontSize:ICON_SIZE.small}}/>}
-              label="Transcript"
-              available={transcriptAvailable}
-            />
-
-            <AvailabilityBadge
-              icon={<NotesOutlinedIcon sx={{fontSize:ICON_SIZE.small}}/>}
-              label="Notes"
-              available={notesAvailable}
-            />
+          <Box sx={compactBadgeRowSx}>
+            <MeetingAvailability meeting={meeting} compact />
           </Box>
         </Box>
       </Box>
@@ -279,10 +341,7 @@ export default function RecordedMeetingCard({
           gap: 0.9,
         }}
       >
-        <GroupsOutlinedIcon
-          aria-hidden="true"
-          sx={{ color: '#7B90A3' }}
-        />
+        <GroupsOutlinedIcon aria-hidden="true" sx={{ color: COLORS.iconMuted }} />
 
         <Box>
           <Typography
@@ -308,36 +367,6 @@ export default function RecordedMeetingCard({
         </Box>
       </Box>
 
-      {/* Available meeting content */}
-      <Box
-        role="cell"
-        aria-label="Available meeting content"
-        data-tour="recorded-actions"
-        sx={{
-          display: { xs: 'none', lg: 'grid' },
-          gridTemplateColumns: 'minmax(0, 1fr)',
-          gap: 0.65,
-        }}
-      >
-        <AvailabilityBadge
-          icon={<PlayArrowRoundedIcon />}
-          label="Recording"
-          available={recordingAvailable}
-        />
-
-        <AvailabilityBadge
-          icon={<DescriptionOutlinedIcon />}
-          label="Transcript"
-          available={transcriptAvailable}
-        />
-
-        <AvailabilityBadge
-          icon={<NotesOutlinedIcon />}
-          label="Meeting notes"
-          available={notesAvailable}
-        />
-      </Box>
-
       {/* Meeting content actions */}
       <Box
         role="cell"
@@ -355,58 +384,26 @@ export default function RecordedMeetingCard({
           minWidth: 0,
         }}
       >
-        <Button
-          size="small"
-          variant="contained"
-          startIcon={<PlayArrowRoundedIcon />}
-          disabled={!recordingAvailable}
-          onClick={onWatchRecording}
-          sx={{
-            gridColumn: { lg: '1 / -1' },
-            minWidth: 0,
-            minHeight: 34,
-            px: 1.25,
-            borderRadius: '8px',
-            bgcolor: COLORS.blue,
-            boxShadow: 'none',
-            fontSize: FONT.caption,
-            fontWeight: 700,
-            textTransform: 'none',
-            whiteSpace: 'nowrap',
-            '&:hover': {
-              bgcolor: '#064A80',
-              boxShadow: 'none',
-            },
-            '&.Mui-disabled': {
-              bgcolor: '#EDF1F5',
-              color: '#9AA9B7',
-            },
-          }}
-        >
-          Watch recording
-        </Button>
-
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={<DescriptionOutlinedIcon />}
-          disabled={!transcriptAvailable}
-          onClick={onViewTranscript}
-          sx={secondaryButtonSx}
-        >
-          Transcript
-        </Button>
-
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={<NotesOutlinedIcon />}
-          disabled={!notesAvailable}
-          onClick={onViewNotes}
-          sx={secondaryButtonSx}
-        >
-          Notes
-        </Button>
+        {actions.map(({ label, Icon, available, onClick, primary }) => (
+          <Button
+            key={label}
+            size="small"
+            variant={primary ? 'contained' : 'outlined'}
+            startIcon={<Icon />}
+            disabled={!available}
+            onClick={onClick}
+            sx={{
+              ...(primary ? primaryButtonSx : secondaryButtonSx),
+              ...(primary ? { gridColumn: { lg: '1 / -1' } } : {}),
+              '& .MuiButton-startIcon': {
+                mr: 0.5,
+                ml: 0,
+              },
+            }}
+          >
+            {label}
+          </Button>
+        ))}
       </Box>
     </Box>
   )

@@ -68,11 +68,6 @@ export default function OverviewTab({
     <Box
       sx={{
         display: 'grid',
-        gridTemplateColumns: {
-          xs: 'minmax(0, 1fr)',
-          lg: 'minmax(0, 1fr) 340px',
-          xl: 'minmax(0, 1fr) 380px',
-        },
         gap: 2,
         alignItems: 'stretch',
       }}
@@ -94,6 +89,7 @@ export default function OverviewTab({
             border: `1px solid ${BORDER}`,
             borderRadius: '12px',
             bgcolor: '#FFFFFF',
+            width: '100%',
           }}
         >
           <Box
@@ -186,31 +182,7 @@ export default function OverviewTab({
             </InfoItem>
           </Box>
         </Paper>
-
-        <AttendeesPanel
-          dataTour="meeting-participants"
-          attendance={attendance}
-          participants={meeting.participants || []}
-          upcoming={isUpcoming}
-        />
-      </Box>
-
-      {/* Right: match the combined height of the left panels */}
-      <Box
-        sx={{
-          minWidth: 0,
-          height: '100%',
-        }}
-      >
-        <MeetingActionsHero
-          ended={ended}
-          joinDisabled={!link}
-          onJoin={() => window.open(link, '_blank', 'noopener,noreferrer')}
-          onRecording={() => onSelectTab?.('recording')}
-          onTranscript={() => onSelectTab?.('transcript')}
-          onActions={() => onSelectTab?.('actions')}
-        />
-      </Box>
-    </Box>
+        </Box>          
+        </Box>
   )
 }

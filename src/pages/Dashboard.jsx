@@ -310,37 +310,6 @@ export default function Dashboard() {
         minWidth: 0,
       }}
     >
-      {/* Header and overview statistics */}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: {
-            xs: 'minmax(0, 1fr)',
-            lg: 'minmax(0, 7fr) minmax(0, 3fr)',
-          },
-          gap: 1.5,
-          mb: 1.5,
-        }}
-      >
-        <DashboardHeader
-          now={now}
-          firstName={firstName}
-          onCreate={openCreate}
-          onInstant={openInstant}
-          activeCount={meetingCounts.activeCount}
-          liveCount={meetingCounts.liveCount}
-        />
-
-        <DashboardOverview
-          values={{
-            meetings: meetings.length,
-            people: participantCount,
-            live: liveMeeting ? 1 : 0,
-            actions: todaysUserAllActionItems.length,
-          }}
-        />
-      </Box>
-
       {/* Today's schedule and pending action items */}
       <Box
         sx={{

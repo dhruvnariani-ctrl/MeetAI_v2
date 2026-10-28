@@ -6,7 +6,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTheme } from '@mui/material/styles'
-
+import CompanionFab from './CompanionFab'
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
 
 import AccountMenu from './AccountMenu'
@@ -190,7 +190,20 @@ export default function Header({
             <NotificationsNoneOutlinedIcon sx={{ fontSize: 23 }} />
           </IconButton>
         </Tooltip>
-
+                {/* AI companion */}
+        <Box
+          sx={{
+            flex: '0 0 auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <CompanionFab
+            placement="header"
+            onClick={() => console.log('open companion')}
+          />
+        </Box>
         {/* Account profile and app tour */}
         <Box
           sx={{

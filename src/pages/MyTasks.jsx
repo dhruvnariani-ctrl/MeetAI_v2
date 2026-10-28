@@ -208,86 +208,72 @@ export default function MyTasks() {
       ),
     )
   }
-
   return (
-    <PageShell
-      title="My Tasks"
-      subtitle="Stay on top of your action items and commitments."
-    >
       <Stack spacing={2}>
-        {/* Executive summary */}
+        {/* Page heading and filters on the same line */}
         <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: 'repeat(2, minmax(0, 1fr))',
-              md: 'repeat(4, minmax(0, 1fr))',
-            },
-            gap: 1.25,
-          }}
-        >
-          <SummaryCard
-            title="Total tasks"
-            value={tasks.length}
-            subtitle="Assigned to you"
-            icon={<AssignmentOutlinedIcon />}
-            tone={{ bg: '#E7F5EF', fg: '#148363' }}
-            onClick={clearFilters}
-          />
+  sx={{
+    display: 'flex',
+    flexDirection: { xs: 'column', md: 'row' },
+    alignItems: { xs: 'stretch', md: 'center' },
+    justifyContent: 'space-between',
+    gap: { xs: 2, md: 3 },
+    width: '100%',
+    minWidth: 0,
+  }}
+>
+  <Box
+    sx={{
+      flex: '1 1 auto',
+      minWidth: 0,
+    }}
+  >
+    <Typography
+      sx={{
+        color: COLORS.navy,
+        fontSize: FONT.statValue,
+        fontWeight: 800,
+        lineHeight: 1.3,
+      }}
+    >
+      My Tasks
+    </Typography>
 
-          <SummaryCard
-            title="High priority"
-            value={highPriorityCount}
-            subtitle="Needs attention"
-            icon={<FlagOutlinedIcon />}
-            tone={{ bg: '#FDEBED', fg: '#D23F4B' }}
-            onClick={() => {
-              setFilter('Open')
-              setPriority('High')
-              setDueDate('default')
-            }}
-          />
+    <Typography
+      sx={{
+        mt: 0.25,
+        color: COLORS.muted,
+        fontSize: FONT.caption,
+      }}
+    >
+      Stay on top of your action items and commitments.
+    </Typography>
+  </Box>
 
-          <SummaryCard
-            title="Due soon"
-            value={dueSoonCount}
-            subtitle="Within 7 days"
-            icon={<EventOutlinedIcon />}
-            tone={{ bg: '#FFF2E3', fg: '#D77A18' }}
-            onClick={() => {
-              setFilter('Open')
-              setPriority('All')
-              setDueDate('week')
-            }}
-          />
-
-          <SummaryCard
-            title="Completed"
-            value={completedCount}
-            subtitle="Marked as done"
-            icon={<TaskAltOutlinedIcon />}
-            tone={{ bg: '#E7F5EF', fg: '#16845A' }}
-            onClick={() => {
-              setFilter('Done')
-              setPriority('All')
-              setDueDate('default')
-            }}
-          />
-        </Box>
-
-        {/* Status, priority, due date and sort (search lives in the header) */}
-        <TaskFilters
-          filter={filter}
-          onFilterChange={setFilter}
-          priority={priority}
-          onPriorityChange={setPriority}
-          dueDate={dueDate}
-          onDueDateChange={setDueDate}
-          sortOptions={TASK_SORT_OPTIONS}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-        />
-
+  <Box
+    sx={{
+      width: { xs: '100%', md: 'auto' },
+      flex: { xs: '1 1 100%', md: '0 1 auto' },
+      minWidth: 0,
+      '& > *': {
+        width: { xs: '100%', md: 'auto' },
+        minWidth: 0,
+      },
+    }}
+  >
+    <TaskFilters
+      filter={filter}
+      onFilterChange={setFilter}
+      priority={priority}
+      onPriorityChange={setPriority}
+      dueDate={dueDate}
+      onDueDateChange={setDueDate}
+      sortOptions={TASK_SORT_OPTIONS}
+      sortBy={sortBy}
+      onSortChange={setSortBy}
+    />
+  </Box>
+</Box>
         {/* Task table */}
         <Paper
           role="table"
@@ -326,7 +312,6 @@ export default function MyTasks() {
             </EmptyPanel>
           ) : (
             <>
-              {/* Table column headers */}
               <Box
                 role="row"
                 sx={{
@@ -369,12 +354,11 @@ export default function MyTasks() {
                   />
                 ))}
               </Box>
-              <Box sx={{m:'10px'}}>{pager}</Box>
-              
+
+              <Box sx={{ m: '10px' }}>{pager}</Box>
             </>
           )}
         </Paper>
       </Stack>
-    </PageShell>
-  )
+   )
 }

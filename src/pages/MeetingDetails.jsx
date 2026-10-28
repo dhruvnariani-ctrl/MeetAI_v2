@@ -150,7 +150,7 @@ export default function MeetingDetails() {
 
   return (
     <PageShell title="" subtitle="">
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap:2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap:1 }}>
         {/* Back */}
         <Button
           startIcon={<ArrowBackOutlinedIcon />}

@@ -7,7 +7,6 @@ import { useTheme } from '@mui/material/styles'
 
 import Header from '../components/Header'
 import Sidebar from '../components/Sidebar'
-import CompanionFab from '../components/CompanionFab'
 import NewMeetingDialog from '../components/event/NewMeetingDialog'
 
 import { searchDirectory } from '../data/Directory'
@@ -112,7 +111,7 @@ export default function AppLayout() {
           top: -60,
           zIndex: 3000,
           px: 2,
-          py: 1.25,
+          py: 1,
           borderRadius: 2,
           bgcolor: '#123A59',
           color: '#fff',
@@ -191,10 +190,6 @@ export default function AppLayout() {
         onInstantJoin={handleInstantJoin}
         currentUser={currentUser}
         searchDirectory={searchDirectory}
-      />
-
-      <CompanionFab
-        onClick={() => console.log('open companion')}
       />
     </Box>
   )

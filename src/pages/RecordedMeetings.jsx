@@ -152,51 +152,8 @@ export default function RecordedMeetings() {
   }
 
   return (
-    <PageShell
-      title="Recorded Meetings"
-      subtitle="Your central archive for meeting recordings, transcripts and notes."
-    >
       <Stack spacing={2}>
-        {/* Summary metrics */}
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: 'repeat(2, minmax(0, 1fr))',
-              md: 'repeat(3, minmax(0, 1fr))',
-            },
-            gap: 1.25,
-            '& > :last-child': {
-              gridColumn: { xs: '1 / -1', md: 'auto' },
-            },
-          }}
-        >
-          <SummaryMetric
-            icon={<VideoLibraryOutlinedIcon />}
-            label="Recordings"
-            value={recordingCount}
-            description="Available to watch"
-            tone={{ bg: '#E8F2FC', fg: '#1769AA' }}
-          />
 
-          <SummaryMetric
-            icon={<DescriptionOutlinedIcon />}
-            label="Transcripts"
-            value={transcriptCount}
-            description="Ready to review"
-            tone={{ bg: '#E8F5EF', fg: '#16805C' }}
-          />
-
-          <SummaryMetric
-            icon={<NotesOutlinedIcon />}
-            label="Meeting notes"
-            value={notesCount}
-            description="Available for reference"
-            tone={{ bg: '#F0EDFC', fg: '#6A58B5' }}
-          />
-        </Box>
-
-        {/* Archive heading */}
         <Box
           sx={{
             display: 'flex',
@@ -215,7 +172,7 @@ export default function RecordedMeetings() {
                 fontWeight: 750,
               }}
             >
-              Meeting archive
+              Meeting recordings and content
             </Typography>
 
             <Typography
@@ -332,7 +289,6 @@ export default function RecordedMeetings() {
                     {[
                       'Meeting',
                       'Participants',
-                      'Content',
                       'Actions',
                     ].map((label) => (
                       <Typography
@@ -367,8 +323,8 @@ export default function RecordedMeetings() {
                               `/meetings/${meeting.id}?tab=transcript`,
                             )
                           }
-                          onViewNotes={() =>
-                            navigate(`/meetings/${meeting.id}`)
+                          onViewSummary={() =>
+                            navigate(`/meetings/${meeting.id}?tab=overview`)
                           }
                         />
                       ))}
@@ -382,6 +338,5 @@ export default function RecordedMeetings() {
           )}
         </Box>
       </Stack>
-    </PageShell>
   )
 }

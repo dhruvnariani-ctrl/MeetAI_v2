@@ -82,10 +82,6 @@ export default function CalendarPage() {
   }
 
   return (
-    <PageShell
-      title="Calendar"
-      subtitle="Manage your meetings and schedule"
-    >
       <Stack spacing={2} sx={{ minWidth: 0 }}>
         {/* Calendar navigation and actions */}
         <Box data-tour="calendar-date-navigation">
@@ -248,6 +244,5 @@ export default function CalendarPage() {
           </Stack>
         </Box>
       </Stack>
-    </PageShell>
   )
 }
